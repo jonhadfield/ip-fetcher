@@ -48,8 +48,11 @@ func Request(c *retryablehttp.Client, url string, method string, inHeaders http.
 
 	request, err := retryablehttp.NewRequest(method, url, nil)
 	if err != nil {
+		err = fmt.Errorf("failed to request %s: %w", MaskSecrets(url, secrets), err)
+
 		return
 	}
+
 	request.Header = inHeaders
 
 	ctx := context.Background()
