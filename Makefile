@@ -26,6 +26,35 @@ ci: lint test
 critic:
 	gocritic check ./...
 
+BUILD_TAG := $(shell git describe --tags 2>/dev/null)
+BUILD_SHA := $(shell git rev-parse --short HEAD)
+BUILD_DATE := $(shell date -u '+%Y/%m/%d:%H:%M:%S')
+
+build:
+	GOOS=darwin CGO_ENABLED=0 GOARCH=amd64 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o ".local_dist/prefix-fetcher_darwin_amd64" cmd/prefix-fetcher/*.go
+
+build-all:
+	GOOS=darwin  CGO_ENABLED=0 GOARCH=amd64 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o ".local_dist/prefix-fetcher_darwin_amd64"  cmd/prefix-fetcher/*.go
+	GOOS=linux   CGO_ENABLED=0 GOARCH=amd64 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o ".local_dist/prefix-fetcher_linux_amd64"   cmd/prefix-fetcher/*.go
+	GOOS=linux   CGO_ENABLED=0 GOARCH=arm   go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o ".local_dist/prefix-fetcher_linux_arm"     cmd/prefix-fetcher/*.go
+	GOOS=linux   CGO_ENABLED=0 GOARCH=arm64 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o ".local_dist/prefix-fetcher_linux_arm64"   cmd/prefix-fetcher/*.go
+	GOOS=netbsd  CGO_ENABLED=0 GOARCH=amd64 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o ".local_dist/prefix-fetcher_netbsd_amd64"  cmd/prefix-fetcher/*.go
+	GOOS=openbsd CGO_ENABLED=0 GOARCH=amd64 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o ".local_dist/prefix-fetcher_openbsd_amd64" cmd/prefix-fetcher/*.go
+	GOOS=freebsd CGO_ENABLED=0 GOARCH=amd64 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o ".local_dist/prefix-fetcher_freebsd_amd64" cmd/prefix-fetcher/*.go
+	GOOS=windows CGO_ENABLED=0 GOARCH=amd64 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o ".local_dist/prefix-fetcher_windows_amd64.exe" cmd/prefix-fetcher/*.go
+
+install:
+	go install ./cmd/...
+
+build-linux:
+	GOOS=linux CGO_ENABLED=0 GOARCH=amd64 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o ".local_dist/prefix-fetcher_linux_amd64" cmd/prefix-fetcher/*.go
+
+mac-install: build
+	install .local_dist/prefix-fetcher_darwin_amd64 /usr/local/bin/prefix-fetcher
+
+linux-install: build-linux
+	sudo install .local_dist/prefix-fetcher_linux_amd64 /usr/local/bin/prefix-fetcher
+
 find-updates:
 	go list -u -m -json all | go-mod-outdated -update -direct
 

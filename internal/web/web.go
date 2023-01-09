@@ -28,7 +28,7 @@ func Resolve(name string) (ip netip.Addr, err error) {
 		return
 	}
 
-	return netip.MustParseAddr(i.String()), nil
+	return netip.ParseAddr(i.String())
 }
 
 func MaskSecrets(content string, secret []string) string {
@@ -92,12 +92,9 @@ func GetResourceHeaderValue(client *retryablehttp.Client, url, method, header st
 
 	_, response, _, err := Request(client, url, method, nil, secrets, 5*time.Second)
 	if err != nil {
-		return "", fmt.Errorf("%w", err)
 	}
 
-	result = response.Get("content-disposition")
-
-	return
+	return response.Get(header), err
 }
 
 type pathDetailsOutput struct {
@@ -156,7 +153,7 @@ func pathDetails(path string) (output pathDetailsOutput, err error) {
 	}, nil
 }
 
-func DownloadFile(client *http.Client, u, path string) (downloadedFilePath string, err error) {
+func DownloadFile(client *retryablehttp.Client, u, path string) (downloadedFilePath string, err error) {
 	details, err := pathDetails(path)
 	if err != nil {
 		return

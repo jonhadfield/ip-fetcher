@@ -102,10 +102,12 @@ func TestDownloadFileWithMissingDir(t *testing.T) {
 		File("testdata/mytextfile.txt").
 		SetHeader("hello", "World")
 
+	rc := retryablehttp.NewClient()
 	client := &http.Client{Transport: &http.Transport{}}
+	rc.HTTPClient = client
 	gock.InterceptClient(client)
 	missingDir := "/a/non-existant-dir"
-	downloadedFilePath, err := DownloadFile(client, "https://www.example.com/mytextfile.txt", missingDir)
+	downloadedFilePath, err := DownloadFile(rc, "https://www.example.com/mytextfile.txt", missingDir)
 	require.Error(t, err)
 	require.Empty(t, downloadedFilePath)
 }
@@ -123,11 +125,13 @@ func TestDownloadFileWithDirSpecified(t *testing.T) {
 		File("testdata/mytextfile.txt").
 		SetHeader("hello", "World")
 
+	rc := retryablehttp.NewClient()
 	client := &http.Client{Transport: &http.Transport{}}
+	rc.HTTPClient = client
 	gock.InterceptClient(client)
 
 	tmpDir := t.TempDir()
-	df, err := DownloadFile(client, "https://www.example.com/mytextfile.txt", tmpDir)
+	df, err := DownloadFile(rc, "https://www.example.com/mytextfile.txt", tmpDir)
 	require.NoError(t, err)
 	require.Equal(t, filepath.Join(tmpDir, "mytextfile.txt"), df)
 }
@@ -145,11 +149,13 @@ func TestDownloadFileWithFilePathSpecified(t *testing.T) {
 		File("testdata/mytextfile.txt").
 		SetHeader("hello", "World")
 
+	rc := retryablehttp.NewClient()
 	client := &http.Client{Transport: &http.Transport{}}
+	rc.HTTPClient = client
 	gock.InterceptClient(client)
 
 	tmpDir := t.TempDir()
-	df, err := DownloadFile(client, "https://www.example.com/mytextfile.txt", path.Join(tmpDir, "mytextfile.txt"))
+	df, err := DownloadFile(rc, "https://www.example.com/mytextfile.txt", path.Join(tmpDir, "mytextfile.txt"))
 	require.NoError(t, err)
 	require.Equal(t, filepath.Join(tmpDir, "mytextfile.txt"), df)
 }
