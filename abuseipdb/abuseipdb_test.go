@@ -61,6 +61,7 @@ func TestFetchBlackList(t *testing.T) {
 	doc, err := ac.Fetch()
 	require.NoError(t, err)
 	expectedGeneratedAt, err := time.Parse(TimeFormat, "2022-07-06T21:18:45+00:00")
+	require.NoError(t, err)
 	require.Equal(t, expectedGeneratedAt, doc.GeneratedAt)
 	require.NotEmpty(t, doc.Records)
 	var found bool

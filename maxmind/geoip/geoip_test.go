@@ -6,7 +6,6 @@ import (
 	"gopkg.in/h2non/gock.v1"
 	"net/url"
 	"path/filepath"
-	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -276,7 +275,6 @@ func TestDownloadExtract(t *testing.T) {
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-Country-CSV_20220617.zip")
 
 	gock.InterceptClient(rc.HTTPClient)
-	fmt.Println(reflect.TypeOf(*ac.Client))
 	out, err := ac.FetchFiles()
 	require.NoError(t, err)
 

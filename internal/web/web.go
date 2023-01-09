@@ -91,8 +91,6 @@ func GetResourceHeaderValue(client *retryablehttp.Client, url, method, header st
 	}
 
 	_, response, _, err := Request(client, url, method, nil, secrets, 5*time.Second)
-	if err != nil {
-	}
 
 	return response.Get(header), err
 }

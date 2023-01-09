@@ -26,11 +26,6 @@ func New() GeoIP {
 	}
 }
 
-// const (
-// 	EditionGeoIP    = "GeoIP"
-// 	EditionGeoLite2 = "GeoLite2"
-// )
-
 type GeoIP struct {
 	Client     *retryablehttp.Client
 	LicenseKey string
@@ -48,12 +43,6 @@ const (
 	NameASN                               = "ASN"
 	NameCountry                           = "Country"
 	NameCity                              = "City"
-	GeoLite2ASNCSVEditionID               = "GeoLite2-ASN-CSV"
-	GeoLite2ASNCSVSuffix                  = "zip"
-	GeoLite2CityCSVEditionID              = "GeoLite2-City-CSV"
-	GeoLite2CityCSVSuffix                 = "zip"
-	GeoLite2CountryCSVEditionID           = "GeoLite2-Country-CSV"
-	GeoLite2CountryCSVSuffix              = "zip"
 	GeoLite2CityBlocksIPv4CSVFileName     = "GeoLite2-City-Blocks-IPv4.csv"
 	GeoLite2CityBlocksIPv6CSVFileName     = "GeoLite2-City-Blocks-IPv6.csv"
 	GeoLite2CityLocationsEnCSVFileName    = "GeoLite2-City-Locations-en.csv"
