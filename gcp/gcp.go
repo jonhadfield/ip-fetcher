@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	downloadURL              = "https://www.gstatic.com/ipranges/cloud.json"
+	DownloadURL              = "https://www.gstatic.com/ipranges/cloud.json"
 	downloadedFileTimeFormat = "2006-01-02T15:04:05.999999"
 )
 
@@ -22,7 +22,7 @@ func New() GCP {
 	c.RetryMax = 1
 
 	return GCP{
-		DownloadURL: downloadURL,
+		DownloadURL: DownloadURL,
 		Client:      c,
 	}
 }
@@ -41,7 +41,7 @@ type RawDoc struct {
 
 func (gc *GCP) FetchData() (data []byte, headers http.Header, status int, err error) {
 	if gc.DownloadURL == "" {
-		gc.DownloadURL = downloadURL
+		gc.DownloadURL = DownloadURL
 	}
 
 	return web.Request(gc.Client, gc.DownloadURL, http.MethodGet, nil, nil, 10*time.Second)
