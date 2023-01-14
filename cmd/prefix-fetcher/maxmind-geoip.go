@@ -39,7 +39,11 @@ func geoipCmd() *cli.Command {
 			a.DBFormat = c.String("format")
 			a.Root = c.String("path")
 			a.Extract = c.Bool("extract")
-			out, err := a.FetchFiles()
+			out, err := a.FetchFiles(geoip.FetchFilesInput{
+				ASN:     true,
+				Country: true,
+				City:    true,
+			})
 			if err != nil {
 				return err
 			}
@@ -52,11 +56,6 @@ func geoipCmd() *cli.Command {
 
 				return nil
 			}
-
-			fmt.Println("geoip compressed files written to:")
-			fmt.Printf("country - %s\n", out.CountryCompressed)
-			fmt.Printf("city - %s\n", out.CityCompressed)
-			fmt.Printf("asn - %s\n", out.ASNCompressed)
 
 			return nil
 		},

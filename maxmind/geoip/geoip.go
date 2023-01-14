@@ -59,6 +59,15 @@ func constructDownloadURL(licenseKey, edition, dbName, dbFormat string) string {
 		suffix = "tar.gz"
 	}
 
+	switch strings.ToLower(dbName) {
+	case "country":
+		dbName = "Country"
+	case "asn":
+		dbName = "ASN"
+	case "city":
+		dbName = "City"
+	}
+
 	editionID := fmt.Sprintf("%s-%s", edition, dbName)
 	if strings.EqualFold(dbFormat, "csv") {
 		editionID = fmt.Sprintf("%s-%s-CSV", edition, dbName)
@@ -107,6 +116,16 @@ func (gc *GeoIP) Validate() error {
 	return nil
 }
 
+func (gc *GeoIP) FetchFileName(dbName string) (filename string, err error) {
+	if err = gc.Validate(); err != nil {
+		return
+	}
+
+	downloadURL := constructDownloadURL(gc.LicenseKey, gc.Edition, dbName, gc.DBFormat)
+
+	return web.RequestContentDispositionFileName(gc.Client, downloadURL, []string{gc.LicenseKey})
+}
+
 func (gc *GeoIP) FetchFile(dbName string) (filePath string, err error) {
 	if err = gc.Validate(); err != nil {
 		return
@@ -138,23 +157,23 @@ func (gc *GeoIP) FetchFile(dbName string) (filePath string, err error) {
 }
 
 type FetchFilesOutput struct {
-	ASNVersion        string
-	ASNCompressed     string
-	ASNIPv4           string
-	ASNIPv6           string
-	ASNDataPath       string
-	CityVersion       string
-	CityIPv4          string
-	CityIPv6          string
-	CityLocations     string
-	CityCompressed    string
-	CityDataPath      string
-	CountryVersion    string
-	CountryIPv4       string
-	CountryIPv6       string
-	CountryLocations  string
-	CountryCompressed string
-	CountryDataPath   string
+	ASNVersion                string
+	ASNCompressedFilePath     string
+	ASNIPv4FilePath           string
+	ASNIPv6FilePath           string
+	ASNDataPath               string
+	CityVersion               string
+	CityIPv4FilePath          string
+	CityIPv6FilePath          string
+	CityLocationsFilePath     string
+	CityCompressedFilePath    string
+	CityDataPath              string
+	CountryVersion            string
+	CountryIPv4FilePath       string
+	CountryIPv6FilePath       string
+	CountryLocationsFilePath  string
+	CountryCompressedFilePath string
+	CountryDataPath           string
 }
 
 func UnzipFiles(src, dest string) error {
@@ -317,8 +336,9 @@ func ExtractCity(zipPath, dest string) error {
 	return UnzipFiles(zipPath, dest)
 }
 
-func getVersionFromZipFileName(in string) (version string, err error) {
+func getVersionFromZipFilePath(in string) (version string, err error) {
 	fNameWithoutExt := fileNameWithoutExtension(filepath.Base(in))
+
 	fNameParts := strings.Split(fNameWithoutExt, "_")
 	if len(fNameParts) != 2 {
 		err = fmt.Errorf("filename should be in format GeoLite2-<Type>-CSV_YYMMDD.zip but presented was '%s'", in)
@@ -329,74 +349,209 @@ func getVersionFromZipFileName(in string) (version string, err error) {
 	return fNameParts[1], nil
 }
 
-func (gc *GeoIP) FetchFiles() (output FetchFilesOutput, err error) {
+type FetchFilesInput struct {
+	ASN     bool
+	Country bool
+	City    bool
+}
+
+type FetchASNFilesOutput struct {
+	Version        string
+	CompressedPath string
+	DataRoot       string
+	IPv4FilePath   string
+	IPv6FilePath   string
+}
+
+func (gc *GeoIP) FetchASNFiles() (output FetchASNFilesOutput, err error) {
+	output.CompressedPath, err = gc.FetchFile(NameASN)
+	if err != nil {
+		return
+	}
+
+	if output.Version, err = getVersionFromZipFilePath(output.CompressedPath); err != nil {
+		return
+	}
+
+	if gc.Extract {
+		extractPath := gc.Root
+		if err = ExtractASN(output.CompressedPath, extractPath); err != nil {
+			return
+		}
+
+		zipMinusExtension := fileNameWithoutExtension(filepath.Base(output.CompressedPath))
+		output.DataRoot = filepath.Join(extractPath, zipMinusExtension)
+		output.IPv4FilePath = filepath.Join(output.DataRoot, GeoLite2ASNBlocksIPv4CSVFileName)
+		output.IPv6FilePath = filepath.Join(output.DataRoot, GeoLite2ASNBlocksIPv6CSVFileName)
+	}
+
+	return output, err
+}
+
+type FetchCityFilesOutput struct {
+	Version           string
+	CompressedPath    string
+	DataRoot          string
+	IPv4FilePath      string
+	IPv6FilePath      string
+	LocationsFilePath string
+}
+
+func (gc *GeoIP) FetchCityFiles() (output FetchCityFilesOutput, err error) {
+	output.CompressedPath, err = gc.FetchFile(NameCity)
+	if err != nil {
+		return
+	}
+
+	if output.Version, err = getVersionFromZipFilePath(output.CompressedPath); err != nil {
+		return
+	}
+
+	if gc.Extract {
+		extractPath := gc.Root
+		if err = ExtractCity(output.CompressedPath, extractPath); err != nil {
+			return
+		}
+
+		zipMinusExtension := fileNameWithoutExtension(filepath.Base(output.CompressedPath))
+		output.DataRoot = filepath.Join(extractPath, zipMinusExtension)
+		output.IPv4FilePath = filepath.Join(output.DataRoot, GeoLite2CityBlocksIPv4CSVFileName)
+		output.IPv6FilePath = filepath.Join(output.DataRoot, GeoLite2CityBlocksIPv6CSVFileName)
+		output.LocationsFilePath = filepath.Join(output.DataRoot, GeoLite2CityLocationsEnCSVFileName)
+	}
+
+	return output, err
+}
+
+type FetchCountryFilesOutput struct {
+	Version           string
+	CompressedPath    string
+	DataRoot          string
+	IPv4FilePath      string
+	IPv6FilePath      string
+	LocationsFilePath string
+}
+
+func (gc *GeoIP) FetchCountryFiles() (output FetchCountryFilesOutput, err error) {
+	output.CompressedPath, err = gc.FetchFile(NameCountry)
+	if err != nil {
+		return
+	}
+
+	if output.Version, err = getVersionFromZipFilePath(output.CompressedPath); err != nil {
+		return
+	}
+
+	if gc.Extract {
+		extractPath := gc.Root
+		if err = ExtractCountry(output.CompressedPath, extractPath); err != nil {
+			return
+		}
+
+		zipMinusExtension := fileNameWithoutExtension(filepath.Base(output.CompressedPath))
+		logrus.Debugf("maxmind data root: %s", output.DataRoot)
+		output.DataRoot = filepath.Join(extractPath, zipMinusExtension)
+		output.IPv4FilePath = filepath.Join(output.DataRoot, GeoLite2CountryBlocksIPv4CSVFileName)
+		logrus.Debugf("GeoLite2CountryBlocksIPv4CSVFileName path: %s", output.IPv4FilePath)
+		output.IPv6FilePath = filepath.Join(output.DataRoot, GeoLite2CountryBlocksIPv6CSVFileName)
+		logrus.Debugf("GeoLite2CountryBlocksIPv6CSVFileName path: %s", output.IPv6FilePath)
+		output.LocationsFilePath = filepath.Join(output.DataRoot, GeoLite2CountryLocationsEnCSVFileName)
+		logrus.Debugf("GeoLite2CountryLocationsEnCSVFileName path: %s", output.LocationsFilePath)
+	}
+
+	return output, err
+}
+
+func (gc *GeoIP) FetchAllFiles() (output FetchFilesOutput, err error) {
 	if err = gc.Validate(); err != nil {
 		return
 	}
 
-	output.ASNCompressed, err = gc.FetchFile(NameASN)
+	var asnOut FetchASNFilesOutput
+	asnOut, err = gc.FetchASNFiles()
 	if err != nil {
 		return
 	}
 
-	if output.ASNVersion, err = getVersionFromZipFileName(output.ASNCompressed); err != nil {
-		return
-	}
+	output.ASNCompressedFilePath = asnOut.CompressedPath
+	output.ASNIPv4FilePath = asnOut.IPv4FilePath
+	output.ASNIPv6FilePath = asnOut.IPv6FilePath
+	output.ASNVersion = asnOut.Version
 
-	if gc.Extract {
-		extractPath := gc.Root
-		if err = ExtractASN(output.ASNCompressed, extractPath); err != nil {
-			return
-		}
-
-		zipMinusExtension := fileNameWithoutExtension(filepath.Base(output.ASNCompressed))
-		output.ASNDataPath = filepath.Join(extractPath, zipMinusExtension)
-		output.ASNIPv4 = filepath.Join(output.ASNDataPath, GeoLite2ASNBlocksIPv4CSVFileName)
-		output.ASNIPv6 = filepath.Join(output.ASNDataPath, GeoLite2ASNBlocksIPv6CSVFileName)
-	}
-
-	output.CountryCompressed, err = gc.FetchFile(NameCountry)
+	var CountryOut FetchCountryFilesOutput
+	CountryOut, err = gc.FetchCountryFiles()
 	if err != nil {
 		return
 	}
 
-	if output.CountryVersion, err = getVersionFromZipFileName(output.CountryCompressed); err != nil {
-		return
-	}
+	output.CountryCompressedFilePath = CountryOut.CompressedPath
+	output.CountryIPv4FilePath = CountryOut.IPv4FilePath
+	output.CountryIPv6FilePath = CountryOut.IPv6FilePath
+	output.CountryLocationsFilePath = CountryOut.LocationsFilePath
+	output.CountryVersion = CountryOut.Version
 
-	if gc.Extract {
-		extractPath := gc.Root
-		if err = ExtractCountry(output.CountryCompressed, extractPath); err != nil {
-			return
-		}
-
-		zipMinusExtension := fileNameWithoutExtension(filepath.Base(output.CountryCompressed))
-		output.CountryDataPath = filepath.Join(extractPath, zipMinusExtension)
-		output.CountryIPv4 = filepath.Join(extractPath, fileNameWithoutExtension(filepath.Base(output.CountryCompressed)), GeoLite2CountryBlocksIPv4CSVFileName)
-		output.CountryIPv6 = filepath.Join(extractPath, fileNameWithoutExtension(filepath.Base(output.CountryCompressed)), GeoLite2CountryBlocksIPv6CSVFileName)
-		output.CountryLocations = filepath.Join(extractPath, fileNameWithoutExtension(filepath.Base(output.CountryCompressed)), GeoLite2CountryLocationsEnCSVFileName)
-	}
-
-	output.CityCompressed, err = gc.FetchFile(NameCity)
+	var CityOut FetchCityFilesOutput
+	CityOut, err = gc.FetchCityFiles()
 	if err != nil {
 		return
 	}
 
-	if output.CityVersion, err = getVersionFromZipFileName(output.CityCompressed); err != nil {
+	output.CityCompressedFilePath = CityOut.CompressedPath
+	output.CityIPv4FilePath = CityOut.IPv4FilePath
+	output.CityIPv6FilePath = CityOut.IPv6FilePath
+	output.CityLocationsFilePath = CityOut.LocationsFilePath
+	output.CityVersion = CityOut.Version
+
+	return
+}
+
+func (gc *GeoIP) FetchFiles(input FetchFilesInput) (output FetchFilesOutput, err error) {
+	if err = gc.Validate(); err != nil {
 		return
 	}
 
-	if gc.Extract {
-		extractPath := gc.Root
-		if err = ExtractCity(output.CityCompressed, extractPath); err != nil {
+	if input.ASN {
+		var asnOut FetchASNFilesOutput
+		asnOut, err = gc.FetchASNFiles()
+		if err != nil {
 			return
 		}
 
-		zipMinusExtension := fileNameWithoutExtension(filepath.Base(output.CityCompressed))
-		output.CityDataPath = filepath.Join(extractPath, zipMinusExtension)
-		output.CityIPv4 = filepath.Join(extractPath, fileNameWithoutExtension(filepath.Base(output.CityCompressed)), GeoLite2CityBlocksIPv4CSVFileName)
-		output.CityIPv6 = filepath.Join(extractPath, fileNameWithoutExtension(filepath.Base(output.CityCompressed)), GeoLite2CityBlocksIPv6CSVFileName)
-		output.CityLocations = filepath.Join(extractPath, fileNameWithoutExtension(filepath.Base(output.CityCompressed)), GeoLite2CityLocationsEnCSVFileName)
+		output.ASNDataPath = asnOut.DataRoot
+		output.ASNCompressedFilePath = asnOut.CompressedPath
+		output.ASNIPv4FilePath = asnOut.IPv4FilePath
+		output.ASNIPv6FilePath = asnOut.IPv6FilePath
+		output.ASNVersion = asnOut.Version
+	}
+
+	if input.Country {
+		var CountryOut FetchCountryFilesOutput
+		CountryOut, err = gc.FetchCountryFiles()
+		if err != nil {
+			return
+		}
+
+		output.CountryDataPath = CountryOut.DataRoot
+		output.CountryCompressedFilePath = CountryOut.CompressedPath
+		output.CountryIPv4FilePath = CountryOut.IPv4FilePath
+		output.CountryIPv6FilePath = CountryOut.IPv6FilePath
+		output.CountryLocationsFilePath = CountryOut.LocationsFilePath
+		output.CountryVersion = CountryOut.Version
+	}
+
+	if input.City {
+		var CityOut FetchCityFilesOutput
+		CityOut, err = gc.FetchCityFiles()
+		if err != nil {
+			return
+		}
+
+		output.CityDataPath = CityOut.DataRoot
+		output.CityCompressedFilePath = CityOut.CompressedPath
+		output.CityIPv4FilePath = CityOut.IPv4FilePath
+		output.CityIPv6FilePath = CityOut.IPv6FilePath
+		output.CityLocationsFilePath = CityOut.LocationsFilePath
+		output.CityVersion = CityOut.Version
 	}
 
 	return
