@@ -215,7 +215,7 @@ func RequestContentDispositionFileName(httpClient *retryablehttp.Client, url str
 
 	_, params, err := mime.ParseMediaType(contentDispHeader)
 	if err != nil {
-		return "", fmt.Errorf("%w", err)
+		return "", fmt.Errorf("failed to get Content-Disposition header - %w", err)
 	}
 
 	if len(params) == 0 {

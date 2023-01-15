@@ -16,6 +16,50 @@ import (
 	"gopkg.in/h2non/gock.v1"
 )
 
+func TestRequestContentDispositionFileName(t *testing.T) {
+	testUrl := "https://www.example.com/sample-url?qsparam=qsvalue"
+	fileName := "example-filename.zip"
+	u, err := url.Parse(testUrl)
+	require.NoError(t, err)
+
+	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
+
+	gock.New(urlBase).
+		Head(u.Path).
+		MatchParams(map[string]string{
+			"qsparam": "qsvalue",
+		}).
+		Reply(200).
+		SetHeader("content-disposition", fmt.Sprintf("attachment; filename=%s", fileName))
+
+	gock.New(urlBase).
+		Head(u.Path).
+		MatchParams(map[string]string{
+			"qsparam": "qsvalue",
+		}).
+		Reply(200).
+		SetHeader("content-disposition", "")
+
+	rc := retryablehttp.NewClient()
+	client := &http.Client{Transport: &http.Transport{}}
+	rc.HTTPClient = client
+	rc.RetryMax = 0
+	gock.InterceptClient(client)
+	fn, err := RequestContentDispositionFileName(rc, testUrl, nil)
+	require.NoError(t, err)
+	require.Equal(t, fileName, fn)
+
+	fn, err = RequestContentDispositionFileName(rc, testUrl, nil)
+	require.Error(t, err)
+	require.ErrorContains(t, err, "failed to get Content-Disposition header")
+	require.ErrorContains(t, err, "mime: no media type")
+
+	// second attempt fails as gock only matching one time
+	fn, err = RequestContentDispositionFileName(rc, testUrl, nil)
+	require.Error(t, err)
+
+}
+
 func TestPathDetails(t *testing.T) {
 	// Test a missing file with an missing 'would-be' parent
 	output, err := pathDetails(filepath.Join("a", "missing", "directory"))
