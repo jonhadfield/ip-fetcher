@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/jonhadfield/prefix-fetcher/pflog"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"regexp"
 	"strings"
@@ -25,8 +27,12 @@ type Azure struct {
 }
 
 func New() Azure {
+	pflog.SetLogLevel()
 	rc := &http.Client{Transport: &http.Transport{}}
 	c := retryablehttp.NewClient()
+	if logrus.GetLevel() <= logrus.DebugLevel {
+		c.Logger = nil
+	}
 	c.HTTPClient = rc
 	c.RetryMax = 1
 

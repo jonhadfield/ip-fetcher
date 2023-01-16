@@ -2,7 +2,6 @@ package geoip
 
 import (
 	"fmt"
-	"github.com/hashicorp/go-retryablehttp"
 	"gopkg.in/h2non/gock.v1"
 	"net/url"
 	"path/filepath"
@@ -39,13 +38,11 @@ func TestDownloadDBFile(t *testing.T) {
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
-	rc := retryablehttp.NewClient()
 	ac := New()
 	ac.LicenseKey = licenseKey
 	ac.Edition = "GeoLite2"
 	ac.DBFormat = "CSv"
 	ac.Root = tempDir
-	ac.Client = rc
 	ac.Client.RetryMax = 0
 
 	downloadURL := constructDownloadURL(licenseKey, "GeoLite2", "ASN", "CSV")
@@ -75,7 +72,7 @@ func TestDownloadDBFile(t *testing.T) {
 		File("testdata/GeoLite2-ASN-CSV_20220617.zip").
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-ASN-CSV_20220617.zip")
 
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	path, err := ac.FetchFile("ASN")
 	require.NoError(t, err)
@@ -86,14 +83,12 @@ func TestFetchCityFiles(t *testing.T) {
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
-	rc := retryablehttp.NewClient()
 	ac := New()
 	ac.LicenseKey = licenseKey
 	ac.Edition = "GeoLite2"
 	ac.DBFormat = "cSv"
 	ac.Extract = true
 	ac.Root = tempDir
-	ac.Client = rc
 	ac.Client.RetryMax = 0
 
 	downloadURL := constructDownloadURL(licenseKey, "GeoLite2", "ciTy", "CSV")
@@ -123,7 +118,7 @@ func TestFetchCityFiles(t *testing.T) {
 		File("testdata/GeoLite2-City-CSV_20220617.zip").
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
 
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	o, err := ac.FetchCityFiles()
 	require.Equal(t, "20220617", o.Version)
@@ -144,14 +139,12 @@ func TestFetchCityFilesWithoutExtract(t *testing.T) {
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
-	rc := retryablehttp.NewClient()
 	ac := New()
 	ac.LicenseKey = licenseKey
 	ac.Edition = "GeoLite2"
 	ac.DBFormat = "cSv"
 	ac.Extract = false
 	ac.Root = tempDir
-	ac.Client = rc
 	ac.Client.RetryMax = 0
 
 	downloadURL := constructDownloadURL(licenseKey, "GeoLite2", "ciTy", "CSV")
@@ -181,7 +174,7 @@ func TestFetchCityFilesWithoutExtract(t *testing.T) {
 		File("testdata/GeoLite2-City-CSV_20220617.zip").
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
 
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	o, err := ac.FetchCityFiles()
 	require.Equal(t, "20220617", o.Version)
@@ -202,14 +195,12 @@ func TestFetchFiles(t *testing.T) {
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
-	rc := retryablehttp.NewClient()
 	ac := New()
 	ac.LicenseKey = licenseKey
 	ac.Edition = "GeoLite2"
 	ac.DBFormat = "csV"
 	ac.Extract = true
 	ac.Root = tempDir
-	ac.Client = rc
 	ac.Client.RetryMax = 0
 
 	arnURL := "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=test-key&suffix=zip"
@@ -285,7 +276,7 @@ func TestFetchFiles(t *testing.T) {
 		File("testdata/GeoLite2-Country-CSV_20220617.zip").
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-Country-CSV_20220617.zip")
 
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	paths, err := ac.FetchFiles(FetchFilesInput{
 		ASN:     true,
@@ -321,13 +312,11 @@ func TestDownloadExtract(t *testing.T) {
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
-	rc := retryablehttp.NewClient()
 	ac := New()
 	ac.LicenseKey = licenseKey
 	ac.Edition = "GeoLite2"
 	ac.DBFormat = "csv"
 	ac.Root = tempDir
-	ac.Client = rc
 	ac.Client.RetryMax = 0
 
 	arnURL := "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=test-key&suffix=zip"
@@ -403,7 +392,7 @@ func TestDownloadExtract(t *testing.T) {
 		File("testdata/GeoLite2-Country-CSV_20220617.zip").
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-Country-CSV_20220617.zip")
 
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 	out, err := ac.FetchFiles(FetchFilesInput{
 		ASN:     true,
 		Country: true,

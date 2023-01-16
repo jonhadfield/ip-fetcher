@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/hashicorp/go-retryablehttp"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 )
@@ -20,8 +19,6 @@ const (
 func TestGetDownloadURL(t *testing.T) {
 	defer gock.Off()
 
-	// t.Parallel()
-
 	u, err := url.Parse(testInitialURL)
 	require.NoError(t, err)
 
@@ -32,11 +29,9 @@ func TestGetDownloadURL(t *testing.T) {
 		Reply(200).
 		File(testInitialFilePath)
 
-	rc := retryablehttp.NewClient()
 	ac := New()
-	ac.Client = rc
 	ac.InitialURL = testInitialURL
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	dURL, err := ac.GetDownloadURL()
 	require.NoError(t, err)
@@ -62,11 +57,9 @@ func TestFetchRaw(t *testing.T) {
 		AddHeader("ETag", exEtag).
 		File(testDataFilePath)
 
-	rc := retryablehttp.NewClient()
 	ac := New()
 	ac.DownloadURL = testDownloadURL
-	ac.Client = rc
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	data, header, status, err := ac.FetchData()
 	require.NoError(t, err)
@@ -88,11 +81,9 @@ func TestFetchRawNoDownloadURL(t *testing.T) {
 	_, err = url.Parse(testInitialURL)
 	require.NoError(t, err)
 
-	rc := retryablehttp.NewClient()
 	ac := New()
 	ac.InitialURL = testInitialURL
-	ac.Client = rc
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	_, _, _, err = ac.FetchData()
 	require.Error(t, err)
@@ -110,11 +101,9 @@ func TestFetchRawFailure(t *testing.T) {
 		Reply(404).
 		File(testDataFilePath)
 
-	rc := retryablehttp.NewClient()
 	ac := New()
 	ac.DownloadURL = testDownloadURL
-	ac.Client = rc
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	data, _, status, err := ac.FetchData()
 	require.Error(t, err)
@@ -142,11 +131,9 @@ func TestGetDownloadURLFailure(t *testing.T) {
 		AddHeader("Content-MD5", exMD5).
 		AddHeader("ETag", exEtag)
 
-	rc := retryablehttp.NewClient()
 	ac := New()
-	ac.Client = rc
 	ac.InitialURL = testInitialURL
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	_, err = ac.GetDownloadURL()
 	require.Error(t, err)
@@ -171,11 +158,9 @@ func TestFetch(t *testing.T) {
 		AddHeader("ETag", exEtag).
 		File(testDataFilePath)
 
-	rc := retryablehttp.NewClient()
 	ac := New()
 	ac.DownloadURL = testDownloadURL
-	ac.Client = rc
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	prefixes, _, err := ac.Fetch()
 	ac.DownloadURL = urlBase

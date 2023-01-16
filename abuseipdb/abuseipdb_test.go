@@ -2,7 +2,6 @@ package abuseipdb
 
 import (
 	"fmt"
-	"github.com/hashicorp/go-retryablehttp"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 	"net/http"
@@ -27,10 +26,7 @@ func TestFetchBlackListData(t *testing.T) {
 		Reply(200).
 		File("testdata/blacklist")
 
-	rc := retryablehttp.NewClient()
-	ac.Client = rc
-
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	data, _, status, err := ac.FetchData()
 	require.NoError(t, err)
@@ -53,10 +49,7 @@ func TestFetchBlackList(t *testing.T) {
 		Reply(200).
 		File("testdata/blacklist")
 
-	rc := retryablehttp.NewClient()
-	ac.Client = rc
-
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	doc, err := ac.Fetch()
 	require.NoError(t, err)
@@ -99,10 +92,7 @@ func TestFetchBlackListDataIncorrectKey(t *testing.T) {
 		Reply(401).
 		JSON([]byte(`{"errors":[{"detail":"Authentication failed. Your API key is either missing, incorrect, or revoked. Note: The APIv2 key differs from the APIv1 key.","status":401}]}`))
 
-	rc := retryablehttp.NewClient()
-	ac.Client = rc
-
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	data, _, status, err := ac.FetchData()
 	require.Error(t, err)

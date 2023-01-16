@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/prefix-fetcher/internal/web"
+	"github.com/jonhadfield/prefix-fetcher/pflog"
 	"github.com/sirupsen/logrus"
 	"io"
 	"net/http"
@@ -16,8 +17,13 @@ import (
 )
 
 func New() GeoIP {
+	pflog.SetLogLevel()
 	rc := &http.Client{Transport: &http.Transport{}}
 	c := retryablehttp.NewClient()
+
+	if logrus.GetLevel() <= logrus.DebugLevel {
+		c.Logger = nil
+	}
 	c.HTTPClient = rc
 	c.RetryMax = 1
 
@@ -26,6 +32,9 @@ func New() GeoIP {
 	}
 }
 
+type LeveledLogrus struct {
+	*logrus.Logger
+}
 type GeoIP struct {
 	Client     *retryablehttp.Client
 	LicenseKey string

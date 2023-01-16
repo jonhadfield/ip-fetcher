@@ -49,13 +49,13 @@ func TestRequestContentDispositionFileName(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, fileName, fn)
 
-	fn, err = RequestContentDispositionFileName(rc, testUrl, nil)
+	_, err = RequestContentDispositionFileName(rc, testUrl, nil)
 	require.Error(t, err)
 	require.ErrorContains(t, err, "failed to get Content-Disposition header")
 	require.ErrorContains(t, err, "mime: no media type")
 
 	// second attempt fails as gock only matching one time
-	fn, err = RequestContentDispositionFileName(rc, testUrl, nil)
+	_, err = RequestContentDispositionFileName(rc, testUrl, nil)
 	require.Error(t, err)
 
 }

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
+	"github.com/jonhadfield/prefix-fetcher/pflog"
 	"github.com/urfave/cli/v2"
 	"os"
 	"time"
@@ -10,30 +10,9 @@ import (
 
 var version, versionOutput, tag, sha, buildDate string
 
-const (
-	autoBackup      = true
-	defaultLogLevel = "info"
-)
-
-func init() {
-	lvl, ok := os.LookupEnv("PF_LOG")
-	if !ok {
-		lvl = defaultLogLevel
-	}
-
-	ll, err := logrus.ParseLevel(lvl)
-	if err != nil {
-		ll = logrus.InfoLevel
-	}
-
-	// logrus.SetFormatter(&nested.Formatter{
-	// 	HideKeys:    true,
-	// 	FieldsOrder: []string{"component", "category"},
-	// })
-
-	logrus.SetLevel(ll)
-}
 func main() {
+	pflog.SetLogLevel()
+
 	if tag != "" && buildDate != "" {
 		versionOutput = fmt.Sprintf("[%s-%s] %s UTC", tag, sha, buildDate)
 	} else {

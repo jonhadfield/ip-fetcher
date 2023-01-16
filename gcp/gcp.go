@@ -2,6 +2,8 @@ package gcp
 
 import (
 	"encoding/json"
+	"github.com/jonhadfield/prefix-fetcher/pflog"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"net/netip"
 	"time"
@@ -16,8 +18,13 @@ const (
 )
 
 func New() GCP {
+	pflog.SetLogLevel()
+
 	rc := &http.Client{Transport: &http.Transport{}}
 	c := retryablehttp.NewClient()
+	if logrus.GetLevel() <= logrus.DebugLevel {
+		c.Logger = nil
+	}
 	c.HTTPClient = rc
 	c.RetryMax = 1
 

@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/hashicorp/go-retryablehttp"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 )
@@ -21,10 +20,8 @@ func TestFetch(t *testing.T) {
 		// SetHeader("Etag", "cd5e4f079775994d8e49f63ae9a84065").
 		File("testdata/cloud.json")
 
-	rc := retryablehttp.NewClient()
 	ac := New()
-	ac.Client = rc
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	doc, err := ac.Fetch()
 	require.NoError(t, err)

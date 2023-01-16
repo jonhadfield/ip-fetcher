@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/hashicorp/go-retryablehttp"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 )
@@ -24,11 +23,9 @@ func TestGetIPListETag(t *testing.T) {
 		Reply(200).
 		SetHeader("Etag", "0338bd4dc4ba7a050b9124d333376fc7")
 
-	rc := retryablehttp.NewClient()
 	ac := New()
 	ac.DownloadURL = downloadURL
-	ac.Client = rc
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	etag, err := ac.FetchETag()
 	require.NoError(t, err)
@@ -49,11 +46,9 @@ func TestDownloadIPList(t *testing.T) {
 		SetHeader("Etag", "\"cd5e4f079775994d8e49f63ae9a84065\"").
 		File("testdata/ip-ranges.json")
 
-	rc := retryablehttp.NewClient()
 	ac := New()
 	ac.DownloadURL = downloadURL
-	ac.Client = rc
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	doc, etag, err := ac.Fetch()
 	require.NoError(t, err)
@@ -74,11 +69,9 @@ func TestDownloadIPListWithoutQuotedEtag(t *testing.T) {
 		SetHeader("Etag", "cd5e4f079775994d8e49f63ae9a84065").
 		File("testdata/ip-ranges.json")
 
-	rc := retryablehttp.NewClient()
 	ac := New()
 	ac.DownloadURL = downloadURL
-	ac.Client = rc
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	_, etag, err := ac.Fetch()
 	require.NoError(t, err)

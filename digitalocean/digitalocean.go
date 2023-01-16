@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/prefix-fetcher/internal/web"
+	"github.com/jonhadfield/prefix-fetcher/pflog"
 	"github.com/jszwec/csvutil"
+	"github.com/sirupsen/logrus"
 	"io"
 	"log"
 	"net/http"
@@ -25,8 +27,12 @@ type DigitalOcean struct {
 }
 
 func New() DigitalOcean {
+	pflog.SetLogLevel()
 	rc := &http.Client{Transport: &http.Transport{}}
 	c := retryablehttp.NewClient()
+	if logrus.GetLevel() <= logrus.DebugLevel {
+		c.Logger = nil
+	}
 	c.HTTPClient = rc
 	c.RetryMax = 1
 

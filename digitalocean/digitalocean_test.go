@@ -2,7 +2,6 @@ package digitalocean
 
 import (
 	"fmt"
-	"github.com/hashicorp/go-retryablehttp"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 	"net/url"
@@ -25,10 +24,8 @@ func TestFetchData(t *testing.T) {
 		SetHeader("last-modified", lastModified).
 		File("testdata/google.csv")
 
-	rc := retryablehttp.NewClient()
 	ac := New()
-	ac.Client = rc
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	data, headers, status, err := ac.FetchData()
 	require.NoError(t, err)
@@ -55,10 +52,8 @@ func TestFetch(t *testing.T) {
 		SetHeader("last-modified", lastModified).
 		File("testdata/google.csv")
 
-	rc := retryablehttp.NewClient()
 	ac := New()
-	ac.Client = rc
-	gock.InterceptClient(rc.HTTPClient)
+	gock.InterceptClient(ac.Client.HTTPClient)
 
 	doc, err := ac.Fetch()
 	require.NoError(t, err)
