@@ -102,8 +102,10 @@ type pathDetailsOutput struct {
 }
 
 func pathDetails(path string) (output pathDetailsOutput, err error) {
+	fmt.Println("In pathDetails with path:", path)
 	f, err := os.Stat(path)
 	if err != nil {
+		fmt.Println("A", err)
 		// if we have an error other than it not existing, then fail
 		if !os.IsNotExist(err) {
 			return
@@ -112,6 +114,7 @@ func pathDetails(path string) (output pathDetailsOutput, err error) {
 		parentPath := path
 		if !f.IsDir() {
 			parentPath = filepath.Dir(path)
+			fmt.Println("not a dir so parentPath:", parentPath)
 		}
 		return pathDetailsOutput{
 			found:       true,
@@ -124,9 +127,11 @@ func pathDetails(path string) (output pathDetailsOutput, err error) {
 
 	// path isn't found, so check if it's would-be parent exists
 	parent := filepath.Dir(path)
+	fmt.Println("path isn't found so checking if would-be parent exists:", path)
 
 	f, err = os.Stat(parent)
 	if err != nil {
+		fmt.Println("B:", err)
 		if os.IsNotExist(err) {
 			return pathDetailsOutput{
 				found:       false,
@@ -152,16 +157,21 @@ func pathDetails(path string) (output pathDetailsOutput, err error) {
 }
 
 func DownloadFile(client *retryablehttp.Client, u, path string) (downloadedFilePath string, err error) {
+	fmt.Println("getting pathDetails for:", path)
+
 	details, err := pathDetails(path)
 	if err != nil {
+		fmt.Println("pants:", err)
 		return
 	}
-
+	fmt.Sprintf("details %v\n", details)
 	// default download path to that provided
 	if details.found {
 		downloadedFilePath = path
 
 		if details.isDir {
+			fmt.Sprintf("it's a dir so parsing u: %s\n", u)
+
 			var pU *url.URL
 
 			pU, err = url.Parse(u)
@@ -174,13 +184,16 @@ func DownloadFile(client *retryablehttp.Client, u, path string) (downloadedFileP
 	}
 
 	if !details.found && details.parentFound {
+		logrus.Infof("!details.found %t details.parentFound %t\nsetting downloadedFilePath to %s", !details.found, details.parentFound, path)
+
 		downloadedFilePath = path
 	}
 
-	logrus.Debugf("downloading %s to %s", u, downloadedFilePath)
+	logrus.Infof("downloading %s to %s", u, downloadedFilePath)
 
 	resp, err := client.Get(u)
 	if err != nil {
+		logrus.Info(err)
 		return downloadedFilePath, err
 	}
 	defer resp.Body.Close()
@@ -189,16 +202,24 @@ func DownloadFile(client *retryablehttp.Client, u, path string) (downloadedFileP
 		return downloadedFilePath, fmt.Errorf("server responded with status %d", resp.StatusCode)
 	}
 
-	logrus.Debugf("writing to path: %s", downloadedFilePath)
+	logrus.Infof("writing to path: %s", downloadedFilePath)
 
 	out, err := os.Create(downloadedFilePath)
 	if err != nil {
+		logrus.Info(err)
 		return downloadedFilePath, err
 	}
 
 	defer out.Close()
 
 	_, err = io.Copy(out, resp.Body)
+	logrus.Info(err)
+
+	f, err := os.Stat(downloadedFilePath)
+	if err != nil {
+		logrus.Info(err)
+	}
+	fmt.Println(f.Name())
 
 	return downloadedFilePath, err
 }

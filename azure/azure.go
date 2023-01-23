@@ -30,7 +30,7 @@ func New() Azure {
 	pflog.SetLogLevel()
 	rc := &http.Client{Transport: &http.Transport{}}
 	c := retryablehttp.NewClient()
-	if logrus.GetLevel() <= logrus.DebugLevel {
+	if logrus.GetLevel() < logrus.DebugLevel {
 		c.Logger = nil
 	}
 	c.HTTPClient = rc

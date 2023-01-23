@@ -21,7 +21,7 @@ func New() GeoIP {
 	rc := &http.Client{Transport: &http.Transport{}}
 	c := retryablehttp.NewClient()
 
-	if logrus.GetLevel() <= logrus.DebugLevel {
+	if logrus.GetLevel() < logrus.DebugLevel {
 		c.Logger = nil
 	}
 	c.HTTPClient = rc
@@ -112,6 +112,13 @@ func (gc *GeoIP) Validate() error {
 	}
 	if gc.Root == "" {
 		return errors.New("missing download path")
+	}
+	if _, err := os.Stat(gc.Root); err != nil {
+		if os.IsNotExist(err) {
+			return fmt.Errorf("data root '%s' doesn't exist", gc.Root)
+		}
+
+		return fmt.Errorf("failed to access data root '%s' - %w", gc.Root, err)
 	}
 
 	if gc.Edition == "" {
@@ -562,6 +569,8 @@ func (gc *GeoIP) FetchFiles(input FetchFilesInput) (output FetchFilesOutput, err
 		output.CityLocationsFilePath = CityOut.LocationsFilePath
 		output.CityVersion = CityOut.Version
 	}
+
+	fmt.Printf("output: %#+v\n", output)
 
 	return
 }

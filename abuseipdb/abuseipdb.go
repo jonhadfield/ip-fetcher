@@ -17,6 +17,7 @@ import (
 
 const (
 	APIURL     = "https://api.abuseipdb.com/api/v2/blacklist"
+	ModuleName = "AbuseIPDB"
 	TimeFormat = "2006-01-02T15:04:05-07:00"
 )
 
@@ -44,7 +45,7 @@ func New() AbuseIPDB {
 	pflog.SetLogLevel()
 	rc := &http.Client{Transport: &http.Transport{}}
 	c := retryablehttp.NewClient()
-	if logrus.GetLevel() <= logrus.DebugLevel {
+	if logrus.GetLevel() < logrus.DebugLevel {
 		c.Logger = nil
 	}
 	c.HTTPClient = rc
@@ -82,10 +83,18 @@ func (a *AbuseIPDB) FetchData() (data []byte, headers http.Header, status int, e
 
 	blackList, headers, statusCode, err := web.Request(a.Client, reqUrl.String(), http.MethodGet, inHeaders, []string{a.APIKey}, 10*time.Second)
 	if err != nil {
+		logrus.Debugf("blacklist len: %d status code: %d err: %s", len(blackList), statusCode, err)
 		return
 	}
+	logrus.Debugf("blacklist len: %d status code: %d", len(blackList), statusCode)
 
 	if statusCode >= 400 && statusCode < 500 {
+		if len(blackList) == 0 {
+			err = fmt.Errorf("empty response from %s api with http status code %d", ModuleName, statusCode)
+
+			return
+		}
+
 		err = parseAPIErrorResponse(blackList)
 	}
 

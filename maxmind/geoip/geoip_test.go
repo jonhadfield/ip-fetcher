@@ -79,6 +79,52 @@ func TestDownloadDBFile(t *testing.T) {
 	require.Equal(t, filepath.Join(tempDir, "GeoLite2-ASN-CSV_20220617.zip"), path)
 }
 
+func TestDownloadDBFileMissingTargetDirectory(t *testing.T) {
+	licenseKey := "test-key"
+	tempDir := t.TempDir()
+
+	ac := New()
+	ac.LicenseKey = licenseKey
+	ac.Edition = "GeoLite2"
+	ac.DBFormat = "CSv"
+	ac.Root = filepath.Join(tempDir, "invalid")
+	ac.Client.RetryMax = 0
+
+	downloadURL := constructDownloadURL(licenseKey, "GeoLite2", "ASN", "CSV")
+	require.Equal(t, "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=test-key&suffix=zip", downloadURL)
+	u, err := url.Parse(downloadURL)
+	require.NoError(t, err)
+	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
+
+	gock.New(urlBase).
+		MatchParams(map[string]string{
+			"edition_id":  "GeoLite2-ASN-CSV",
+			"license_key": "test-key",
+			"suffix":      "zip",
+		}).
+		Head(u.Path).
+		Reply(200).
+		SetHeader("content-disposition", "attachment; filename=GeoLite2-ASN-CSV_20220617.zip")
+
+	gock.New(urlBase).
+		MatchParams(map[string]string{
+			"edition_id":  "GeoLite2-ASN-CSV",
+			"license_key": "test-key",
+			"suffix":      "zip",
+		}).
+		Get(u.Path).
+		Reply(200).
+		File("testdata/GeoLite2-ASN-CSV_20220617.zip").
+		SetHeader("content-disposition", "attachment; filename=GeoLite2-ASN-CSV_20220617.zip")
+
+	gock.InterceptClient(ac.Client.HTTPClient)
+
+	_, err = ac.FetchFile("ASN")
+	require.Error(t, err)
+	require.ErrorContains(t, err, "invalid")
+	require.ErrorContains(t, err, "exist")
+}
+
 func TestFetchCityFiles(t *testing.T) {
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
