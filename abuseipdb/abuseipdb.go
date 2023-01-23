@@ -82,6 +82,7 @@ func (a *AbuseIPDB) FetchData() (data []byte, headers http.Header, status int, e
 	}
 
 	blackList, headers, statusCode, err := web.Request(a.Client, reqUrl.String(), http.MethodGet, inHeaders, []string{a.APIKey}, 10*time.Second)
+	logrus.Debugf("abuseipdb | blackList len: %d status code: %d", len(blackList), statusCode)
 	if err != nil {
 		logrus.Debugf("blacklist len: %d status code: %d err: %s", len(blackList), statusCode, err)
 		return
@@ -107,7 +108,8 @@ type Doc struct {
 }
 
 func (a *AbuseIPDB) Fetch() (doc Doc, err error) {
-	data, _, _, err := a.FetchData()
+	data, _, status, err := a.FetchData()
+	logrus.Debugf("abuseipdb | data len: %d FetchData status: %s", len(data), status)
 	if err != nil {
 		return
 	}
