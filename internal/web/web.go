@@ -102,20 +102,19 @@ type pathDetailsOutput struct {
 }
 
 func pathDetails(path string) (output pathDetailsOutput, err error) {
-	fmt.Println("In pathDetails with path:", path)
 	f, err := os.Stat(path)
 	if err != nil {
-		fmt.Println("A", err)
 		// if we have an error other than it not existing, then fail
 		if !os.IsNotExist(err) {
 			return
 		}
 	} else {
 		parentPath := path
+
 		if !f.IsDir() {
 			parentPath = filepath.Dir(path)
-			fmt.Println("not a dir so parentPath:", parentPath)
 		}
+
 		return pathDetailsOutput{
 			found:       true,
 			parentFound: true,
@@ -127,11 +126,9 @@ func pathDetails(path string) (output pathDetailsOutput, err error) {
 
 	// path isn't found, so check if it's would-be parent exists
 	parent := filepath.Dir(path)
-	fmt.Println("path isn't found so checking if would-be parent exists:", path)
 
 	f, err = os.Stat(parent)
 	if err != nil {
-		fmt.Println("B:", err)
 		if os.IsNotExist(err) {
 			return pathDetailsOutput{
 				found:       false,
@@ -157,14 +154,12 @@ func pathDetails(path string) (output pathDetailsOutput, err error) {
 }
 
 func DownloadFile(client *retryablehttp.Client, u, path string) (downloadedFilePath string, err error) {
-	fmt.Println("getting pathDetails for:", path)
 
 	details, err := pathDetails(path)
 	if err != nil {
-		fmt.Println("pants:", err)
 		return
 	}
-	fmt.Sprintf("details %v\n", details)
+
 	// default download path to that provided
 	if details.found {
 		downloadedFilePath = path
@@ -219,7 +214,6 @@ func DownloadFile(client *retryablehttp.Client, u, path string) (downloadedFileP
 	if err != nil {
 		logrus.Info(err)
 	}
-	fmt.Println(f.Name())
 
 	return downloadedFilePath, err
 }

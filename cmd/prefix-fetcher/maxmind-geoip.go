@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/jonhadfield/prefix-fetcher/maxmind/geoip"
 	"github.com/urfave/cli/v2"
 )
@@ -49,11 +48,6 @@ func geoipCmd() *cli.Command {
 			}
 
 			if a.Extract {
-				fmt.Println("geoip data written to:")
-				fmt.Printf("country - %s\n", out.CountryDataPath)
-				fmt.Printf("city - %s\n", out.CityDataPath)
-				fmt.Printf("asn - %s\n", out.ASNDataPath)
-
 				return nil
 			}
 

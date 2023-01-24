@@ -570,7 +570,5 @@ func (gc *GeoIP) FetchFiles(input FetchFilesInput) (output FetchFilesOutput, err
 		output.CityVersion = CityOut.Version
 	}
 
-	fmt.Printf("output: %#+v\n", output)
-
 	return
 }

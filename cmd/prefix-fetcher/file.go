@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -28,8 +27,6 @@ func saveFile(i saveFileInput) error {
 	if _, err = f.Write(i.data); err != nil {
 		return err
 	}
-
-	fmt.Printf("%s data written to: %s", i.provider, filepath.Clean(i.path))
 
 	return nil
 }
