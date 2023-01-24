@@ -38,7 +38,7 @@ func geoipCmd() *cli.Command {
 			a.DBFormat = c.String("format")
 			a.Root = c.String("path")
 			a.Extract = c.Bool("extract")
-			out, err := a.FetchFiles(geoip.FetchFilesInput{
+			_, err := a.FetchFiles(geoip.FetchFilesInput{
 				ASN:     true,
 				Country: true,
 				City:    true,

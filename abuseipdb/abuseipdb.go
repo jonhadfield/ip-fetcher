@@ -109,7 +109,7 @@ type Doc struct {
 
 func (a *AbuseIPDB) Fetch() (doc Doc, err error) {
 	data, _, status, err := a.FetchData()
-	logrus.Debugf("abuseipdb | data len: %d FetchData status: %s", len(data), status)
+	logrus.Debugf("abuseipdb | data len: %d FetchData status: %d", len(data), status)
 	if err != nil {
 		return
 	}

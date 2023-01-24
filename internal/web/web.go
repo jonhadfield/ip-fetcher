@@ -210,8 +210,7 @@ func DownloadFile(client *retryablehttp.Client, u, path string) (downloadedFileP
 	_, err = io.Copy(out, resp.Body)
 	logrus.Info(err)
 
-	f, err := os.Stat(downloadedFilePath)
-	if err != nil {
+	if _, err = os.Stat(downloadedFilePath); err != nil {
 		logrus.Info(err)
 	}
 
