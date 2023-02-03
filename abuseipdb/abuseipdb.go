@@ -89,13 +89,13 @@ func (a *AbuseIPDB) FetchData() (data []byte, headers http.Header, status int, e
 	}
 	logrus.Debugf("blacklist len: %d status code: %d", len(blackList), statusCode)
 
+	if len(blackList) == 0 {
+		err = fmt.Errorf("empty response from %s api with http status code %d", ModuleName, statusCode)
+
+		return
+	}
+
 	if statusCode >= 400 && statusCode < 500 {
-		if len(blackList) == 0 {
-			err = fmt.Errorf("empty response from %s api with http status code %d", ModuleName, statusCode)
-
-			return
-		}
-
 		err = parseAPIErrorResponse(blackList)
 	}
 
