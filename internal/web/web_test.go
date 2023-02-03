@@ -1,6 +1,7 @@
 package web
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -15,6 +16,51 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 )
+
+func TestRequestMethodNotSpecified(t *testing.T) {
+	testUrl := "https://www.example.com/mytextfile.txt?cred=secret-value&hello=world"
+
+	rc := retryablehttp.NewClient()
+	client := &http.Client{Transport: &http.Transport{}}
+	rc.HTTPClient = client
+
+	body, headers, status, err := Request(rc, testUrl, "", nil, []string{}, 1*time.Second)
+	require.Error(t, err)
+	require.Empty(t, headers)
+	require.Len(t, body, 0)
+	require.Equal(t, 0, status)
+	require.ErrorContains(t, err, "method not specified")
+}
+
+func TestRequestFailure(t *testing.T) {
+	testUrl := "https://www.example.com/mytextfile.txt?cred=secret-value&hello=world"
+	u, err := url.Parse(testUrl)
+	require.NoError(t, err)
+
+	urlBase := fmt.Sprintf("%s://%s%s?%s", u.Scheme, u.Host, u.Path, u.RawQuery)
+	fmt.Println(urlBase)
+	fmt.Println(u.String())
+	gock.New(urlBase).
+		Get(u.Path).
+		Times(5).
+		MatchParam("cred", "secret-value").
+		MatchParam("hello", "world").
+		ReplyError(errors.New("no worky"))
+
+	rc := retryablehttp.NewClient()
+	rc.RetryMax = 2
+	client := &http.Client{Transport: &http.Transport{}}
+	rc.HTTPClient = client
+
+	gock.InterceptClient(client)
+	body, headers, status, err := Request(rc, testUrl, http.MethodGet, nil, []string{}, 10*time.Second)
+	require.Error(t, err)
+	require.ErrorContains(t, err, "no worky")
+	require.Empty(t, headers)
+	require.Len(t, body, 0)
+	require.Equal(t, 0, status)
+	// require.Empty(t, downloadedFilePath)
+}
 
 func TestRequestContentDispositionFileName(t *testing.T) {
 	testUrl := "https://www.example.com/sample-url?qsparam=qsvalue"

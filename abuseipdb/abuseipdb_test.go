@@ -11,6 +11,40 @@ import (
 	"time"
 )
 
+func TestParse(t *testing.T) {
+	data := []byte(`{"meta":{"generatedAt":"2022-07-06T21:18:45+00:00"},"data":[{"ipAddress":"104.255.199.22","countryCode":"US","abuseConfidenceScore":100,"lastReportedAt":"2022-07-06T21:17:02+00:00"},{"ipAddress":"59.49.78.12","countryCode":"CN","abuseConfidenceScore":100,"lastReportedAt":"2022-07-06T21:17:02+00:00"}]}`)
+	doc, err := Parse(data)
+	require.NoError(t, err)
+	require.Len(t, doc.Records, 2)
+
+	data = []byte(`invalid`)
+	doc, err = Parse(data)
+	require.Error(t, err)
+	require.Empty(t, doc)
+
+}
+
+func TestFetchBlackListFailure(t *testing.T) {
+	ac := New()
+	ac.APIKey = "test-key"
+	ac.APIURL = "https://example.com"
+	u, err := url.Parse(ac.APIURL)
+	require.NoError(t, err)
+
+	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
+
+	gock.New(urlBase).
+		Get(u.Path).
+		MatchHeaders(map[string]string{"Key": "test-key", "Accept": "application/json"}).
+		Reply(400)
+
+	gock.InterceptClient(ac.Client.HTTPClient)
+
+	_, err = ac.Fetch()
+	require.Error(t, err)
+	require.ErrorContains(t, err, "empty response")
+}
+
 func TestFetchBlackListData(t *testing.T) {
 	ac := New()
 	ac.APIKey = "test-key"

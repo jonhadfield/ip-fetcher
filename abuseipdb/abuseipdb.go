@@ -83,19 +83,19 @@ func (a *AbuseIPDB) FetchData() (data []byte, headers http.Header, status int, e
 
 	blackList, headers, statusCode, err := web.Request(a.Client, reqUrl.String(), http.MethodGet, inHeaders, []string{a.APIKey}, 10*time.Second)
 	logrus.Debugf("abuseipdb | blackList len: %d status code: %d", len(blackList), statusCode)
-	if err != nil {
-		logrus.Debugf("blacklist len: %d status code: %d err: %s", len(blackList), statusCode, err)
+	// if we didn't manage to connect then return
+	if statusCode == 0 && err != nil {
+
 		return
 	}
-	logrus.Debugf("blacklist len: %d status code: %d", len(blackList), statusCode)
+
+	if len(blackList) == 0 {
+		err = fmt.Errorf("empty response from %s api with http status code %d", ModuleName, statusCode)
+
+		return
+	}
 
 	if statusCode >= 400 && statusCode < 500 {
-		if len(blackList) == 0 {
-			err = fmt.Errorf("empty response from %s api with http status code %d", ModuleName, statusCode)
-
-			return
-		}
-
 		err = parseAPIErrorResponse(blackList)
 	}
 
