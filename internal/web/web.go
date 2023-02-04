@@ -165,8 +165,6 @@ func DownloadFile(client *retryablehttp.Client, u, path string) (downloadedFileP
 		downloadedFilePath = path
 
 		if details.isDir {
-			fmt.Sprintf("it's a dir so parsing u: %s\n", u)
-
 			var pU *url.URL
 
 			pU, err = url.Parse(u)
@@ -179,8 +177,6 @@ func DownloadFile(client *retryablehttp.Client, u, path string) (downloadedFileP
 	}
 
 	if !details.found && details.parentFound {
-		logrus.Infof("!details.found %t details.parentFound %t\nsetting downloadedFilePath to %s", !details.found, details.parentFound, path)
-
 		downloadedFilePath = path
 	}
 
@@ -188,9 +184,9 @@ func DownloadFile(client *retryablehttp.Client, u, path string) (downloadedFileP
 
 	resp, err := client.Get(u)
 	if err != nil {
-		logrus.Info(err)
 		return downloadedFilePath, err
 	}
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode > 299 {
@@ -201,18 +197,12 @@ func DownloadFile(client *retryablehttp.Client, u, path string) (downloadedFileP
 
 	out, err := os.Create(downloadedFilePath)
 	if err != nil {
-		logrus.Info(err)
 		return downloadedFilePath, err
 	}
 
 	defer out.Close()
 
 	_, err = io.Copy(out, resp.Body)
-	logrus.Info(err)
-
-	if _, err = os.Stat(downloadedFilePath); err != nil {
-		logrus.Info(err)
-	}
 
 	return downloadedFilePath, err
 }

@@ -82,6 +82,13 @@ func (a *AbuseIPDB) FetchData() (data []byte, headers http.Header, status int, e
 	}
 
 	blackList, headers, statusCode, err := web.Request(a.Client, reqUrl.String(), http.MethodGet, inHeaders, []string{a.APIKey}, 10*time.Second)
+	fmt.Println("BLACKLIST:", string(blackList))
+	fmt.Println("HEADERS:")
+	for k, v := range headers {
+		fmt.Println(k, v)
+	}
+	fmt.Println("STATUS", statusCode)
+	fmt.Println("ERROR:", err)
 	logrus.Debugf("abuseipdb | blackList len: %d status code: %d", len(blackList), statusCode)
 	// if we didn't manage to connect then return
 	if statusCode == 0 && err != nil {
