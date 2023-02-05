@@ -21,7 +21,6 @@ func TestParse(t *testing.T) {
 	doc, err = Parse(data)
 	require.Error(t, err)
 	require.Empty(t, doc)
-
 }
 
 func TestFetchBlackListFailure(t *testing.T) {

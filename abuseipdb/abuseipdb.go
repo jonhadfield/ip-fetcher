@@ -1,6 +1,8 @@
 package abuseipdb
 
 import (
+	"context"
+	"crypto/x509"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,6 +13,7 @@ import (
 	"net/http"
 	"net/netip"
 	"net/url"
+	"regexp"
 	"strconv"
 	"time"
 )
@@ -41,6 +44,39 @@ type RawBlacklistDoc struct {
 	} `json:"data"`
 }
 
+func retryPolicy(ctx context.Context, resp *http.Response, err error) (bool, error) {
+	if err != nil {
+		if v, ok := err.(*url.Error); ok {
+			if redirectsErrorRe.MatchString(v.Error()) {
+				return false, v
+			}
+
+			if schemeErrorRe.MatchString(v.Error()) {
+				return false, v
+			}
+
+			if notTrustedErrorRe.MatchString(v.Error()) {
+				return false, v
+			}
+			if _, ok := v.Err.(x509.UnknownAuthorityError); ok {
+				return false, v
+			}
+		}
+
+		return true, nil
+	}
+
+	if resp.StatusCode == http.StatusTooManyRequests {
+		return false, fmt.Errorf("exceeded number of allowed blacklist downloads in last 24 hours")
+	}
+
+	if resp.StatusCode == 0 || (resp.StatusCode >= 500 && resp.StatusCode != http.StatusNotImplemented) {
+		return true, fmt.Errorf("unexpected HTTP status %s", resp.Status)
+	}
+
+	return false, nil
+}
+
 func New() AbuseIPDB {
 	pflog.SetLogLevel()
 	rc := &http.Client{Transport: &http.Transport{}}
@@ -48,6 +84,7 @@ func New() AbuseIPDB {
 	if logrus.GetLevel() < logrus.DebugLevel {
 		c.Logger = nil
 	}
+	c.CheckRetry = retryPolicy
 	c.HTTPClient = rc
 	c.RetryMax = 1
 
@@ -56,6 +93,12 @@ func New() AbuseIPDB {
 		Client: c,
 	}
 }
+
+var (
+	redirectsErrorRe  = regexp.MustCompile(`stopped after \d+ redirects\z`)
+	schemeErrorRe     = regexp.MustCompile(`unsupported protocol scheme`)
+	notTrustedErrorRe = regexp.MustCompile(`certificate is not trusted`)
+)
 
 func (a *AbuseIPDB) FetchData() (data []byte, headers http.Header, status int, err error) {
 	// get download url if not specified
@@ -82,15 +125,6 @@ func (a *AbuseIPDB) FetchData() (data []byte, headers http.Header, status int, e
 	}
 
 	blackList, headers, statusCode, err := web.Request(a.Client, reqUrl.String(), http.MethodGet, inHeaders, []string{a.APIKey}, 10*time.Second)
-	fmt.Println("BLACKLIST:", string(blackList))
-	fmt.Println("HEADERS:")
-	for k, v := range headers {
-		fmt.Println(k, v)
-	}
-	fmt.Println("STATUS", statusCode)
-	fmt.Println("ERROR:", err)
-	logrus.Debugf("abuseipdb | blackList len: %d status code: %d", len(blackList), statusCode)
-	// if we didn't manage to connect then return
 	if statusCode == 0 && err != nil {
 
 		return
