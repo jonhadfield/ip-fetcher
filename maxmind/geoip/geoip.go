@@ -16,6 +16,21 @@ import (
 	"strings"
 )
 
+func init() {
+	lvl, ok := os.LookupEnv("PF_LOG")
+	// LOG_LEVEL not set, default to info
+	if !ok {
+		lvl = "info"
+	}
+
+	ll, err := logrus.ParseLevel(lvl)
+	if err != nil {
+		ll = logrus.InfoLevel
+	}
+
+	logrus.SetLevel(ll)
+}
+
 func New() GeoIP {
 	pflog.SetLogLevel()
 	rc := &http.Client{Transport: &http.Transport{}}
@@ -143,6 +158,8 @@ func (gc *GeoIP) FetchFileName(dbName string) (filename string, err error) {
 }
 
 func (gc *GeoIP) FetchFile(dbName string) (filePath string, err error) {
+	logrus.Debugf("%s | fetching File %s", pflog.GetFunctionName(), dbName)
+
 	if err = gc.Validate(); err != nil {
 		return
 	}
@@ -160,7 +177,10 @@ func (gc *GeoIP) FetchFile(dbName string) (filePath string, err error) {
 		if !errors.Is(err, os.ErrNotExist) {
 			return
 		}
+
+		logrus.Debugf("%s | filepath: %s doesn't exist", pflog.GetFunctionName(), filePath)
 	} else {
+		logrus.Debugf("%s | filepath: %s already exists", pflog.GetFunctionName(), filePath)
 		// zip already exists
 		return
 	}
@@ -380,6 +400,7 @@ type FetchASNFilesOutput struct {
 }
 
 func (gc *GeoIP) FetchASNFiles() (output FetchASNFilesOutput, err error) {
+	logrus.Debugf("%s | fetching ASN Files", pflog.GetFunctionName())
 	output.CompressedPath, err = gc.FetchFile(NameASN)
 	if err != nil {
 		return
@@ -390,6 +411,8 @@ func (gc *GeoIP) FetchASNFiles() (output FetchASNFilesOutput, err error) {
 	}
 
 	if gc.Extract {
+		logrus.Debugf("%s | extracting ASN Files", pflog.GetFunctionName())
+
 		extractPath := gc.Root
 		if err = ExtractASN(output.CompressedPath, extractPath); err != nil {
 			return
@@ -422,7 +445,7 @@ func (gc *GeoIP) FetchCityFiles() (output FetchCityFilesOutput, err error) {
 	if output.Version, err = getVersionFromZipFilePath(output.CompressedPath); err != nil {
 		return
 	}
-
+	logrus.Debugf("%s | extracted version %s from %s", pflog.GetFunctionName(), output.Version, output.CompressedPath)
 	if gc.Extract {
 		extractPath := gc.Root
 		if err = ExtractCity(output.CompressedPath, extractPath); err != nil {

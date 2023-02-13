@@ -1,11 +1,22 @@
 package pflog
 
 import (
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"os"
+	"runtime"
+	"strings"
 )
 
 const DefaultLogLevel = logrus.InfoLevel
+
+func GetFunctionName() string {
+	pc, _, _, _ := runtime.Caller(1)
+	complete := fmt.Sprintf("%s", runtime.FuncForPC(pc).Name())
+	split := strings.Split(complete, "/")
+
+	return split[len(split)-1]
+}
 
 func SetLogLevel() {
 	// if set, then don't attempt to override with env var

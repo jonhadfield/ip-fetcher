@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/jonhadfield/prefix-fetcher/pflog"
 	"io"
 	"mime"
 	"net"
@@ -154,6 +155,7 @@ func pathDetails(path string) (output pathDetailsOutput, err error) {
 }
 
 func DownloadFile(client *retryablehttp.Client, u, path string) (downloadedFilePath string, err error) {
+	logrus.Debugf("%s | downloading: %s to %s", pflog.GetFunctionName(), u, path)
 
 	details, err := pathDetails(path)
 	if err != nil {

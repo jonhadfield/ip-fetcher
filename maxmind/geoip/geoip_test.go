@@ -2,13 +2,26 @@ package geoip
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/h2non/gock.v1"
 	"net/url"
+	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 )
+
+func TestMain(m *testing.M) {
+	logrus.SetLevel(logrus.DebugLevel)
+
+	os.Setenv("PF_LOG", "debug")
+
+	// run tests
+	code := m.Run()
+
+	os.Exit(code)
+}
 
 // TODO: test for DB type other than all caps
 func TestConstructDownloadURL(t *testing.T) {
@@ -449,4 +462,70 @@ func TestDownloadExtract(t *testing.T) {
 	require.Equal(t, filepath.Join(tempDir, "GeoLite2-ASN-CSV_20220617.zip"), out.ASNCompressedFilePath)
 	require.Equal(t, filepath.Join(tempDir, "GeoLite2-City-CSV_20220617.zip"), out.CityCompressedFilePath)
 	require.Equal(t, filepath.Join(tempDir, "GeoLite2-Country-CSV_20220617.zip"), out.CountryCompressedFilePath)
+}
+
+func TestFetchCityFilesEmptyRoot(t *testing.T) {
+	licenseKey := "test-key"
+	// tempDir := t.TempDir()
+
+	ac := New()
+	ac.LicenseKey = licenseKey
+	ac.Edition = "GeoLite2"
+	ac.DBFormat = "cSv"
+	ac.Extract = true
+	ac.Client.RetryMax = 0
+
+	_, err := ac.FetchCityFiles()
+	require.ErrorContains(t, err, "missing download path")
+}
+
+func TestDownloadExtractCityWithoutRoot(t *testing.T) {
+	licenseKey := "test-key"
+	// tempDir := t.TempDir()
+
+	ac := New()
+	ac.LicenseKey = licenseKey
+	ac.Edition = "GeoLite2"
+	ac.DBFormat = "csv"
+	ac.Root = "/tmp"
+	ac.Client.RetryMax = 0
+
+	arnURL := "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=test-key&suffix=zip"
+	uARN, _ := url.Parse(arnURL)
+
+	urlBase := fmt.Sprintf("%s://%s", uARN.Scheme, uARN.Host)
+
+	cityURL := "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=test-key&suffix=zip"
+	uCity, _ := url.Parse(cityURL)
+
+	gock.New(urlBase).
+		MatchParams(map[string]string{
+			"edition_id":  "GeoLite2-City-CSV",
+			"license_key": "test-key",
+			"suffix":      "zip",
+		}).
+		Head(uCity.Path).
+		Reply(200).
+		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
+
+	gock.New(urlBase).
+		MatchParams(map[string]string{
+			"edition_id":  "GeoLite2-City-CSV",
+			"license_key": "test-key",
+			"suffix":      "zip",
+		}).
+		Get(uCity.Path).
+		Reply(200).
+		File("testdata/GeoLite2-City-CSV_20220617.zip").
+		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
+
+	gock.InterceptClient(ac.Client.HTTPClient)
+	out, err := ac.FetchFiles(FetchFilesInput{
+		ASN:     false,
+		Country: false,
+		City:    true,
+	})
+	require.NoError(t, err)
+
+	require.Equal(t, filepath.Join("/tmp", "GeoLite2-City-CSV_20220617.zip"), out.CityCompressedFilePath)
 }
