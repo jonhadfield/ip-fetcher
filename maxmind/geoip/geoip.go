@@ -488,8 +488,8 @@ func (gc *GeoIP) FetchCountryFiles() (output FetchCountryFilesOutput, err error)
 		}
 
 		zipMinusExtension := fileNameWithoutExtension(filepath.Base(output.CompressedPath))
-		logrus.Debugf("maxmind data root: %s", output.DataRoot)
 		output.DataRoot = filepath.Join(extractPath, zipMinusExtension)
+		logrus.Debugf("maxmind data root: %s", output.DataRoot)
 		output.IPv4FilePath = filepath.Join(output.DataRoot, GeoLite2CountryBlocksIPv4CSVFileName)
 		logrus.Debugf("GeoLite2CountryBlocksIPv4CSVFileName path: %s", output.IPv4FilePath)
 		output.IPv6FilePath = filepath.Join(output.DataRoot, GeoLite2CountryBlocksIPv6CSVFileName)
@@ -532,6 +532,8 @@ func (gc *GeoIP) FetchAllFiles() (output FetchFilesOutput, err error) {
 	var CityOut FetchCityFilesOutput
 	CityOut, err = gc.FetchCityFiles()
 	if err != nil {
+		logrus.Error("%s | %s", pflog.GetFunctionName(), err.Error())
+
 		return
 	}
 

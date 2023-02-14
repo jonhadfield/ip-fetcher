@@ -91,7 +91,7 @@ func GetResourceHeaderValue(client *retryablehttp.Client, url, method, header st
 		return "", fmt.Errorf("header must not be empty")
 	}
 
-	_, response, _, err := Request(client, url, method, nil, secrets, 5*time.Second)
+	_, response, _, err := Request(client, url, method, nil, secrets, 30*time.Second)
 
 	return response.Get(header), err
 }
