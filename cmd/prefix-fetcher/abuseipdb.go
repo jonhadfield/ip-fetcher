@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"github.com/jonhadfield/prefix-fetcher/abuseipdb"
 	"github.com/urfave/cli/v2"
+	"os"
+	"strings"
 )
 
 func abuseipdbCmd() *cli.Command {
@@ -26,12 +29,19 @@ func abuseipdbCmd() *cli.Command {
 				Name:  "path",
 				Usage: "where to save the file", Aliases: []string{"p"},
 			},
-			&cli.StringFlag{
-				Name:  "format",
-				Usage: "output as yaml or json", Aliases: []string{"f"},
+			&cli.BoolFlag{
+				Name:  "stdout",
+				Usage: "write to stdout", Aliases: []string{"s"},
 			},
 		},
 		Action: func(c *cli.Context) error {
+			path := strings.TrimSpace(c.String("path"))
+			if path == "" && !c.Bool("stdout") {
+				cli.ShowAppHelp(c)
+				fmt.Println("\nerror: must specify at least one of stdOut and path")
+				os.Exit(1)
+			}
+
 			a := abuseipdb.New()
 			a.Limit = c.Int64("limit")
 			a.APIKey = c.String("key")
@@ -41,14 +51,19 @@ func abuseipdbCmd() *cli.Command {
 				return err
 			}
 
-			path := c.String("path")
 			if path != "" {
-				return saveFile(saveFileInput{
+				if err = saveFile(saveFileInput{
 					provider:        "abuseipdb",
 					data:            data,
 					path:            path,
 					defaultFileName: "blacklist",
-				})
+				}); err != nil {
+					return err
+				}
+			}
+
+			if c.Bool("stdout") {
+				fmt.Printf("%s\n", data)
 			}
 
 			return nil

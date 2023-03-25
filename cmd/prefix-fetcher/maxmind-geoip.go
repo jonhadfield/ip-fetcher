@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/jonhadfield/prefix-fetcher/maxmind/geoip"
 	"github.com/urfave/cli/v2"
+	"strings"
 )
 
 func geoipCmd() *cli.Command {
@@ -16,7 +17,7 @@ func geoipCmd() *cli.Command {
 			},
 			&cli.StringFlag{
 				Name:  "path",
-				Usage: "where to save the file", Aliases: []string{"p"},
+				Usage: "where to save the files", Aliases: []string{"p"}, Required: true,
 			},
 			&cli.StringFlag{
 				Name:  "format",
@@ -36,7 +37,7 @@ func geoipCmd() *cli.Command {
 			a.LicenseKey = c.String("key")
 			a.Edition = c.String("edition")
 			a.DBFormat = c.String("format")
-			a.Root = c.String("path")
+			a.Root = strings.TrimSpace(c.String("path"))
 			a.Extract = c.Bool("extract")
 			_, err := a.FetchFiles(geoip.FetchFilesInput{
 				ASN:     true,
