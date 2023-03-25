@@ -532,7 +532,7 @@ func (gc *GeoIP) FetchAllFiles() (output FetchFilesOutput, err error) {
 	var CityOut FetchCityFilesOutput
 	CityOut, err = gc.FetchCityFiles()
 	if err != nil {
-		logrus.Error("%s | %s", pflog.GetFunctionName(), err.Error())
+		logrus.Errorf("%s | %s", pflog.GetFunctionName(), err.Error())
 
 		return
 	}
