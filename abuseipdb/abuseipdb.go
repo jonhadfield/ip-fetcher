@@ -58,7 +58,7 @@ func retryPolicy(ctx context.Context, resp *http.Response, err error) (bool, err
 			if notTrustedErrorRe.MatchString(v.Error()) {
 				return false, v
 			}
-			if _, ok := v.Err.(x509.UnknownAuthorityError); ok {
+			if _, ok = v.Err.(x509.UnknownAuthorityError); ok {
 				return false, v
 			}
 		}
