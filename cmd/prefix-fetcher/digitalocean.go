@@ -10,23 +10,19 @@ import (
 
 func digitaloceanCmd() *cli.Command {
 	return &cli.Command{
-		Name:  "digitalocean",
-		Usage: "fetch digitalocean prefixes",
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  "path",
-				Usage: "where to save the file", Aliases: []string{"p"},
-			},
-			&cli.BoolFlag{
-				Name:  "stdout",
-				Usage: "write to stdout", Aliases: []string{"s"},
-			},
+		Name:      "digitalocean",
+		HelpName:  "- fetch DigitalOcean prefixes",
+		UsageText: "prefix-fetcher digitalocean {--stdout | --path FILE}",
+		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
+			cli.ShowSubcommandHelp(cCtx)
+
+			return err
 		},
 		Action: func(c *cli.Context) error {
 			path := strings.TrimSpace(c.String("path"))
 			if path == "" && !c.Bool("stdout") {
-				cli.ShowAppHelp(c)
-				fmt.Println("\nerror: must specify at least one of stdOut and path")
+				_ = cli.ShowSubcommandHelp(c)
+				fmt.Println("\nerror: must specify at least one of stdout and path")
 				os.Exit(1)
 			}
 

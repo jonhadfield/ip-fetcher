@@ -10,8 +10,14 @@ import (
 
 func gcpCmd() *cli.Command {
 	return &cli.Command{
-		Name:  "gcp",
-		Usage: "fetch gcp prefixes",
+		Name:      "gcp",
+		HelpName:  "- fetch GCP prefixes",
+		UsageText: "prefix-fetcher azure {--stdout | --path FILE}",
+		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
+			cli.ShowSubcommandHelp(cCtx)
+
+			return err
+		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "path",
@@ -25,8 +31,8 @@ func gcpCmd() *cli.Command {
 		Action: func(c *cli.Context) error {
 			path := strings.TrimSpace(c.String("path"))
 			if path == "" && !c.Bool("stdout") {
-				cli.ShowAppHelp(c)
-				fmt.Println("\nerror: must specify at least one of stdOut and path")
+				_ = cli.ShowSubcommandHelp(c)
+				fmt.Println("\nerror: must specify at least one of stdout and path")
 				os.Exit(1)
 			}
 

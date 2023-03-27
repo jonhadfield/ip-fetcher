@@ -10,12 +10,18 @@ import (
 
 func awsCmd() *cli.Command {
 	return &cli.Command{
-		Name:  "aws",
-		Usage: "fetch aws prefixes",
+		Name:      "aws",
+		HelpName:  "- fetch AWS prefixes",
+		UsageText: "prefix-fetcher aws {--stdout | --path FILE}",
+		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
+			cli.ShowSubcommandHelp(cCtx)
+
+			return err
+		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "path",
-				Usage: "where to save the file", Aliases: []string{"p"},
+				Usage: "where to save the file", Aliases: []string{"p"}, TakesFile: true,
 			},
 			&cli.BoolFlag{
 				Name:  "stdout",
@@ -25,8 +31,8 @@ func awsCmd() *cli.Command {
 		Action: func(c *cli.Context) error {
 			path := strings.TrimSpace(c.String("path"))
 			if path == "" && !c.Bool("stdout") {
-				cli.ShowAppHelp(c)
-				fmt.Println("\nerror: must specify at least one of stdOut and path")
+				_ = cli.ShowSubcommandHelp(c)
+				fmt.Println("\nerror: must specify at least one of stdout and path")
 				os.Exit(1)
 			}
 

@@ -8,8 +8,14 @@ import (
 
 func geoipCmd() *cli.Command {
 	return &cli.Command{
-		Name:  "geoip",
-		Usage: "fetch maxmind geoip databases",
+		Name:      "geoip",
+		HelpName:  "- fetch MaxMind GeoIP prefixes",
+		UsageText: "prefix-fetcher geoip --key=mykey --path=mypath [ --format=(csv | mmdb) ] [ --edition=(GeoLite2 | GeoIP) ] [ --extract ]",
+		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
+			cli.ShowSubcommandHelp(cCtx)
+
+			return err
+		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "key",

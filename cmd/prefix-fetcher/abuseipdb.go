@@ -10,8 +10,14 @@ import (
 
 func abuseipdbCmd() *cli.Command {
 	return &cli.Command{
-		Name:  "abuseipdb",
-		Usage: "fetch abuseipdb prefixes",
+		Name:      "abuseipdb",
+		HelpName:  "- fetch AbuseIPDB prefixes",
+		UsageText: "prefix-fetcher abuseipdb {--stdout | --path FILE}",
+		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
+			cli.ShowSubcommandHelp(cCtx)
+
+			return err
+		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "key",
@@ -37,8 +43,8 @@ func abuseipdbCmd() *cli.Command {
 		Action: func(c *cli.Context) error {
 			path := strings.TrimSpace(c.String("path"))
 			if path == "" && !c.Bool("stdout") {
-				cli.ShowAppHelp(c)
-				fmt.Println("\nerror: must specify at least one of stdOut and path")
+				_ = cli.ShowSubcommandHelp(c)
+				fmt.Println("\nerror: must specify at least one of stdout and path")
 				os.Exit(1)
 			}
 
