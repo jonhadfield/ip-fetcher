@@ -1,0 +1,120 @@
+project_name: soba
+
+env:
+  - GO111MODULE=on
+  - GOPROXY=https://proxy.golang.org
+  - CGO_ENABLED=0
+
+before:
+  hooks:
+    - make clean
+    - go mod tidy
+builds:
+-
+  id: macos-soba
+  binary: soba
+  goos:
+    - darwin
+  goarch:
+    - amd64
+    - arm64
+  flags:
+    - -trimpath
+  ldflags:
+    - "-s -w -X main.version={{ .Version }} -X main.sha={{ .ShortCommit }} -X main.buildDate={{ .Date }} -X main.tag={{ .Tag }}"
+  hooks:
+    post:
+      - |
+        sh -c '
+        cat > /tmp/prefix-fetcher_gon_arm64.hcl << EOF
+        source = ["./dist/macos-prefix-fetcher_darwin_arm64/prefix-fetcher"]
+        bundle_id = "uk.co.lessknown.prefix-fetcher"
+        apple_id {
+          username = "jon@lessknown.co.uk"
+          password = "@env:AC_PASSWORD"
+        }
+        sign {
+          application_identity = "Developer ID Application: Jonathan Hadfield (VBZY8FBYR5)"
+        }
+        zip {
+          output_path = "./dist/prefix-fetcher_darwin_arm64.zip"
+        }
+        EOF
+        gon /tmp/prefix-fetcher_gon_arm64.hcl
+        echo $?
+        '
+        echo $?
+      - |
+        sh -c '
+        cat > /tmp/prefix-fetcher_gon_amd64.hcl << EOF
+        source = ["./dist/macos-prefix-fetcher_darwin_amd64_v1/prefix-fetcher"]
+        bundle_id = "uk.co.lessknown.prefix-fetcher"
+        apple_id {
+          username = "jon@lessknown.co.uk"
+          password = "@env:AC_PASSWORD"
+        }
+        sign {
+          application_identity = "Developer ID Application: Jonathan Hadfield (VBZY8FBYR5)"
+        }
+        zip {
+          output_path = "./dist/prefix-fetcher_darwin_amd64_v1.zip"
+        }
+        EOF
+        echo $?
+        gon /tmp/prefix-fetcher_gon_amd64.hcl
+        echo $?
+        '
+-
+  id: prefix-fetcher
+  binary: prefix-fetcher
+  env:
+    - CGO_ENABLED=0
+  goos:
+    - linux
+    - windows
+    - freebsd
+  goarch:
+    - amd64
+    - arm
+    - arm64
+  flags:
+    - -trimpath
+  ldflags:
+    - "-s -w -X main.version={{ .Version }} -X main.sha={{ .ShortCommit }} -X main.buildDate={{ .Date }} -X main.tag={{ .Tag }}"
+
+archives:
+- name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+  builds:
+    - prefix-fetcher
+  format: tar.gz
+  format_overrides:
+    - goos: windows
+      format: zip
+  files:
+    - none*
+
+release:
+  github:
+    owner: jonhadfield
+    name: prefix-fetcher
+  prerelease: auto
+  name_template: '{{ .Tag }}'
+  extra_files:
+   - glob: ./dist/prefix-fetcher_darwin*.zip
+
+announce:
+  skip: true
+
+snapshot:
+  name_template: "{{ .Tag }}-devel"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - README
+    - test
+    - ignore
+
+checksum:
+  name_template: 'checksums.txt'
