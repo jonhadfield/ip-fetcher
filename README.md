@@ -11,9 +11,6 @@
 - [api](#api)
   - [installation](#installation)	
   - [basic usage](#basic-usage)
-    - [initialise client](#initialise-client) 
-    - [fetch](#fetch)  
-    - [output](#output)  
  
 ## about
 
