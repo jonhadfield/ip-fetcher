@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - goreleaser
+      - workflows
   pull_request:
 jobs:
   golangci:

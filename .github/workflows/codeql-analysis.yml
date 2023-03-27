@@ -2,9 +2,9 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ main,goreleaser ]
+    branches: [ main,goreleaser,workflows ]
   pull_request:
-    branches: [ main,goreleaser ]
+    branches: [ main,goreleaser,workflows ]
   schedule:
     - cron: '25 23 * * 6'
 
