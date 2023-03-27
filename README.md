@@ -22,12 +22,12 @@ Please raise an issue if you have any issues or suggestions for new providers.
 
 ## supported providers
 
-- [AbuseIPDB](https://www.abuseipdb.com/)
-- [AWS](https://aws.amazon.com/) (Amazon Web Services)
-- [Azure](https://azure.microsoft.com)
-- [DigitalOcean](https://www.digitalocean.com/)
-- [GCP](https://cloud.google.com/) (Google Cloud Platform)
-- [MaxMind GeoIP](https://www.maxmind.com)
+- <a href="https://www.abuseipdb.com/" target="_blank">AbuseIPDB</a>
+- <a href="https://aws.amazon.com/" target="_blank">AWS</a> (Amazon Web Services)
+- <a href="https://azure.microsoft.com" target="_blank">Azure</a>
+- <a href="https://www.digitalocean.com/" target="_blank">DigitalOcean</a>
+- <a href="https://cloud.google.com/" target="_blank">GCP</a> (Google Cloud Platform)
+- <a href="https://www.maxmind.com" target="_blank">MaxMind GeoIP</a>
 
 ## CLI
 
