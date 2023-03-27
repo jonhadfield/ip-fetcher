@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonhadfield/prefix-fetcher/pflog"
+	"github.com/jonhadfield/prefix-fetcher/internal/pflog"
 	"github.com/urfave/cli/v2"
 	"os"
 	"time"

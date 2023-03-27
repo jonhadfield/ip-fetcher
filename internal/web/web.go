@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/jonhadfield/prefix-fetcher/pflog"
+	"github.com/jonhadfield/prefix-fetcher/internal/pflog"
 	"io"
 	"mime"
 	"net"

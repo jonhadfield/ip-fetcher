@@ -2,7 +2,7 @@ package gcp
 
 import (
 	"encoding/json"
-	"github.com/jonhadfield/prefix-fetcher/pflog"
+	"github.com/jonhadfield/prefix-fetcher/internal/pflog"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"net/netip"
