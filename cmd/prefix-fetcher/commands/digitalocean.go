@@ -1,4 +1,4 @@
-package main
+package commands
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func digitaloceanCmd() *cli.Command {
+func DigitalOceanCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "digitalocean",
 		HelpName:  "- fetch DigitalOcean prefixes",

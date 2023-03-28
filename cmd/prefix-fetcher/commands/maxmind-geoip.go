@@ -1,4 +1,4 @@
-package main
+package commands
 
 import (
 	"github.com/jonhadfield/prefix-fetcher/maxmind/geoip"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func geoipCmd() *cli.Command {
+func GeoIPCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "geoip",
 		HelpName:  "- fetch MaxMind GeoIP prefixes",

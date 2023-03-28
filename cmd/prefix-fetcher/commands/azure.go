@@ -1,4 +1,4 @@
-package main
+package commands
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func azureCmd() *cli.Command {
+func AzureCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "azure",
 		HelpName:  "- fetch Azure prefixes",

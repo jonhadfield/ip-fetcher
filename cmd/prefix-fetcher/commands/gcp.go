@@ -1,4 +1,4 @@
-package main
+package commands
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func gcpCmd() *cli.Command {
+func GCPCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "gcp",
 		HelpName:  "- fetch GCP prefixes",

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/jonhadfield/prefix-fetcher/cmd/prefix-fetcher/commands"
 	"github.com/jonhadfield/prefix-fetcher/internal/pflog"
 	"github.com/urfave/cli/v2"
 	"os"
@@ -36,12 +37,12 @@ func main() {
 	app.Usage = "prefix-fetcher [global options] provider [command options]"
 	app.Flags = []cli.Flag{}
 	app.Commands = []*cli.Command{
-		abuseipdbCmd(),
-		awsCmd(),
-		azureCmd(),
-		digitaloceanCmd(),
-		gcpCmd(),
-		geoipCmd(),
+		commands.AbuseIPDBCmd(),
+		commands.AWSCmd(),
+		commands.AzureCmd(),
+		commands.DigitalOceanCmd(),
+		commands.GCPCmd(),
+		commands.GeoIPCmd(),
 	}
 
 	// app.Run(os.Args)

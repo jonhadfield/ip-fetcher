@@ -1,4 +1,4 @@
-package main
+package commands
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func abuseipdbCmd() *cli.Command {
+func AbuseIPDBCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "abuseipdb",
 		HelpName:  "- fetch AbuseIPDB prefixes",

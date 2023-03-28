@@ -1,4 +1,4 @@
-project_name: soba
+project_name: prefix-fetcher
 
 env:
   - GO111MODULE=on
@@ -11,9 +11,10 @@ before:
     - go mod tidy
 builds:
 -
-  id: macos-soba
-  main: cmd/prefix-fetcher/main.go
-  binary: soba
+  id: macos-prefix-fetcher
+  dir: .
+  main: ./cmd/prefix-fetcher/main.go
+  binary: prefix-fetcher
   goos:
     - darwin
   goarch:
@@ -67,7 +68,8 @@ builds:
         '
 -
   id: prefix-fetcher
-  main: cmd/prefix-fetcher/main.go
+  dir: .
+  main: ./cmd/prefix-fetcher/main.go
   binary: prefix-fetcher
   env:
     - CGO_ENABLED=0

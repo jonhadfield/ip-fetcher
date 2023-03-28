@@ -1,4 +1,4 @@
-package main
+package commands
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func awsCmd() *cli.Command {
+func AWSCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "aws",
 		HelpName:  "- fetch AWS prefixes",
