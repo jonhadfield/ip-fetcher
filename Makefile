@@ -21,6 +21,9 @@ fmt:
 lint:
 	golangci-lint run
 
+clean:
+	rm -rf ./dist
+
 ci: lint test
 
 critic:
