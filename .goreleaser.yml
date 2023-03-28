@@ -12,6 +12,7 @@ before:
 builds:
 -
   id: macos-soba
+  main: cmd/prefix-fetcher/main.go
   binary: soba
   goos:
     - darwin
@@ -66,6 +67,7 @@ builds:
         '
 -
   id: prefix-fetcher
+  main: cmd/prefix-fetcher/main.go
   binary: prefix-fetcher
   env:
     - CGO_ENABLED=0
