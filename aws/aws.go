@@ -24,12 +24,14 @@ type AWS struct {
 
 func New() AWS {
 	pflog.SetLogLevel()
+
 	rc := &http.Client{Transport: &http.Transport{}}
 	c := retryablehttp.NewClient()
 
 	if logrus.GetLevel() < logrus.DebugLevel {
 		c.Logger = nil
 	}
+
 	c.HTTPClient = rc
 	c.RetryMax = 1
 
@@ -43,15 +45,13 @@ func (a *AWS) FetchETag() (etag string, err error) {
 	// get download url if not specified
 	if a.DownloadURL == "" {
 		a.DownloadURL = downloadURL
-		if err != nil {
-			return
-		}
 	}
 
 	inHeaders := http.Header{}
 	inHeaders.Add("Accept", "application/json")
 
 	var reqUrl *url.URL
+
 	if reqUrl, err = url.Parse(a.DownloadURL); err != nil {
 		return
 	}
@@ -82,9 +82,6 @@ func (a *AWS) FetchData() (data []byte, headers http.Header, status int, err err
 	// get download url if not specified
 	if a.DownloadURL == "" {
 		a.DownloadURL = downloadURL
-		if err != nil {
-			return
-		}
 	}
 
 	inHeaders := http.Header{}
@@ -111,8 +108,8 @@ func (a *AWS) Fetch() (doc Doc, etag string, err error) {
 
 func ProcessData(data []byte) (doc Doc, err error) {
 	var rawDoc RawDoc
-	err = json.Unmarshal(data, &rawDoc)
-	if err != nil {
+
+	if err = json.Unmarshal(data, &rawDoc); err != nil {
 		return
 	}
 
@@ -135,6 +132,7 @@ func ProcessData(data []byte) (doc Doc, err error) {
 func castV4Entries(entries []RawPrefix) (res []Prefix, err error) {
 	for _, entry := range entries {
 		var p netip.Prefix
+
 		p, err = netip.ParsePrefix(entry.IPPrefix)
 		if err != nil {
 			return
@@ -153,6 +151,7 @@ func castV4Entries(entries []RawPrefix) (res []Prefix, err error) {
 func castV6Entries(entries []RawIPv6Prefix) (res []IPv6Prefix, err error) {
 	for _, entry := range entries {
 		var p netip.Prefix
+
 		p, err = netip.ParsePrefix(entry.IPv6Prefix)
 		if err != nil {
 			return

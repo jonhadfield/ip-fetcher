@@ -14,7 +14,8 @@ func abuseipdbCmd() *cli.Command {
 		HelpName:  "- fetch AbuseIPDB prefixes",
 		UsageText: "prefix-fetcher abuseipdb {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
-			cli.ShowSubcommandHelp(cCtx)
+			// nolint:errcheck
+			_ = cli.ShowSubcommandHelp(cCtx)
 
 			return err
 		},
@@ -43,6 +44,7 @@ func abuseipdbCmd() *cli.Command {
 		Action: func(c *cli.Context) error {
 			path := strings.TrimSpace(c.String("path"))
 			if path == "" && !c.Bool("stdout") {
+				// nolint:errcheck
 				_ = cli.ShowSubcommandHelp(c)
 				fmt.Println("\nerror: must specify at least one of stdout and path")
 				os.Exit(1)
@@ -52,7 +54,7 @@ func abuseipdbCmd() *cli.Command {
 			a.Limit = c.Int64("limit")
 			a.APIKey = c.String("key")
 			a.ConfidenceMinimum = c.Int("confidence")
-			data, _, _, err := a.FetchData()
+			data, _, err := a.FetchData()
 			if err != nil {
 				return err
 			}

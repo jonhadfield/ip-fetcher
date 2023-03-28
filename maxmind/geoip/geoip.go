@@ -33,12 +33,14 @@ func init() {
 
 func New() GeoIP {
 	pflog.SetLogLevel()
+
 	rc := &http.Client{Transport: &http.Transport{}}
 	c := retryablehttp.NewClient()
 
 	if logrus.GetLevel() < logrus.DebugLevel {
 		c.Logger = nil
 	}
+
 	c.HTTPClient = rc
 	c.RetryMax = 1
 
@@ -125,9 +127,11 @@ func (gc *GeoIP) Validate() error {
 	if gc.LicenseKey == "" {
 		return errors.New("missing license key")
 	}
+
 	if gc.Root == "" {
 		return errors.New("missing download path")
 	}
+
 	if _, err := os.Stat(gc.Root); err != nil {
 		if os.IsNotExist(err) {
 			return fmt.Errorf("data root '%s' doesn't exist", gc.Root)
@@ -401,6 +405,7 @@ type FetchASNFilesOutput struct {
 
 func (gc *GeoIP) FetchASNFiles() (output FetchASNFilesOutput, err error) {
 	logrus.Debugf("%s | fetching ASN Files", pflog.GetFunctionName())
+
 	output.CompressedPath, err = gc.FetchFile(NameASN)
 	if err != nil {
 		return
@@ -445,7 +450,9 @@ func (gc *GeoIP) FetchCityFiles() (output FetchCityFilesOutput, err error) {
 	if output.Version, err = getVersionFromZipFilePath(output.CompressedPath); err != nil {
 		return
 	}
+
 	logrus.Debugf("%s | extracted version %s from %s", pflog.GetFunctionName(), output.Version, output.CompressedPath)
+
 	if gc.Extract {
 		extractPath := gc.Root
 		if err = ExtractCity(output.CompressedPath, extractPath); err != nil {
@@ -507,6 +514,7 @@ func (gc *GeoIP) FetchAllFiles() (output FetchFilesOutput, err error) {
 	}
 
 	var asnOut FetchASNFilesOutput
+
 	asnOut, err = gc.FetchASNFiles()
 	if err != nil {
 		return
@@ -518,6 +526,7 @@ func (gc *GeoIP) FetchAllFiles() (output FetchFilesOutput, err error) {
 	output.ASNVersion = asnOut.Version
 
 	var CountryOut FetchCountryFilesOutput
+
 	CountryOut, err = gc.FetchCountryFiles()
 	if err != nil {
 		return
@@ -530,6 +539,7 @@ func (gc *GeoIP) FetchAllFiles() (output FetchFilesOutput, err error) {
 	output.CountryVersion = CountryOut.Version
 
 	var CityOut FetchCityFilesOutput
+
 	CityOut, err = gc.FetchCityFiles()
 	if err != nil {
 		logrus.Errorf("%s | %s", pflog.GetFunctionName(), err.Error())
@@ -553,6 +563,7 @@ func (gc *GeoIP) FetchFiles(input FetchFilesInput) (output FetchFilesOutput, err
 
 	if input.ASN {
 		var asnOut FetchASNFilesOutput
+
 		asnOut, err = gc.FetchASNFiles()
 		if err != nil {
 			return
@@ -567,6 +578,7 @@ func (gc *GeoIP) FetchFiles(input FetchFilesInput) (output FetchFilesOutput, err
 
 	if input.Country {
 		var CountryOut FetchCountryFilesOutput
+
 		CountryOut, err = gc.FetchCountryFiles()
 		if err != nil {
 			return
@@ -582,6 +594,7 @@ func (gc *GeoIP) FetchFiles(input FetchFilesInput) (output FetchFilesOutput, err
 
 	if input.City {
 		var CityOut FetchCityFilesOutput
+
 		CityOut, err = gc.FetchCityFiles()
 		if err != nil {
 			return

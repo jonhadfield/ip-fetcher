@@ -19,7 +19,7 @@ fmt:
 	find . -name '*.go' | while read -r file; do gofumpt -w "$$file"; done
 
 lint:
-	golangci-lint run ./...
+	golangci-lint run
 
 ci: lint test
 

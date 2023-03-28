@@ -12,6 +12,7 @@ import (
 func TestFetchData(t *testing.T) {
 	u, err := url.Parse(downloadURL)
 	require.NoError(t, err)
+
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
 	lastModified := "Thu, 05 Jan 2023 19:43:47 GMT"
@@ -40,6 +41,7 @@ func TestFetchData(t *testing.T) {
 func TestFetch(t *testing.T) {
 	u, err := url.Parse(downloadURL)
 	require.NoError(t, err)
+
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
 	lastModified := "Thu, 05 Jan 2023 19:43:47 GMT"

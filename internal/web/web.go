@@ -57,7 +57,9 @@ func Request(c *retryablehttp.Client, url string, method string, inHeaders http.
 	request.Header = inHeaders
 
 	ctx := context.Background()
+
 	var cancel context.CancelFunc
+
 	if timeout != 0 {
 		ctx, cancel = context.WithTimeout(context.Background(), timeout)
 		defer cancel()

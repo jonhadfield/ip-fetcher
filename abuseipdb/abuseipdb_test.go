@@ -61,7 +61,7 @@ func TestFetchBlackListData(t *testing.T) {
 
 	gock.InterceptClient(ac.Client.HTTPClient)
 
-	data, _, status, err := ac.FetchData()
+	data, status, err := ac.FetchData()
 	require.NoError(t, err)
 	require.NotEmpty(t, data)
 	require.Equal(t, http.StatusOK, status)
@@ -90,15 +90,21 @@ func TestFetchBlackList(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, expectedGeneratedAt, doc.GeneratedAt)
 	require.NotEmpty(t, doc.Records)
+
 	var found bool
+
 	expectedAddr := netip.MustParseAddr("92.118.161.25")
 	expectedReportedAt := "2022-07-06T21:17:00+00:00"
+
 	for _, r := range doc.Records {
 		if r.IPAddress == expectedAddr {
 			if r.CountryCode == "US" {
 				if r.AbuseConfidenceScore == 100 {
-					expectedReportedAt, _ := time.Parse(TimeFormat, expectedReportedAt)
-					if r.LastReportedAt.String() == expectedReportedAt.String() {
+					var expectedReportedAtTime time.Time
+					expectedReportedAtTime, err = time.Parse(TimeFormat, expectedReportedAt)
+					require.NoError(t, err)
+
+					if r.LastReportedAt.String() == expectedReportedAtTime.String() {
 						found = true
 
 						break
@@ -107,7 +113,47 @@ func TestFetchBlackList(t *testing.T) {
 			}
 		}
 	}
+
 	require.True(t, found)
+}
+
+// // constructReqUrl builds the AbuseIPDB API request URL with the provided values
+// func constructReqUrl(apiURL string, confidenceMinimum int, limit int64) (reqUrl *url.URL, err error) {
+//	if apiURL == "" {
+//		apiURL = APIURL
+//	}
+//
+//	if reqUrl, err = url.Parse(apiURL); err != nil {
+//		return
+//	}
+//
+//	q := reqUrl.Query()
+//
+//	if confidenceMinimum != 0 {
+//		q.Add("confidenceMinimum", strconv.Itoa(confidenceMinimum))
+//	}
+//
+//	if limit != 0 {
+//		q.Add("limit", strconv.FormatInt(limit, 10))
+//	}
+//
+//	reqUrl.RawQuery = q.Encode()
+//
+//	return reqUrl, nil
+// }
+
+func TestConstructReqUrl(t *testing.T) {
+	reqUrl, err := constructReqUrl(APIURL, 73, 30123)
+	require.NoError(t, err)
+	require.Equal(t, fmt.Sprintf("%s?confidenceMinimum=73&limit=30123", APIURL), reqUrl.String())
+
+	reqUrl, err = constructReqUrl("https://example.com/myapi", 0, 5)
+	require.NoError(t, err)
+	require.Equal(t, "https://example.com/myapi?limit=5", reqUrl.String())
+
+	reqUrl, err = constructReqUrl("https://example.com/myapi", 10, 0)
+	require.NoError(t, err)
+	require.Equal(t, "https://example.com/myapi?confidenceMinimum=10", reqUrl.String())
 }
 
 func TestFetchBlackListDataIncorrectKey(t *testing.T) {
@@ -127,7 +173,7 @@ func TestFetchBlackListDataIncorrectKey(t *testing.T) {
 
 	gock.InterceptClient(ac.Client.HTTPClient)
 
-	data, _, status, err := ac.FetchData()
+	data, status, err := ac.FetchData()
 	require.Error(t, err)
 	require.Contains(t, string(data), "Authentication failed.")
 	require.Equal(t, http.StatusUnauthorized, status)

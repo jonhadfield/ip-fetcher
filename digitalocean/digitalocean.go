@@ -28,11 +28,14 @@ type DigitalOcean struct {
 
 func New() DigitalOcean {
 	pflog.SetLogLevel()
+
 	rc := &http.Client{Transport: &http.Transport{}}
 	c := retryablehttp.NewClient()
+
 	if logrus.GetLevel() < logrus.DebugLevel {
 		c.Logger = nil
 	}
+
 	c.HTTPClient = rc
 	c.RetryMax = 1
 
@@ -85,7 +88,9 @@ func (a *DigitalOcean) Fetch() (doc Doc, err error) {
 	doc.ETag = etag
 
 	var lastModifiedTime time.Time
+
 	lastModifiedRaw := headers.Values("last-modified")
+
 	if len(lastModifiedRaw) != 0 {
 		if lastModifiedTime, err = time.Parse(time.RFC1123, lastModifiedRaw[0]); err != nil {
 			return
@@ -108,6 +113,7 @@ type Entry struct {
 func Parse(data []byte) (records []Record, err error) {
 	reader := bytes.NewReader(data)
 	csvReader := csv.NewReader(reader)
+
 	doHeader, err := csvutil.Header(Entry{}, "csv")
 	if err != nil {
 		log.Fatal(err)

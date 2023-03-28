@@ -22,9 +22,11 @@ func New() GCP {
 
 	rc := &http.Client{Transport: &http.Transport{}}
 	c := retryablehttp.NewClient()
+
 	if logrus.GetLevel() < logrus.DebugLevel {
 		c.Logger = nil
 	}
+
 	c.HTTPClient = rc
 	c.RetryMax = 1
 
@@ -65,6 +67,7 @@ func (gc *GCP) Fetch() (doc Doc, err error) {
 
 func ProcessData(data []byte) (doc Doc, err error) {
 	var rawDoc RawDoc
+
 	err = json.Unmarshal(data, &rawDoc)
 	if err != nil {
 		return

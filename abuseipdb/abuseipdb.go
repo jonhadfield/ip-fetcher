@@ -58,6 +58,7 @@ func retryPolicy(ctx context.Context, resp *http.Response, err error) (bool, err
 			if notTrustedErrorRe.MatchString(v.Error()) {
 				return false, v
 			}
+
 			if _, ok = v.Err.(x509.UnknownAuthorityError); ok {
 				return false, v
 			}
@@ -79,11 +80,14 @@ func retryPolicy(ctx context.Context, resp *http.Response, err error) (bool, err
 
 func New() AbuseIPDB {
 	pflog.SetLogLevel()
+
 	rc := &http.Client{Transport: &http.Transport{}}
 	c := retryablehttp.NewClient()
+
 	if logrus.GetLevel() < logrus.DebugLevel {
 		c.Logger = nil
 	}
+
 	c.CheckRetry = retryPolicy
 	c.HTTPClient = rc
 	c.RetryMax = 1
@@ -100,33 +104,43 @@ var (
 	notTrustedErrorRe = regexp.MustCompile(`certificate is not trusted`)
 )
 
-func (a *AbuseIPDB) FetchData() (data []byte, headers http.Header, status int, err error) {
-	// get download url if not specified
-	if a.APIURL == "" {
-		a.APIURL = APIURL
+// constructReqUrl builds the AbuseIPDB API request URL with the provided values
+func constructReqUrl(apiURL string, confidenceMinimum int, limit int64) (reqUrl *url.URL, err error) {
+	if apiURL == "" {
+		apiURL = APIURL
 	}
 
-	inHeaders := http.Header{}
-	inHeaders.Add("Key", a.APIKey)
-	inHeaders.Add("Accept", "application/json")
-
-	var reqUrl *url.URL
-
-	if reqUrl, err = url.Parse(a.APIURL); err != nil {
+	if reqUrl, err = url.Parse(apiURL); err != nil {
 		return
 	}
 
-	if a.ConfidenceMinimum != 0 {
-		reqUrl.Query().Add("confidenceMinimum", strconv.Itoa(a.ConfidenceMinimum))
+	q := reqUrl.Query()
+
+	if confidenceMinimum != 0 {
+		q.Add("confidenceMinimum", strconv.Itoa(confidenceMinimum))
 	}
 
-	if a.Limit != 0 {
-		reqUrl.Query().Add("limit", strconv.FormatInt(a.Limit, 10))
+	if limit != 0 {
+		q.Add("limit", strconv.FormatInt(limit, 10))
 	}
 
-	blackList, headers, statusCode, err := web.Request(a.Client, reqUrl.String(), http.MethodGet, inHeaders, []string{a.APIKey}, 10*time.Second)
+	reqUrl.RawQuery = q.Encode()
+
+	return reqUrl, nil
+}
+
+func (a *AbuseIPDB) FetchData() (data []byte, status int, err error) {
+	reqUrl, err := constructReqUrl(a.APIURL, a.ConfidenceMinimum, a.Limit)
+	if err != nil {
+		return
+	}
+
+	reqHeaders := http.Header{}
+	reqHeaders.Add("Key", a.APIKey)
+	reqHeaders.Add("Accept", "application/json")
+
+	blackList, _, statusCode, err := web.Request(a.Client, reqUrl.String(), http.MethodGet, reqHeaders, []string{a.APIKey}, 10*time.Second)
 	if statusCode == 0 && err != nil {
-
 		return
 	}
 
@@ -140,7 +154,7 @@ func (a *AbuseIPDB) FetchData() (data []byte, headers http.Header, status int, e
 		err = parseAPIErrorResponse(blackList)
 	}
 
-	return blackList, headers, statusCode, err
+	return blackList, statusCode, err
 }
 
 type Doc struct {
@@ -149,8 +163,10 @@ type Doc struct {
 }
 
 func (a *AbuseIPDB) Fetch() (doc Doc, err error) {
-	data, _, status, err := a.FetchData()
+	data, status, err := a.FetchData()
+
 	logrus.Debugf("abuseipdb | data len: %d FetchData status: %d", len(data), status)
+
 	if err != nil {
 		return
 	}

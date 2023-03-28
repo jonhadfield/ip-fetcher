@@ -60,6 +60,7 @@ func TestDownloadIPList(t *testing.T) {
 func TestDownloadIPListWithoutQuotedEtag(t *testing.T) {
 	u, err := url.Parse(downloadURL)
 	require.NoError(t, err)
+
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
 	gock.New(urlBase).

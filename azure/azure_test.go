@@ -78,6 +78,7 @@ func TestFetchRawNoDownloadURL(t *testing.T) {
 	gock.New(testInitialURL).
 		Get(u.Path).
 		Reply(404)
+
 	_, err = url.Parse(testInitialURL)
 	require.NoError(t, err)
 
@@ -163,8 +164,11 @@ func TestFetch(t *testing.T) {
 	gock.InterceptClient(ac.Client.HTTPClient)
 
 	prefixes, _, err := ac.Fetch()
+
 	ac.DownloadURL = urlBase
+
 	require.NoError(t, err)
+
 	require.Equal(t, "Public", prefixes.Cloud)
 	require.Equal(t, 232, prefixes.ChangeNumber)
 	require.Equal(t, 2643, len(prefixes.Values))

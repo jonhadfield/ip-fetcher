@@ -14,6 +14,7 @@ func azureCmd() *cli.Command {
 		HelpName:  "- fetch Azure prefixes",
 		UsageText: "prefix-fetcher azure {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
+			// nolint:errcheck
 			_ = cli.ShowSubcommandHelp(cCtx)
 
 			return err
@@ -31,7 +32,9 @@ func azureCmd() *cli.Command {
 		Action: func(c *cli.Context) error {
 			path := strings.TrimSpace(c.String("path"))
 			if path == "" && !c.Bool("stdout") {
+				// nolint:errcheck
 				_ = cli.ShowSubcommandHelp(c)
+
 				fmt.Println("\nerror: must specify at least one of stdout and path")
 				os.Exit(1)
 			}

@@ -12,6 +12,7 @@ import (
 func TestFetch(t *testing.T) {
 	u, err := url.Parse(DownloadURL)
 	require.NoError(t, err)
+
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
 	gock.New(urlBase).

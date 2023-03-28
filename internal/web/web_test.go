@@ -53,13 +53,13 @@ func TestRequestFailure(t *testing.T) {
 	rc.HTTPClient = client
 
 	gock.InterceptClient(client)
+
 	body, headers, status, err := Request(rc, testUrl, http.MethodGet, nil, []string{}, 10*time.Second)
 	require.Error(t, err)
 	require.ErrorContains(t, err, "no worky")
 	require.Empty(t, headers)
 	require.Len(t, body, 0)
 	require.Equal(t, 0, status)
-	// require.Empty(t, downloadedFilePath)
 }
 
 func TestRequestContentDispositionFileName(t *testing.T) {
@@ -90,7 +90,9 @@ func TestRequestContentDispositionFileName(t *testing.T) {
 	client := &http.Client{Transport: &http.Transport{}}
 	rc.HTTPClient = client
 	rc.RetryMax = 0
+
 	gock.InterceptClient(client)
+
 	fn, err := RequestContentDispositionFileName(rc, testUrl, nil)
 	require.NoError(t, err)
 	require.Equal(t, fileName, fn)
@@ -103,7 +105,6 @@ func TestRequestContentDispositionFileName(t *testing.T) {
 	// second attempt fails as gock only matching one time
 	_, err = RequestContentDispositionFileName(rc, testUrl, nil)
 	require.Error(t, err)
-
 }
 
 func TestPathDetails(t *testing.T) {
@@ -196,7 +197,9 @@ func TestDownloadFileWithMissingDir(t *testing.T) {
 	client := &http.Client{Transport: &http.Transport{}}
 	rc.HTTPClient = client
 	gock.InterceptClient(client)
+
 	missingDir := "/a/non-existant-dir"
+
 	downloadedFilePath, err := DownloadFile(rc, "https://www.example.com/mytextfile.txt", missingDir)
 	require.Error(t, err)
 	require.Empty(t, downloadedFilePath)
@@ -265,9 +268,11 @@ func TestHTTPGet(t *testing.T) {
 
 	client := &http.Client{Transport: &http.Transport{}}
 	gock.InterceptClient(client)
+
 	rc := retryablehttp.NewClient()
 	rc.HTTPClient = client
 	gock.InterceptClient(rc.HTTPClient)
+
 	b, headers, status, err := Request(rc, testUrl, http.MethodGet, nil, nil, 2*time.Second)
 	require.NoError(t, err)
 	require.Equal(t, 200, status)

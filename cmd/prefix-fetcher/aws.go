@@ -14,7 +14,8 @@ func awsCmd() *cli.Command {
 		HelpName:  "- fetch AWS prefixes",
 		UsageText: "prefix-fetcher aws {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
-			cli.ShowSubcommandHelp(cCtx)
+			// nolint:errcheck
+			_ = cli.ShowSubcommandHelp(cCtx)
 
 			return err
 		},
@@ -31,6 +32,7 @@ func awsCmd() *cli.Command {
 		Action: func(c *cli.Context) error {
 			path := strings.TrimSpace(c.String("path"))
 			if path == "" && !c.Bool("stdout") {
+				// nolint:errcheck
 				_ = cli.ShowSubcommandHelp(c)
 				fmt.Println("\nerror: must specify at least one of stdout and path")
 				os.Exit(1)

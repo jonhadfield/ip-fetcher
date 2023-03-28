@@ -30,6 +30,7 @@ func TestConstructDownloadURL(t *testing.T) {
 	dbType := "ASN"
 	csvDBFormat := "cSv"
 	mmdbDBFormat := "mmdB"
+
 	require.Equal(t, "https://download.maxmind.com/app/geoip_download?"+
 		"edition_id=GeoLite2-ASN-CSV&license_key=license-key&suffix=zip",
 		constructDownloadURL(licenseKey, editionID, dbType, csvDBFormat))
@@ -60,8 +61,10 @@ func TestDownloadDBFile(t *testing.T) {
 
 	downloadURL := constructDownloadURL(licenseKey, "GeoLite2", "ASN", "CSV")
 	require.Equal(t, "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=test-key&suffix=zip", downloadURL)
+
 	u, err := url.Parse(downloadURL)
 	require.NoError(t, err)
+
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
 	gock.New(urlBase).
@@ -107,6 +110,7 @@ func TestDownloadDBFileMissingTargetDirectory(t *testing.T) {
 	require.Equal(t, "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=test-key&suffix=zip", downloadURL)
 	u, err := url.Parse(downloadURL)
 	require.NoError(t, err)
+
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
 	gock.New(urlBase).
@@ -153,7 +157,9 @@ func TestFetchCityFiles(t *testing.T) {
 	downloadURL := constructDownloadURL(licenseKey, "GeoLite2", "ciTy", "CSV")
 	require.Equal(t, "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=test-key&suffix=zip", downloadURL)
 	u, err := url.Parse(downloadURL)
+
 	require.NoError(t, err)
+
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
 	gock.New(urlBase).
@@ -208,8 +214,10 @@ func TestFetchCityFilesWithoutExtract(t *testing.T) {
 
 	downloadURL := constructDownloadURL(licenseKey, "GeoLite2", "ciTy", "CSV")
 	require.Equal(t, "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=test-key&suffix=zip", downloadURL)
+
 	u, err := url.Parse(downloadURL)
 	require.NoError(t, err)
+
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
 	gock.New(urlBase).
@@ -263,7 +271,9 @@ func TestFetchFiles(t *testing.T) {
 	ac.Client.RetryMax = 0
 
 	arnURL := "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=test-key&suffix=zip"
-	uARN, _ := url.Parse(arnURL)
+
+	uARN, err := url.Parse(arnURL)
+	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", uARN.Scheme, uARN.Host)
 
@@ -289,7 +299,9 @@ func TestFetchFiles(t *testing.T) {
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-ASN-CSV_20220617.zip")
 
 	cityURL := "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=test-key&suffix=zip"
-	uCity, _ := url.Parse(cityURL)
+
+	uCity, err := url.Parse(cityURL)
+	require.NoError(t, err)
 
 	gock.New(urlBase).
 		MatchParams(map[string]string{
@@ -313,7 +325,10 @@ func TestFetchFiles(t *testing.T) {
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
 
 	countryURL := "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country-CSV&license_key=test-key&suffix=zip"
-	uCountry, _ := url.Parse(countryURL)
+
+	uCountry, err := url.Parse(countryURL)
+	require.NoError(t, err)
+
 	gock.New(urlBase).
 		MatchParams(map[string]string{
 			"edition_id":  "GeoLite2-Country-CSV",
@@ -379,7 +394,8 @@ func TestDownloadExtract(t *testing.T) {
 	ac.Client.RetryMax = 0
 
 	arnURL := "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=test-key&suffix=zip"
-	uARN, _ := url.Parse(arnURL)
+	uARN, err := url.Parse(arnURL)
+	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", uARN.Scheme, uARN.Host)
 
@@ -405,7 +421,8 @@ func TestDownloadExtract(t *testing.T) {
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-ASN-CSV_20220617.zip")
 
 	cityURL := "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=test-key&suffix=zip"
-	uCity, _ := url.Parse(cityURL)
+	uCity, err := url.Parse(cityURL)
+	require.NoError(t, err)
 
 	gock.New(urlBase).
 		MatchParams(map[string]string{
@@ -429,7 +446,9 @@ func TestDownloadExtract(t *testing.T) {
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
 
 	countryURL := "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country-CSV&license_key=test-key&suffix=zip"
-	uCountry, _ := url.Parse(countryURL)
+	uCountry, err := url.Parse(countryURL)
+	require.NoError(t, err)
+
 	gock.New(urlBase).
 		MatchParams(map[string]string{
 			"edition_id":  "GeoLite2-Country-CSV",
@@ -491,12 +510,14 @@ func TestDownloadExtractCityWithoutRoot(t *testing.T) {
 	ac.Client.RetryMax = 0
 
 	arnURL := "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=test-key&suffix=zip"
-	uARN, _ := url.Parse(arnURL)
+	uARN, err := url.Parse(arnURL)
+	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", uARN.Scheme, uARN.Host)
 
 	cityURL := "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=test-key&suffix=zip"
-	uCity, _ := url.Parse(cityURL)
+	uCity, err := url.Parse(cityURL)
+	require.NoError(t, err)
 
 	gock.New(urlBase).
 		MatchParams(map[string]string{
