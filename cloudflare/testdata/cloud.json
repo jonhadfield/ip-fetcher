@@ -1,0 +1,56 @@
+{
+  "syncToken": "1657904603044",
+  "creationTime": "2022-07-15T10:03:23.044306",
+  "prefixes": [
+    {
+      "ipv4Prefix": "34.80.0.0/15",
+      "service": "Google Cloud",
+      "scope": "asia-east1"
+    },
+    {
+      "ipv4Prefix": "34.137.0.0/16",
+      "service": "Google Cloud",
+      "scope": "asia-east1"
+    },
+    {
+      "ipv4Prefix": "35.185.128.0/19",
+      "service": "Google Cloud",
+      "scope": "asia-east1"
+    },
+    {
+      "ipv4Prefix": "35.185.160.0/20",
+      "service": "Google Cloud",
+      "scope": "asia-east1"
+    },
+    {
+      "ipv4Prefix": "35.187.144.0/20",
+      "service": "Google Cloud",
+      "scope": "asia-east1"
+    },
+    {
+      "ipv4Prefix": "35.243.8.0/21",
+      "service": "Google Cloud",
+      "scope": "asia-east2"
+    },
+    {
+      "ipv6Prefix": "2600:1900:41a0::/44",
+      "service": "Google Cloud",
+      "scope": "asia-east2"
+    },
+    {
+      "ipv4Prefix": "34.125.0.0/16",
+      "service": "Google Cloud",
+      "scope": "us-west4"
+    },
+    {
+      "ipv4Prefix": "35.219.128.0/18",
+      "service": "Google Cloud",
+      "scope": "us-west4"
+    },
+    {
+      "ipv6Prefix": "2600:1900:4180::/44",
+      "service": "Google Cloud",
+      "scope": "us-west4"
+    }
+  ]
+}
