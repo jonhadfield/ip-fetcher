@@ -40,12 +40,11 @@ func main() {
 		commands.AbuseIPDBCmd(),
 		commands.AWSCmd(),
 		commands.AzureCmd(),
+		commands.CloudflareCmd(),
 		commands.DigitalOceanCmd(),
 		commands.GCPCmd(),
 		commands.GeoIPCmd(),
 	}
-
-	// app.Run(os.Args)
 
 	if err := app.Run(os.Args); err != nil {
 		fmt.Printf("\nerror: %s\n", err.Error())

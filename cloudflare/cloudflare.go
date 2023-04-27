@@ -1,7 +1,9 @@
 package cloudflare
 
 import (
-	"encoding/json"
+	"bufio"
+	"bytes"
+	"fmt"
 	"github.com/jonhadfield/prefix-fetcher/internal/pflog"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -13,8 +15,8 @@ import (
 )
 
 const (
-	IPv4URL                  = "https://www.cloudflare.com/ips-v4"
-	IPv6URL                  = "https://www.cloudflare.com/ips-v6"
+	defaultIPv4URL           = "https://www.cloudflare.com/ips-v4"
+	defaultIPv6URL           = "https://www.cloudflare.com/ips-v6"
 	downloadedFileTimeFormat = "2006-01-02T15:04:05.999999"
 )
 
@@ -32,33 +34,36 @@ func New() Cloudflare {
 	c.RetryMax = 1
 
 	return Cloudflare{
-		DownloadURL: DownloadURL,
-		Client:      c,
+		IPv4DownloadURL: defaultIPv4URL,
+		IPv6DownloadURL: defaultIPv6URL,
+		Client:          c,
 	}
 }
 
 type Cloudflare struct {
-	Client      *retryablehttp.Client
-	DownloadURL string
+	Client          *retryablehttp.Client
+	IPv4DownloadURL string
+	IPv6DownloadURL string
 }
 
-type RawDoc struct {
-	SyncToken     string `json:"syncToken"`
-	CreationTime  string `json:"creationTime"`
-	LastRequested time.Time
-	Entries       []json.RawMessage `json:"prefixes"`
-}
-
-func (gc *Cloudflare) FetchData() (data []byte, headers http.Header, status int, err error) {
-	if gc.DownloadURL == "" {
-		gc.DownloadURL = DownloadURL
+func (cf *Cloudflare) FetchIPv4Data() (data []byte, headers http.Header, status int, err error) {
+	if cf.IPv4DownloadURL == "" {
+		cf.IPv4DownloadURL = defaultIPv4URL
 	}
 
-	return web.Request(gc.Client, gc.DownloadURL, http.MethodGet, nil, nil, 10*time.Second)
+	return web.Request(cf.Client, cf.IPv4DownloadURL, http.MethodGet, nil, nil, 10*time.Second)
 }
 
-func (gc *Cloudflare) Fetch() (doc Doc, err error) {
-	data, _, _, err := gc.FetchData()
+func (cf *Cloudflare) FetchIPv6Data() (data []byte, headers http.Header, status int, err error) {
+	if cf.IPv6DownloadURL == "" {
+		cf.IPv6DownloadURL = defaultIPv6URL
+	}
+
+	return web.Request(cf.Client, cf.IPv6DownloadURL, http.MethodGet, nil, nil, 10*time.Second)
+}
+
+func (cf *Cloudflare) Fetch4() (prefixes []netip.Prefix, err error) {
+	data, _, _, err := cf.FetchIPv4Data()
 	if err != nil {
 		return
 	}
@@ -66,103 +71,45 @@ func (gc *Cloudflare) Fetch() (doc Doc, err error) {
 	return ProcessData(data)
 }
 
-func ProcessData(data []byte) (doc Doc, err error) {
-	var rawDoc RawDoc
-
-	err = json.Unmarshal(data, &rawDoc)
+func (cf *Cloudflare) Fetch6() (prefixes []netip.Prefix, err error) {
+	data, _, _, err := cf.FetchIPv6Data()
 	if err != nil {
 		return
 	}
 
-	doc.IPv4Prefixes, doc.IPv6Prefixes, err = castEntries(rawDoc.Entries)
-	if err != nil {
-		return
-	}
-
-	ct, err := time.Parse(downloadedFileTimeFormat, rawDoc.CreationTime)
-	if err != nil {
-		return
-	}
-
-	doc.CreationTime = ct
-	doc.SyncToken = rawDoc.SyncToken
-
-	return
+	return ProcessData(data)
 }
 
-func castEntries(prefixes []json.RawMessage) (ipv4 []IPv4Entry, ipv6 []IPv6Entry, err error) {
-	for _, pr := range prefixes {
-		var ipv4entry RawIPv4Entry
+func (cf *Cloudflare) Fetch() (prefixes []netip.Prefix, err error) {
+	p4, err := cf.Fetch4()
+	if err != nil {
+		return
+	}
 
-		var ipv6entry RawIPv6Entry
+	p6, err := cf.Fetch6()
+	if err != nil {
+		return
+	}
 
-		// try 4
-		err = json.Unmarshal(pr, &ipv4entry)
-		if err == nil {
-			ipv4Prefix, parseError := netip.ParsePrefix(ipv4entry.IPv4Prefix)
-			if parseError == nil {
-				ipv4 = append(ipv4, IPv4Entry{
-					IPv4Prefix: ipv4Prefix,
-					Service:    ipv4entry.Service,
-					Scope:      ipv4entry.Scope,
-				})
+	return append(p4, p6...), err
+}
 
-				continue
-			}
-		}
+func ProcessData(data []byte) (prefixes []netip.Prefix, err error) {
+	r := bytes.NewReader(data)
 
-		// try 6
-		err = json.Unmarshal(pr, &ipv6entry)
-		if err == nil {
-			ipv6Prefix, parseError := netip.ParsePrefix(ipv6entry.IPv6Prefix)
-			if parseError != nil {
-				return ipv4, ipv6, parseError
-			}
+	scanner := bufio.NewScanner(r)
+	for scanner.Scan() {
+		fmt.Println(scanner.Text()) // Println will add back the final '\n'
 
-			ipv6 = append(ipv6, IPv6Entry{
-				IPv6Prefix: ipv6Prefix,
-				Service:    ipv6entry.Service,
-				Scope:      ipv6entry.Scope,
-			})
+		var prefix netip.Prefix
 
-			continue
-		}
-
+		prefix, err = netip.ParsePrefix(scanner.Text())
 		if err != nil {
 			return
 		}
+
+		prefixes = append(prefixes, prefix)
 	}
 
 	return
-}
-
-type RawIPv4Entry struct {
-	IPv4Prefix string `json:"ipv4Prefix"`
-	Service    string `json:"service"`
-	Scope      string `json:"scope"`
-}
-
-type RawIPv6Entry struct {
-	IPv6Prefix string `json:"ipv6Prefix"`
-	Service    string `json:"service"`
-	Scope      string `json:"scope"`
-}
-
-type IPv4Entry struct {
-	IPv4Prefix netip.Prefix `json:"ipv4Prefix"`
-	Service    string       `json:"service"`
-	Scope      string       `json:"scope"`
-}
-
-type IPv6Entry struct {
-	IPv6Prefix netip.Prefix `json:"ipv6Prefix"`
-	Service    string       `json:"service"`
-	Scope      string       `json:"scope"`
-}
-
-type Doc struct {
-	SyncToken    string
-	CreationTime time.Time
-	IPv4Prefixes []IPv4Entry
-	IPv6Prefixes []IPv6Entry
 }
