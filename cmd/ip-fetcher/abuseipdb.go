@@ -2,26 +2,38 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonhadfield/prefix-fetcher/azure"
+	"github.com/jonhadfield/ip-fetcher/abuseipdb"
 	"github.com/urfave/cli/v2"
 	"os"
 	"strings"
 )
 
-func azureCmd() *cli.Command {
+func abuseipdbCmd() *cli.Command {
 	return &cli.Command{
-		Name:      "azure",
-		HelpName:  "- fetch Azure prefixes",
-		UsageText: "prefix-fetcher azure {--stdout | --path FILE}",
+		Name:      "abuseipdb",
+		HelpName:  "- fetch AbuseIPDB prefixes",
+		UsageText: "ip-fetcher abuseipdb {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
-			_ = cli.ShowSubcommandHelp(cCtx)
+			cli.ShowSubcommandHelp(cCtx)
 
 			return err
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
+				Name:  "key",
+				Usage: "api key", Aliases: []string{"k"}, Required: true,
+			},
+			&cli.IntFlag{
+				Name:  "confidence",
+				Usage: "minimum confidence percentage score to return", Value: 75, Aliases: []string{"c"},
+			},
+			&cli.Int64Flag{
+				Name:  "limit",
+				Usage: "maximum number of results to return", Value: 1000, Aliases: []string{"l"},
+			},
+			&cli.StringFlag{
 				Name:  "path",
-				Usage: "where to save the file", Aliases: []string{"p"}, TakesFile: true,
+				Usage: "where to save the file", Aliases: []string{"p"},
 			},
 			&cli.BoolFlag{
 				Name:  "stdout",
@@ -36,7 +48,10 @@ func azureCmd() *cli.Command {
 				os.Exit(1)
 			}
 
-			a := azure.New()
+			a := abuseipdb.New()
+			a.Limit = c.Int64("limit")
+			a.APIKey = c.String("key")
+			a.ConfidenceMinimum = c.Int("confidence")
 			data, _, _, err := a.FetchData()
 			if err != nil {
 				return err
@@ -44,10 +59,10 @@ func azureCmd() *cli.Command {
 
 			if path != "" {
 				if err = saveFile(saveFileInput{
-					provider:        "azure",
+					provider:        "abuseipdb",
 					data:            data,
 					path:            path,
-					defaultFileName: "ServiceTags_Public.json",
+					defaultFileName: "blacklist",
 				}); err != nil {
 					return err
 				}

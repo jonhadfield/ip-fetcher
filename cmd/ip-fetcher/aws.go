@@ -2,17 +2,17 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonhadfield/prefix-fetcher/gcp"
+	"github.com/jonhadfield/ip-fetcher/aws"
 	"github.com/urfave/cli/v2"
 	"os"
 	"strings"
 )
 
-func gcpCmd() *cli.Command {
+func awsCmd() *cli.Command {
 	return &cli.Command{
-		Name:      "gcp",
-		HelpName:  "- fetch GCP prefixes",
-		UsageText: "prefix-fetcher azure {--stdout | --path FILE}",
+		Name:      "aws",
+		HelpName:  "- fetch AWS prefixes",
+		UsageText: "ip-fetcher aws {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			cli.ShowSubcommandHelp(cCtx)
 
@@ -21,7 +21,7 @@ func gcpCmd() *cli.Command {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "path",
-				Usage: "where to save the file", Aliases: []string{"p"},
+				Usage: "where to save the file", Aliases: []string{"p"}, TakesFile: true,
 			},
 			&cli.BoolFlag{
 				Name:  "stdout",
@@ -36,7 +36,7 @@ func gcpCmd() *cli.Command {
 				os.Exit(1)
 			}
 
-			a := gcp.New()
+			a := aws.New()
 			data, _, _, err := a.FetchData()
 			if err != nil {
 				return err
@@ -44,10 +44,10 @@ func gcpCmd() *cli.Command {
 
 			if path != "" {
 				if err = saveFile(saveFileInput{
-					provider:        "gcp",
+					provider:        "aws",
 					data:            data,
 					path:            path,
-					defaultFileName: "cloud.json",
+					defaultFileName: "ip-ranges.json",
 				}); err != nil {
 					return err
 				}

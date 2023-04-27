@@ -2,7 +2,7 @@ package aws
 
 import (
 	"encoding/json"
-	"github.com/jonhadfield/prefix-fetcher/internal/pflog"
+	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"net/netip"
@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/jonhadfield/prefix-fetcher/internal/web"
+	"github.com/jonhadfield/ip-fetcher/internal/web"
 )
 
 const downloadURL = "https://ip-ranges.amazonaws.com/ip-ranges.json"

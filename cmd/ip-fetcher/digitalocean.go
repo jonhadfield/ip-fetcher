@@ -2,31 +2,21 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonhadfield/prefix-fetcher/aws"
+	"github.com/jonhadfield/ip-fetcher/digitalocean"
 	"github.com/urfave/cli/v2"
 	"os"
 	"strings"
 )
 
-func awsCmd() *cli.Command {
+func digitaloceanCmd() *cli.Command {
 	return &cli.Command{
-		Name:      "aws",
-		HelpName:  "- fetch AWS prefixes",
-		UsageText: "prefix-fetcher aws {--stdout | --path FILE}",
+		Name:      "digitalocean",
+		HelpName:  "- fetch DigitalOcean prefixes",
+		UsageText: "ip-fetcher digitalocean {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			cli.ShowSubcommandHelp(cCtx)
 
 			return err
-		},
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  "path",
-				Usage: "where to save the file", Aliases: []string{"p"}, TakesFile: true,
-			},
-			&cli.BoolFlag{
-				Name:  "stdout",
-				Usage: "write to stdout", Aliases: []string{"s"},
-			},
 		},
 		Action: func(c *cli.Context) error {
 			path := strings.TrimSpace(c.String("path"))
@@ -36,7 +26,7 @@ func awsCmd() *cli.Command {
 				os.Exit(1)
 			}
 
-			a := aws.New()
+			a := digitalocean.New()
 			data, _, _, err := a.FetchData()
 			if err != nil {
 				return err
@@ -44,10 +34,10 @@ func awsCmd() *cli.Command {
 
 			if path != "" {
 				if err = saveFile(saveFileInput{
-					provider:        "aws",
+					provider:        "digitalocean",
 					data:            data,
 					path:            path,
-					defaultFileName: "ip-ranges.json",
+					defaultFileName: "ServiceTags_Public.json",
 				}); err != nil {
 					return err
 				}

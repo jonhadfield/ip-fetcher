@@ -2,35 +2,23 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonhadfield/prefix-fetcher/abuseipdb"
+	"github.com/jonhadfield/ip-fetcher/gcp"
 	"github.com/urfave/cli/v2"
 	"os"
 	"strings"
 )
 
-func abuseipdbCmd() *cli.Command {
+func gcpCmd() *cli.Command {
 	return &cli.Command{
-		Name:      "abuseipdb",
-		HelpName:  "- fetch AbuseIPDB prefixes",
-		UsageText: "prefix-fetcher abuseipdb {--stdout | --path FILE}",
+		Name:      "gcp",
+		HelpName:  "- fetch GCP prefixes",
+		UsageText: "ip-fetcher azure {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			cli.ShowSubcommandHelp(cCtx)
 
 			return err
 		},
 		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  "key",
-				Usage: "api key", Aliases: []string{"k"}, Required: true,
-			},
-			&cli.IntFlag{
-				Name:  "confidence",
-				Usage: "minimum confidence percentage score to return", Value: 75, Aliases: []string{"c"},
-			},
-			&cli.Int64Flag{
-				Name:  "limit",
-				Usage: "maximum number of results to return", Value: 1000, Aliases: []string{"l"},
-			},
 			&cli.StringFlag{
 				Name:  "path",
 				Usage: "where to save the file", Aliases: []string{"p"},
@@ -48,10 +36,7 @@ func abuseipdbCmd() *cli.Command {
 				os.Exit(1)
 			}
 
-			a := abuseipdb.New()
-			a.Limit = c.Int64("limit")
-			a.APIKey = c.String("key")
-			a.ConfidenceMinimum = c.Int("confidence")
+			a := gcp.New()
 			data, _, _, err := a.FetchData()
 			if err != nil {
 				return err
@@ -59,10 +44,10 @@ func abuseipdbCmd() *cli.Command {
 
 			if path != "" {
 				if err = saveFile(saveFileInput{
-					provider:        "abuseipdb",
+					provider:        "gcp",
 					data:            data,
 					path:            path,
-					defaultFileName: "blacklist",
+					defaultFileName: "cloud.json",
 				}); err != nil {
 					return err
 				}

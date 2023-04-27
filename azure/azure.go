@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/jonhadfield/prefix-fetcher/internal/pflog"
+	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"regexp"
@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/jonhadfield/prefix-fetcher/internal/web"
+	"github.com/jonhadfield/ip-fetcher/internal/web"
 )
 
 const (

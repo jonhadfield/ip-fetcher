@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/jonhadfield/prefix-fetcher/maxmind/geoip"
+	"github.com/jonhadfield/ip-fetcher/maxmind/geoip"
 	"github.com/urfave/cli/v2"
 	"strings"
 )
@@ -10,7 +10,7 @@ func geoipCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "geoip",
 		HelpName:  "- fetch MaxMind GeoIP prefixes",
-		UsageText: "prefix-fetcher geoip --key=mykey --path=mypath [ --format=(csv | mmdb) ] [ --edition=(GeoLite2 | GeoIP) ] [ --extract ]",
+		UsageText: "ip-fetcher geoip --key=mykey --path=mypath [ --format=(csv | mmdb) ] [ --edition=(GeoLite2 | GeoIP) ] [ --extract ]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			cli.ShowSubcommandHelp(cCtx)
 

@@ -1,7 +1,7 @@
-# prefix-fetcher 
+# ip-fetcher
 
-[![GoDoc](https://godoc.org/github.com/jonhadfield/prefix-fetcher?status.svg)](https://pkg.go.dev/github.com/jonhadfield/prefix-fetcher)
-[![Go Report Card](https://goreportcard.com/badge/github.com/jonhadfield/prefix-fetcher)](https://goreportcard.com/report/github.com/jonhadfield/prefix-fetcher)
+[![GoDoc](https://godoc.org/github.com/jonhadfield/ip-fetcher?status.svg)](https://pkg.go.dev/github.com/jonhadfield/ip-fetcher)
+[![Go Report Card](https://goreportcard.com/badge/github.com/jonhadfield/ip-fetcher)](https://goreportcard.com/report/github.com/jonhadfield/ip-fetcher)
 
 - [about](#about)
 - [supported providers](#supported-providers)
@@ -14,7 +14,7 @@
  
 ## about
 
-prefix-fetcher is a go library and cli used to retrieve public ip prefixes from popular cloud and hosting providers.  
+ip-fetcher is a go library and cli used to retrieve public ip prefixes from popular cloud and hosting providers.
 Please raise an issue if you have any issues or suggestions for new providers.  
 
 ## supported providers
@@ -30,21 +30,21 @@ Please raise an issue if you have any issues or suggestions for new providers.
 
 ### install
 
-Download the latest release [here](https://github.com/jonhadfield/prefix-fetcher/releases) and then install:
+Download the latest release [here](https://github.com/jonhadfield/ip-fetcher/releases) and then install:
 
 ```bash
-install <prefix-fetcher binary> /usr/local/bin/prefix-fetcher
+install <ip-fetcher binary> /usr/local/bin/ip-fetcher
 ```
 _use: `sudo install` if on linux_
 
 ### run
 
 ```
-prefix-fetcher <provider> <options>
+ip-fetcher <provider> <options>
 ```  
 for example:  
-- output aws prefixes to the console: `prefix-fetcher aws --stdout`  
-- save gcp prefixes to a file: `prefix-fetcher gcp --file prefixes.json` 
+- output aws prefixes to the console: `ip-fetcher aws --stdout`
+- save gcp prefixes to a file: `ip-fetcher gcp --file prefixes.json`
 
 ## API
 
@@ -52,7 +52,7 @@ The following example uses the GCP (Google Cloud Platform) provider.
 
 ### installation
 ```
-go get github.com/jonhadfield/prefix-fetcher/gcp
+go get github.com/jonhadfield/ip-fetcher/gcp
 ```
 ### basic usage
 ```
@@ -60,7 +60,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonhadfield/prefix-fetcher/gcp"
+	"github.com/jonhadfield/ip-fetcher/gcp"
 )
 
 func main() {
