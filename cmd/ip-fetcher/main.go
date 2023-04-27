@@ -39,6 +39,7 @@ func main() {
 		abuseipdbCmd(),
 		awsCmd(),
 		azureCmd(),
+		CloudflareCmd(),
 		digitaloceanCmd(),
 		gcpCmd(),
 		geoipCmd(),

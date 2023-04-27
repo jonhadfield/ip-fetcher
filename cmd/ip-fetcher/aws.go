@@ -5,6 +5,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/aws"
 	"github.com/urfave/cli/v2"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -14,7 +15,7 @@ func awsCmd() *cli.Command {
 		HelpName:  "- fetch AWS prefixes",
 		UsageText: "ip-fetcher aws {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
-			cli.ShowSubcommandHelp(cCtx)
+			_ = cli.ShowSubcommandHelp(cCtx)
 
 			return err
 		},
@@ -43,14 +44,22 @@ func awsCmd() *cli.Command {
 			}
 
 			if path != "" {
-				if err = saveFile(saveFileInput{
+				err = saveFile(saveFileInput{
 					provider:        "aws",
 					data:            data,
 					path:            path,
 					defaultFileName: "ip-ranges.json",
-				}); err != nil {
+				})
+				if err != nil {
 					return err
 				}
+
+				var ap string
+				ap, err = filepath.Abs(filepath.Join(path, "ip-ranges.json"))
+				if err != nil {
+
+				}
+				fmt.Printf("data written to %s\n", ap)
 			}
 
 			if c.Bool("stdout") {

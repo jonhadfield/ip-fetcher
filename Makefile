@@ -31,7 +31,7 @@ BUILD_SHA := $(shell git rev-parse --short HEAD)
 BUILD_DATE := $(shell date -u '+%Y/%m/%d:%H:%M:%S')
 
 build:
-	CGO_ENABLED=0 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o ".local_dist/ip-fetcher_darwin_amd64" cmd/ip-fetcher/*.go
+	CGO_ENABLED=0 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o ".local_dist/ip-fetcher" cmd/ip-fetcher/*.go
 
 build-all:
 	GOOS=darwin  CGO_ENABLED=0 GOARCH=amd64 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o ".local_dist/ip-fetcher_darwin_amd64"  cmd/ip-fetcher/*.go
@@ -50,7 +50,7 @@ build-linux:
 	GOOS=linux CGO_ENABLED=0 GOARCH=amd64 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o ".local_dist/ip-fetcher_linux_amd64" cmd/ip-fetcher/.go
 
 mac-install: build
-	install .local_dist/ip-fetcher_darwin_amd64 /usr/local/bin/ip-fetcher
+	install .local_dist/ip-fetcher /usr/local/bin/ip-fetcher
 
 linux-install: build-linux
 	sudo install .local_dist/ip-fetcher_linux_amd64 /usr/local/bin/ip-fetcher
