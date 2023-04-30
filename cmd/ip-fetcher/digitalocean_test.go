@@ -54,7 +54,7 @@ func TestDigitaloceanCmdSavetoPath(t *testing.T) {
 	require.FileExists(t, filepath.Join(tDir, testFile))
 
 	// with directory only
-	os.Args = []string{"ip-fetcher", "digitalocean", "--path", filepath.Join(tDir)}
+	os.Args = []string{"ip-fetcher", "digitalocean", "--path", tDir}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, "google.csv"))
 }

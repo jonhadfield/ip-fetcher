@@ -43,7 +43,7 @@
       "scope": "us-west4"
     },
     {
-      "ipv4Prefix": "35.219.128.0/18",
+      "ipv4Prefix": "35.219.128.0/24",
       "service": "Google Cloud",
       "scope": "us-west4"
     },

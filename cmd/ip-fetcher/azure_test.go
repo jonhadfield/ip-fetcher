@@ -57,7 +57,7 @@ func TestAzureCmdSavetoPath(t *testing.T) {
 	require.FileExists(t, filepath.Join(tDir, testFile))
 
 	// with directory only
-	os.Args = []string{"ip-fetcher", "azure", "--path", filepath.Join(tDir)}
+	os.Args = []string{"ip-fetcher", "azure", "--path", tDir}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, "ServiceTags_Public.json"))
 }

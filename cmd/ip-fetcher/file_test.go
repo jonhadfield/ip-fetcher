@@ -25,7 +25,7 @@ func TestFileSave(t *testing.T) {
 	_, err = saveFile(saveFileInput{
 		provider:        "example-provider",
 		data:            []byte("some example data"),
-		path:            filepath.Join(tDir),
+		path:            tDir,
 		defaultFileName: "default.json",
 	})
 	require.NoError(t, err)

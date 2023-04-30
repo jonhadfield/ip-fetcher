@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/jonhadfield/ip-fetcher/providers/gcp"
 	"github.com/urfave/cli/v2"
+	"gopkg.in/h2non/gock.v1"
+	"net/url"
 	"os"
 	"strings"
 )
@@ -43,6 +45,18 @@ func gcpCmd() *cli.Command {
 			}
 
 			a := gcp.New()
+
+			if os.Getenv("IP_FETCHER_MOCK_GCP") == "true" {
+				defer gock.Off()
+				urlBase := gcp.DownloadURL
+				u, _ := url.Parse(urlBase)
+				gock.New(urlBase).
+					Get(u.Path).
+					Reply(200).
+					File("../../providers/gcp/testdata/cloud.json")
+				gock.InterceptClient(a.Client.HTTPClient)
+			}
+
 			data, _, _, err := a.FetchData()
 			if err != nil {
 				return err

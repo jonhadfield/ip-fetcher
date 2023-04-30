@@ -12,20 +12,20 @@ import (
 	"testing"
 )
 
-func AWSCmdNoStdOutNoPath() {
+func GCPCmdNoStdOutNoPath() {
 	app := getApp()
-	_ = app.Run([]string{"ip-fetcher", "aws"})
+	_ = app.Run([]string{"ip-fetcher", "gcp"})
 }
 
-func TestAWSCmdNoStdOutNoPath(t *testing.T) {
+func TestGCPCmdNoStdOutNoPath(t *testing.T) {
 	defer testCleanUp(os.Args)
 
 	if os.Getenv("TEST_EXIT") == "1" {
-		AWSCmdNoStdOutNoPath()
+		GCPCmdNoStdOutNoPath()
 		return
 	}
 
-	cmd := exec.Command(os.Args[0], "-test.run=TestAWSCmdNoStdOutNoPath")
+	cmd := exec.Command(os.Args[0], "-test.run=TestGCPCmdNoStdOutNoPath")
 	cmd.Env = append(os.Environ(), "TEST_EXIT=1")
 	err := cmd.Run()
 	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
@@ -34,22 +34,22 @@ func TestAWSCmdNoStdOutNoPath(t *testing.T) {
 	t.Fatalf("process ran with err %v, want exit status 1", err)
 }
 
-func AWSCmdEmptyPath() {
+func GCPCmdEmptyPath() {
 	defer testCleanUp(os.Args)
 
 	app := getApp()
-	_ = app.Run([]string{"ip-fetcher", "aws"})
+	_ = app.Run([]string{"ip-fetcher", "gcp"})
 }
 
-func TestAWSCmdEmptyPath(t *testing.T) {
+func TestGCPCmdEmptyPath(t *testing.T) {
 	defer testCleanUp(os.Args)
 
 	defer os.Unsetenv("TEST_EXIT")
 	if os.Getenv("TEST_EXIT") == "1" {
-		AWSCmdEmptyPath()
+		GCPCmdEmptyPath()
 		return
 	}
-	cmd := exec.Command(os.Args[0], "-test.run=TestAWSCmdEmptyPath")
+	cmd := exec.Command(os.Args[0], "-test.run=TestGCPCmdEmptyPath")
 	cmd.Env = append(os.Environ(), "TEST_EXIT=1")
 	err := cmd.Run()
 	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
@@ -58,33 +58,33 @@ func TestAWSCmdEmptyPath(t *testing.T) {
 	t.Fatalf("process ran with err %v, want exit status 1", err)
 }
 
-func TestAWSCmdSavetoPath(t *testing.T) {
+func TestGCPCmdSavetoPath(t *testing.T) {
 	defer testCleanUp(os.Args)
 
 	testFile := "test.json"
 
 	tDir := t.TempDir()
 
-	_ = os.Setenv("IP_FETCHER_MOCK_AWS", "true")
-	defer os.Unsetenv("IP_FETCHER_MOCK_AWS")
+	_ = os.Setenv("IP_FETCHER_MOCK_GCP", "true")
+	defer os.Unsetenv("IP_FETCHER_MOCK_GCP")
 
 	app := getApp()
 
 	// with filename only
-	os.Args = []string{"ip-fetcher", "aws", "--path", filepath.Join(tDir, testFile)}
+	os.Args = []string{"ip-fetcher", "gcp", "--path", filepath.Join(tDir, testFile)}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, testFile))
 
 	// with directory only
-	os.Args = []string{"ip-fetcher", "aws", "--path", tDir}
+	os.Args = []string{"ip-fetcher", "gcp", "--path", tDir}
 	require.NoError(t, app.Run(os.Args))
-	require.FileExists(t, filepath.Join(tDir, "ip-ranges.json"))
+	require.FileExists(t, filepath.Join(tDir, "cloud.json"))
 }
 
-func TestAWSCmdStdOut(t *testing.T) {
+func TestGCPCmdStdOut(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_AWS", "true")
-	defer os.Unsetenv("IP_FETCHER_MOCK_AWS")
+	_ = os.Setenv("IP_FETCHER_MOCK_GCP", "true")
+	defer os.Unsetenv("IP_FETCHER_MOCK_GCP")
 
 	// stdout
 	old := os.Stdout
@@ -101,19 +101,19 @@ func TestAWSCmdStdOut(t *testing.T) {
 	}()
 
 	app := getApp()
-	os.Args = []string{"ip-fetcher", "aws", "--stdout"}
+	os.Args = []string{"ip-fetcher", "gcp", "--stdout"}
 	require.NoError(t, app.Run(os.Args))
 
 	_ = w.Close()
 	os.Stdout = old
 	out := <-outC
-	require.Contains(t, out, "13.34.37.65/27")
+	require.Contains(t, out, "35.219.128.0/24")
 }
 
-func TestAWSCmdStdOutAndFile(t *testing.T) {
+func TestGCPCmdStdOutAndFile(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_AWS", "true")
-	defer os.Unsetenv("IP_FETCHER_MOCK_AWS")
+	_ = os.Setenv("IP_FETCHER_MOCK_GCP", "true")
+	defer os.Unsetenv("IP_FETCHER_MOCK_GCP")
 
 	tDir := t.TempDir()
 
@@ -132,12 +132,12 @@ func TestAWSCmdStdOutAndFile(t *testing.T) {
 	}()
 
 	app := getApp()
-	os.Args = []string{"ip-fetcher", "aws", "--stdout", "--path", tDir}
+	os.Args = []string{"ip-fetcher", "gcp", "--stdout", "--path", tDir}
 	require.NoError(t, app.Run(os.Args))
 
 	_ = w.Close()
 	os.Stdout = old
 	out := <-outC
-	require.Contains(t, out, "13.34.37.65/27")
-	require.FileExists(t, filepath.Join(tDir, "ip-ranges.json"))
+	require.Contains(t, out, "35.219.128.0/24")
+	require.FileExists(t, filepath.Join(tDir, "cloud.json"))
 }
