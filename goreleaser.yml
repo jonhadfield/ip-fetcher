@@ -12,6 +12,7 @@ before:
 builds:
   -
     id: macos-ip-fetcher
+    main: ./cmd/ip-fetcher/
     binary: ip-fetcher
     goos:
       - darwin
@@ -66,6 +67,7 @@ builds:
           '
   -
     id: ip-fetcher
+    main: ./cmd/ip-fetcher/
     binary: ip-fetcher
     env:
       - CGO_ENABLED=0
