@@ -44,7 +44,7 @@ The following example uses the GCP (Google Cloud Platform) provider.
 
 ### installation
 ```
-go get github.com/jonhadfield/ip-fetcher/gcp
+go get github.com/jonhadfield/ip-fetcher/providers/gcp
 ```
 ### basic usage
 ```
