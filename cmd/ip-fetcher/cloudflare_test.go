@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"github.com/jonhadfield/ip-fetcher/cloudflare"
+	"github.com/jonhadfield/ip-fetcher/providers/cloudflare"
 	"github.com/stretchr/testify/require"
 	"io"
 	"os"

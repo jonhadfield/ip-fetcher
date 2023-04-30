@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/digitalocean"
+	"github.com/jonhadfield/ip-fetcher/providers/digitalocean"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/h2non/gock.v1"
 	"net/url"
@@ -47,7 +47,7 @@ func digitaloceanCmd() *cli.Command {
 				gock.New(urlBase).
 					Get(u.Path).
 					Reply(200).
-					File("../../digitalocean/testdata/google.csv")
+					File("../../providers/digitalocean/testdata/google.csv")
 				gock.InterceptClient(a.Client.HTTPClient)
 			}
 

@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"github.com/jonhadfield/ip-fetcher/digitalocean"
+	"github.com/jonhadfield/ip-fetcher/providers/digitalocean"
 	"github.com/stretchr/testify/require"
 	"io"
 	"os"

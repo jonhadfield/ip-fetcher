@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/cloudflare"
+	"github.com/jonhadfield/ip-fetcher/providers/cloudflare"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/h2non/gock.v1"
 	"net/url"
@@ -76,13 +76,13 @@ func CloudflareCmd() *cli.Command {
 					Get(u4.Path).
 					Reply(200).
 					AddHeader("Last-Modified", exTimeStamp).
-					File("../../cloudflare/testdata/ips-v4")
+					File("../../providers/cloudflare/testdata/ips-v4")
 				url6Base := fmt.Sprintf("%s://%s", u6.Scheme, u6.Host)
 				gock.New(url6Base).
 					Get(u6.Path).
 					Reply(200).
 					AddHeader("Last-Modified", exTimeStamp).
-					File("../../cloudflare/testdata/ips-v6")
+					File("../../providers/cloudflare/testdata/ips-v6")
 
 				gock.InterceptClient(cf.Client.HTTPClient)
 			}

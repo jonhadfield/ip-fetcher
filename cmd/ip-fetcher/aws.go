@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/aws"
+	"github.com/jonhadfield/ip-fetcher/providers/aws"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/h2non/gock.v1"
 	"net/url"
@@ -54,7 +54,7 @@ func awsCmd() *cli.Command {
 				gock.New(urlBase).
 					Get(u.Path).
 					Reply(200).
-					File("../../aws/testdata/ip-ranges.json")
+					File("../../providers/aws/testdata/ip-ranges.json")
 				gock.InterceptClient(a.Client.HTTPClient)
 			}
 

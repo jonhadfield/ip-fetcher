@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/gcp"
+	"github.com/jonhadfield/ip-fetcher/providers/gcp"
 	"github.com/urfave/cli/v2"
 	"os"
 	"strings"

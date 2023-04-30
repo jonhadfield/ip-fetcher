@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/jonhadfield/ip-fetcher/maxmind/geoip"
+	"github.com/jonhadfield/ip-fetcher/providers/maxmind/geoip"
 	"github.com/urfave/cli/v2"
 	"strings"
 )

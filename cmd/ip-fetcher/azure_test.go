@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"github.com/jonhadfield/ip-fetcher/azure"
+	"github.com/jonhadfield/ip-fetcher/providers/azure"
 	"github.com/stretchr/testify/require"
 	"io"
 	"os"

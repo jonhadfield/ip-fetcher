@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/azure"
+	"github.com/jonhadfield/ip-fetcher/providers/azure"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/h2non/gock.v1"
 	"net/url"
@@ -13,9 +13,8 @@ import (
 func azureCmd() *cli.Command {
 	const (
 		testAzureDownloadURL     = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20000000.json"
-		testAzureInitialURL      = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=00000"
-		testAzureInitialFilePath = "../../azure/testdata/initial.html"
-		testAzureDataFilePath    = "../../azure/testdata/ServiceTags_Public_20221212.json"
+		testAzureInitialFilePath = "../../providers/azure/testdata/initial.html"
+		testAzureDataFilePath    = "../../providers/azure/testdata/ServiceTags_Public_20221212.json"
 		providerName             = "azure"
 		fileName                 = "ServiceTags_Public.json"
 	)
