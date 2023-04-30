@@ -43,6 +43,9 @@ build-all:
 	GOOS=freebsd CGO_ENABLED=0 GOARCH=amd64 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o ".local_dist/ip-fetcher_freebsd_amd64" cmd/ip-fetcher/*.go
 	GOOS=windows CGO_ENABLED=0 GOARCH=amd64 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o ".local_dist/ip-fetcher_windows_amd64.exe" cmd/ip-fetcher/*.go
 
+clean:
+	rm -rf .local_dist
+
 install:
 	go install ./cmd/...
 
