@@ -15,9 +15,8 @@ import (
 )
 
 const (
-	defaultIPv4URL           = "https://www.cloudflare.com/ips-v4"
-	defaultIPv6URL           = "https://www.cloudflare.com/ips-v6"
-	downloadedFileTimeFormat = "2006-01-02T15:04:05.999999"
+	DefaultIPv4URL = "https://www.cloudflare.com/ips-v4"
+	DefaultIPv6URL = "https://www.cloudflare.com/ips-v6"
 )
 
 func New() Cloudflare {
@@ -34,8 +33,8 @@ func New() Cloudflare {
 	c.RetryMax = 1
 
 	return Cloudflare{
-		IPv4DownloadURL: defaultIPv4URL,
-		IPv6DownloadURL: defaultIPv6URL,
+		IPv4DownloadURL: DefaultIPv4URL,
+		IPv6DownloadURL: DefaultIPv6URL,
 		Client:          c,
 	}
 }
@@ -48,7 +47,7 @@ type Cloudflare struct {
 
 func (cf *Cloudflare) FetchIPv4Data() (data []byte, headers http.Header, status int, err error) {
 	if cf.IPv4DownloadURL == "" {
-		cf.IPv4DownloadURL = defaultIPv4URL
+		cf.IPv4DownloadURL = DefaultIPv4URL
 	}
 
 	return web.Request(cf.Client, cf.IPv4DownloadURL, http.MethodGet, nil, nil, 10*time.Second)
@@ -56,7 +55,7 @@ func (cf *Cloudflare) FetchIPv4Data() (data []byte, headers http.Header, status 
 
 func (cf *Cloudflare) FetchIPv6Data() (data []byte, headers http.Header, status int, err error) {
 	if cf.IPv6DownloadURL == "" {
-		cf.IPv6DownloadURL = defaultIPv6URL
+		cf.IPv6DownloadURL = DefaultIPv6URL
 	}
 
 	return web.Request(cf.Client, cf.IPv6DownloadURL, http.MethodGet, nil, nil, 10*time.Second)

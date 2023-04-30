@@ -12,9 +12,9 @@ func abuseipdbCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "abuseipdb",
 		HelpName:  "- fetch AbuseIPDB prefixes",
-		UsageText: "ip-fetcher abuseipdb {--stdout | --path FILE}",
+		UsageText: "ip-fetcher abuseipdb --key {--stdout | --path FILE} [--confidence] [--limit]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
-			cli.ShowSubcommandHelp(cCtx)
+			_ = cli.ShowSubcommandHelp(cCtx)
 
 			return err
 		},
@@ -58,7 +58,8 @@ func abuseipdbCmd() *cli.Command {
 			}
 
 			if path != "" {
-				if err = saveFile(saveFileInput{
+				var out string
+				if out, err = saveFile(saveFileInput{
 					provider:        "abuseipdb",
 					data:            data,
 					path:            path,
@@ -66,6 +67,8 @@ func abuseipdbCmd() *cli.Command {
 				}); err != nil {
 					return err
 				}
+
+				_, _ = os.Stderr.WriteString(fmt.Sprintf("data written to %s\n", out))
 			}
 
 			if c.Bool("stdout") {

@@ -4,13 +4,23 @@ import (
 	"fmt"
 	"github.com/jonhadfield/ip-fetcher/azure"
 	"github.com/urfave/cli/v2"
+	"gopkg.in/h2non/gock.v1"
+	"net/url"
 	"os"
 	"strings"
 )
 
 func azureCmd() *cli.Command {
+	const (
+		testAzureDownloadURL     = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20000000.json"
+		testAzureInitialURL      = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=00000"
+		testAzureInitialFilePath = "../../azure/testdata/initial.html"
+		testAzureDataFilePath    = "../../azure/testdata/ServiceTags_Public_20221212.json"
+		providerName             = "azure"
+		fileName                 = "ServiceTags_Public.json"
+	)
 	return &cli.Command{
-		Name:      "azure",
+		Name:      providerName,
 		HelpName:  "- fetch Azure prefixes",
 		UsageText: "ip-fetcher azure {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
@@ -32,25 +42,49 @@ func azureCmd() *cli.Command {
 			path := strings.TrimSpace(c.String("path"))
 			if path == "" && !c.Bool("stdout") {
 				_ = cli.ShowSubcommandHelp(c)
+
 				fmt.Println("\nerror: must specify at least one of stdout and path")
+
 				os.Exit(1)
 			}
 
 			a := azure.New()
+
+			if os.Getenv("IP_FETCHER_MOCK_AZURE") == "true" {
+				defer gock.Off()
+				u, _ := url.Parse(azure.InitialURL)
+				gock.New(azure.InitialURL).
+					Get(u.Path).
+					Reply(200).
+					File(testAzureInitialFilePath)
+
+				uDownload, _ := url.Parse(testAzureDownloadURL)
+				gock.New(testAzureDownloadURL).
+					Get(uDownload.Path).
+					Reply(200).
+					File(testAzureDataFilePath)
+
+				gock.InterceptClient(a.Client.HTTPClient)
+			}
+
 			data, _, _, err := a.FetchData()
 			if err != nil {
 				return err
 			}
 
 			if path != "" {
-				if err = saveFile(saveFileInput{
-					provider:        "azure",
+				var out string
+
+				if out, err = saveFile(saveFileInput{
+					provider:        providerName,
 					data:            data,
 					path:            path,
-					defaultFileName: "ServiceTags_Public.json",
+					defaultFileName: fileName,
 				}); err != nil {
 					return err
 				}
+
+				_, _ = os.Stderr.WriteString(fmt.Sprintf("data written to %s\n", out))
 			}
 
 			if c.Bool("stdout") {

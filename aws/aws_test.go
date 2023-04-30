@@ -10,7 +10,7 @@ import (
 )
 
 func TestGetIPListETag(t *testing.T) {
-	u, err := url.Parse(downloadURL)
+	u, err := url.Parse(DownloadURL)
 	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -24,7 +24,7 @@ func TestGetIPListETag(t *testing.T) {
 		SetHeader("Etag", "0338bd4dc4ba7a050b9124d333376fc7")
 
 	ac := New()
-	ac.DownloadURL = downloadURL
+	ac.DownloadURL = DownloadURL
 	gock.InterceptClient(ac.Client.HTTPClient)
 
 	etag, err := ac.FetchETag()
@@ -34,7 +34,7 @@ func TestGetIPListETag(t *testing.T) {
 }
 
 func TestDownloadIPList(t *testing.T) {
-	u, err := url.Parse(downloadURL)
+	u, err := url.Parse(DownloadURL)
 	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -47,7 +47,7 @@ func TestDownloadIPList(t *testing.T) {
 		File("testdata/ip-ranges.json")
 
 	ac := New()
-	ac.DownloadURL = downloadURL
+	ac.DownloadURL = DownloadURL
 	gock.InterceptClient(ac.Client.HTTPClient)
 
 	doc, etag, err := ac.Fetch()
@@ -58,7 +58,7 @@ func TestDownloadIPList(t *testing.T) {
 }
 
 func TestDownloadIPListWithoutQuotedEtag(t *testing.T) {
-	u, err := url.Parse(downloadURL)
+	u, err := url.Parse(DownloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
@@ -66,14 +66,14 @@ func TestDownloadIPListWithoutQuotedEtag(t *testing.T) {
 		Get(u.Path).
 		MatchHeaders(map[string]string{"Accept": "application/json"}).
 		Reply(200).
-		SetHeader("Etag", "cd5e4f079775994d8e49f63ae9a84065").
+		SetHeader("Etag", "dd5e4f079775994d8e49f63ae9a84065").
 		File("testdata/ip-ranges.json")
 
 	ac := New()
-	ac.DownloadURL = downloadURL
+	ac.DownloadURL = DownloadURL
 	gock.InterceptClient(ac.Client.HTTPClient)
 
 	_, etag, err := ac.Fetch()
 	require.NoError(t, err)
-	require.Equal(t, "cd5e4f079775994d8e49f63ae9a84065", etag)
+	require.Equal(t, "dd5e4f079775994d8e49f63ae9a84065", etag)
 }

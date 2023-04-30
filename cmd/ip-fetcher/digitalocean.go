@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/jonhadfield/ip-fetcher/digitalocean"
 	"github.com/urfave/cli/v2"
+	"gopkg.in/h2non/gock.v1"
+	"net/url"
 	"os"
 	"strings"
 )
@@ -14,9 +16,19 @@ func digitaloceanCmd() *cli.Command {
 		HelpName:  "- fetch DigitalOcean prefixes",
 		UsageText: "ip-fetcher digitalocean {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
-			cli.ShowSubcommandHelp(cCtx)
+			_ = cli.ShowSubcommandHelp(cCtx)
 
 			return err
+		},
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:  "path",
+				Usage: "where to save the file", Aliases: []string{"p"}, TakesFile: true,
+			},
+			&cli.BoolFlag{
+				Name:  "stdout",
+				Usage: "write to stdout", Aliases: []string{"s"},
+			},
 		},
 		Action: func(c *cli.Context) error {
 			path := strings.TrimSpace(c.String("path"))
@@ -27,20 +39,36 @@ func digitaloceanCmd() *cli.Command {
 			}
 
 			a := digitalocean.New()
+
+			if os.Getenv("IP_FETCHER_MOCK_DIGITALOCEAN") == "true" {
+				defer gock.Off()
+				urlBase := digitalocean.DigitaloceanDownloadURL
+				u, _ := url.Parse(urlBase)
+				gock.New(urlBase).
+					Get(u.Path).
+					Reply(200).
+					File("../../digitalocean/testdata/google.csv")
+				gock.InterceptClient(a.Client.HTTPClient)
+			}
+
 			data, _, _, err := a.FetchData()
 			if err != nil {
 				return err
 			}
 
 			if path != "" {
-				if err = saveFile(saveFileInput{
+				var out string
+
+				if out, err = saveFile(saveFileInput{
 					provider:        "digitalocean",
 					data:            data,
 					path:            path,
-					defaultFileName: "ServiceTags_Public.json",
+					defaultFileName: "google.csv",
 				}); err != nil {
 					return err
 				}
+
+				_, _ = os.Stderr.WriteString(fmt.Sprintf("data written to %s\n", out))
 			}
 
 			if c.Bool("stdout") {

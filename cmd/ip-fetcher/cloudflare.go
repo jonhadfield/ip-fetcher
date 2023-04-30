@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/jonhadfield/ip-fetcher/cloudflare"
 	"github.com/urfave/cli/v2"
+	"gopkg.in/h2non/gock.v1"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -19,7 +21,7 @@ func CloudflareCmd() *cli.Command {
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch Cloudflare ip ranges",
-		UsageText: "ip-fetcher cloudflare [ -4 ipv4] [ -6 ipv6] {--stdout | --path FILE}",
+		UsageText: "ip-fetcher cloudflare [-4 ipv4] [-6 ipv6] {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			// nolint:errcheck
 			_ = cli.ShowSubcommandHelp(cCtx)
@@ -62,6 +64,29 @@ func CloudflareCmd() *cli.Command {
 
 			cf := cloudflare.New()
 
+			if os.Getenv("IP_FETCHER_MOCK_CLOUDFLARE") == "true" {
+				u4, _ := url.Parse(cloudflare.DefaultIPv4URL)
+				u6, _ := url.Parse(cloudflare.DefaultIPv6URL)
+
+				defer gock.Off()
+
+				url4Base := fmt.Sprintf("%s://%s", u4.Scheme, u4.Host)
+				exTimeStamp := "Tue, 13 Dec 2022 06:50:50 GMT"
+				gock.New(url4Base).
+					Get(u4.Path).
+					Reply(200).
+					AddHeader("Last-Modified", exTimeStamp).
+					File("../../cloudflare/testdata/ips-v4")
+				url6Base := fmt.Sprintf("%s://%s", u6.Scheme, u6.Host)
+				gock.New(url6Base).
+					Get(u6.Path).
+					Reply(200).
+					AddHeader("Last-Modified", exTimeStamp).
+					File("../../cloudflare/testdata/ips-v6")
+
+				gock.InterceptClient(cf.Client.HTTPClient)
+			}
+
 			if four || (!four && !six) {
 				dataFour, _, _, err := cf.FetchIPv4Data()
 				if err != nil {
@@ -72,7 +97,9 @@ func CloudflareCmd() *cli.Command {
 				}
 				if path != "" {
 					p := filepath.Join(path, ipsv4Filename)
-					if err = saveFile(saveFileInput{
+
+					var out string
+					if out, err = saveFile(saveFileInput{
 						provider: providerName,
 						data:     dataFour,
 						path:     p,
@@ -80,12 +107,7 @@ func CloudflareCmd() *cli.Command {
 						return err
 					}
 
-					var ap string
-					ap, err = filepath.Abs(p)
-					if err != nil {
-						return err
-					}
-					msg = fmt.Sprintf("ipv4 data written to %s\n", ap)
+					msg = fmt.Sprintf("ipv4 data written to %s\n", out)
 				}
 			}
 
@@ -101,7 +123,9 @@ func CloudflareCmd() *cli.Command {
 
 				if path != "" {
 					p := filepath.Join(path, ipsv6Filename)
-					if err = saveFile(saveFileInput{
+
+					var out string
+					if out, err = saveFile(saveFileInput{
 						provider: providerName,
 						data:     dataSix,
 						path:     p,
@@ -109,18 +133,16 @@ func CloudflareCmd() *cli.Command {
 						return err
 					}
 
-					var ap string
-					ap, err = filepath.Abs(p)
-					if err != nil {
-						return err
-					}
-
-					msg += fmt.Sprintf("ipv6 data written to %s\n", ap)
+					msg += fmt.Sprintf("ipv6 data written to %s\n", out)
 				}
 			}
 
 			if msg != "" {
-				fmt.Printf("\n%s", msg)
+				if stdOut {
+					fmt.Println()
+				}
+
+				_, _ = os.Stderr.WriteString(msg)
 			}
 
 			return nil

@@ -14,7 +14,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/internal/web"
 )
 
-const downloadURL = "https://ip-ranges.amazonaws.com/ip-ranges.json"
+const DownloadURL = "https://ip-ranges.amazonaws.com/ip-ranges.json"
 
 type AWS struct {
 	Client      *retryablehttp.Client
@@ -34,7 +34,7 @@ func New() AWS {
 	c.RetryMax = 1
 
 	return AWS{
-		InitialURL: downloadURL,
+		InitialURL: DownloadURL,
 		Client:     c,
 	}
 }
@@ -42,7 +42,7 @@ func New() AWS {
 func (a *AWS) FetchETag() (etag string, err error) {
 	// get download url if not specified
 	if a.DownloadURL == "" {
-		a.DownloadURL = downloadURL
+		a.DownloadURL = DownloadURL
 		if err != nil {
 			return
 		}
@@ -81,7 +81,7 @@ func (a *AWS) FetchETag() (etag string, err error) {
 func (a *AWS) FetchData() (data []byte, headers http.Header, status int, err error) {
 	// get download url if not specified
 	if a.DownloadURL == "" {
-		a.DownloadURL = downloadURL
+		a.DownloadURL = DownloadURL
 		if err != nil {
 			return
 		}

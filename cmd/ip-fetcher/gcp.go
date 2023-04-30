@@ -9,12 +9,18 @@ import (
 )
 
 func gcpCmd() *cli.Command {
+
+	const (
+		providerName = "gcp"
+		fileName     = "cloud.json"
+	)
+
 	return &cli.Command{
-		Name:      "gcp",
+		Name:      providerName,
 		HelpName:  "- fetch GCP prefixes",
 		UsageText: "ip-fetcher azure {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
-			cli.ShowSubcommandHelp(cCtx)
+			_ = cli.ShowSubcommandHelp(cCtx)
 
 			return err
 		},
@@ -43,14 +49,17 @@ func gcpCmd() *cli.Command {
 			}
 
 			if path != "" {
-				if err = saveFile(saveFileInput{
-					provider:        "gcp",
+				var out string
+				if out, err = saveFile(saveFileInput{
+					provider:        providerName,
 					data:            data,
 					path:            path,
-					defaultFileName: "cloud.json",
+					defaultFileName: fileName,
 				}); err != nil {
 					return err
 				}
+
+				_, _ = os.Stderr.WriteString(fmt.Sprintf("data written to %s\n", out))
 			}
 
 			if c.Bool("stdout") {

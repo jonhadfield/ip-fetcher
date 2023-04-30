@@ -4,14 +4,20 @@ import (
 	"fmt"
 	"github.com/jonhadfield/ip-fetcher/aws"
 	"github.com/urfave/cli/v2"
+	"gopkg.in/h2non/gock.v1"
+	"net/url"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
 func awsCmd() *cli.Command {
+	const (
+		providerName = "aws"
+		fileName     = "ip-ranges.json"
+	)
+
 	return &cli.Command{
-		Name:      "aws",
+		Name:      providerName,
 		HelpName:  "- fetch AWS prefixes",
 		UsageText: "ip-fetcher aws {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
@@ -33,33 +39,43 @@ func awsCmd() *cli.Command {
 			path := strings.TrimSpace(c.String("path"))
 			if path == "" && !c.Bool("stdout") {
 				_ = cli.ShowSubcommandHelp(c)
+
 				fmt.Println("\nerror: must specify at least one of stdout and path")
+
 				os.Exit(1)
 			}
 
 			a := aws.New()
+
+			if os.Getenv("IP_FETCHER_MOCK_AWS") == "true" {
+				defer gock.Off()
+				urlBase := aws.DownloadURL
+				u, _ := url.Parse(urlBase)
+				gock.New(urlBase).
+					Get(u.Path).
+					Reply(200).
+					File("../../aws/testdata/ip-ranges.json")
+				gock.InterceptClient(a.Client.HTTPClient)
+			}
+
 			data, _, _, err := a.FetchData()
 			if err != nil {
 				return err
 			}
 
 			if path != "" {
-				err = saveFile(saveFileInput{
-					provider:        "aws",
+				var out string
+
+				if out, err = saveFile(saveFileInput{
+					provider:        providerName,
 					data:            data,
 					path:            path,
-					defaultFileName: "ip-ranges.json",
-				})
-				if err != nil {
+					defaultFileName: fileName,
+				}); err != nil {
 					return err
 				}
 
-				var ap string
-				ap, err = filepath.Abs(filepath.Join(path, "ip-ranges.json"))
-				if err != nil {
-
-				}
-				fmt.Printf("data written to %s\n", ap)
+				_, _ = os.Stderr.WriteString(fmt.Sprintf("data written to %s\n", out))
 			}
 
 			if c.Bool("stdout") {

@@ -117,11 +117,15 @@ func (a *AbuseIPDB) FetchData() (data []byte, headers http.Header, status int, e
 	}
 
 	if a.ConfidenceMinimum != 0 {
-		reqUrl.Query().Add("confidenceMinimum", strconv.Itoa(a.ConfidenceMinimum))
+		q := reqUrl.Query()
+		q.Add("confidenceMinimum", strconv.Itoa(a.ConfidenceMinimum))
+		reqUrl.RawQuery = q.Encode()
 	}
 
 	if a.Limit != 0 {
-		reqUrl.Query().Add("limit", strconv.FormatInt(a.Limit, 10))
+		q := reqUrl.Query()
+		q.Add("limit", strconv.FormatInt(a.Limit, 10))
+		reqUrl.RawQuery = q.Encode()
 	}
 
 	blackList, headers, statusCode, err := web.Request(a.Client, reqUrl.String(), http.MethodGet, inHeaders, []string{a.APIKey}, 10*time.Second)

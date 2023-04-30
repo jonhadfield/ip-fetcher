@@ -1,7 +1,6 @@
 package pflog
 
 import (
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"os"
 	"runtime"
@@ -12,7 +11,7 @@ const DefaultLogLevel = logrus.InfoLevel
 
 func GetFunctionName() string {
 	pc, _, _, _ := runtime.Caller(1)
-	complete := fmt.Sprintf("%s", runtime.FuncForPC(pc).Name())
+	complete := runtime.FuncForPC(pc).Name()
 	split := strings.Split(complete, "/")
 
 	return split[len(split)-1]

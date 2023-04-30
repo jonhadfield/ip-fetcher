@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	initialURL          = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519"
+	InitialURL          = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519"
 	errFailedToDownload = "failed to retrieve azure prefixes initial page"
 )
 
@@ -37,14 +37,14 @@ func New() Azure {
 	c.RetryMax = 1
 
 	return Azure{
-		InitialURL: initialURL,
+		InitialURL: InitialURL,
 		Client:     c,
 	}
 }
 
 func (a *Azure) GetDownloadURL() (url string, err error) {
 	if a.InitialURL == "" {
-		a.InitialURL = initialURL
+		a.InitialURL = InitialURL
 	}
 
 	body, _, status, err := web.Request(a.Client, a.InitialURL, http.MethodGet, nil, nil, 10*time.Second)

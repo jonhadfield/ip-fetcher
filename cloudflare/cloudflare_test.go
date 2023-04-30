@@ -11,7 +11,7 @@ import (
 )
 
 func TestFetch4(t *testing.T) {
-	u, err := url.Parse(defaultIPv4URL)
+	u, err := url.Parse(DefaultIPv4URL)
 	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -31,7 +31,7 @@ func TestFetch4(t *testing.T) {
 }
 
 func TestFetch6(t *testing.T) {
-	u, err := url.Parse(defaultIPv6URL)
+	u, err := url.Parse(DefaultIPv6URL)
 	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -51,7 +51,7 @@ func TestFetch6(t *testing.T) {
 }
 
 func TestFetch(t *testing.T) {
-	u6, err := url.Parse(defaultIPv6URL)
+	u6, err := url.Parse(DefaultIPv6URL)
 	require.NoError(t, err)
 
 	urlBase6 := fmt.Sprintf("%s://%s", u6.Scheme, u6.Host)
@@ -61,7 +61,7 @@ func TestFetch(t *testing.T) {
 		Reply(200).
 		File("testdata/ips-v6")
 
-	u4, err := url.Parse(defaultIPv4URL)
+	u4, err := url.Parse(DefaultIPv4URL)
 	require.NoError(t, err)
 
 	urlBase4 := fmt.Sprintf("%s://%s", u4.Scheme, u4.Host)
@@ -77,5 +77,5 @@ func TestFetch(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, ips, 22)
 	require.Contains(t, ips, netip.MustParsePrefix("2606:4700::/32"))
-	require.Contains(t, ips, netip.MustParsePrefix("131.0.72.0/22"))
+	require.Contains(t, ips, netip.MustParsePrefix("131.0.72.1/22"))
 }

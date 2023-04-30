@@ -19,7 +19,16 @@ func main() {
 		versionOutput = version
 	}
 
+	app := getApp()
+
+	if err := app.Run(os.Args); err != nil {
+		fmt.Printf("\nerror: %s\n", err.Error())
+	}
+}
+
+func getApp() *cli.App {
 	app := cli.NewApp()
+
 	app.EnableBashCompletion = true
 
 	app.Name = "ip-fetcher"
@@ -45,9 +54,5 @@ func main() {
 		geoipCmd(),
 	}
 
-	// app.Run(os.Args)
-
-	if err := app.Run(os.Args); err != nil {
-		fmt.Printf("\nerror: %s\n", err.Error())
-	}
+	return app
 }

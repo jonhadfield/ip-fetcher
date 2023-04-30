@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	downloadURL         = "https://www.digitalocean.com/geo/google.csv"
-	errFailedToDownload = "failed to download digital ocean prefixes document "
+	DigitaloceanDownloadURL = "https://www.digitalocean.com/geo/google.csv"
+	errFailedToDownload     = "failed to download digital ocean prefixes document "
 )
 
 type DigitalOcean struct {
@@ -37,7 +37,7 @@ func New() DigitalOcean {
 	c.RetryMax = 1
 
 	return DigitalOcean{
-		DownloadURL: downloadURL,
+		DownloadURL: DigitaloceanDownloadURL,
 		Client:      c,
 	}
 }
@@ -45,7 +45,7 @@ func New() DigitalOcean {
 func (a *DigitalOcean) FetchData() (data []byte, headers http.Header, status int, err error) {
 	// get download url if not specified
 	if a.DownloadURL == "" {
-		a.DownloadURL = downloadURL
+		a.DownloadURL = DigitaloceanDownloadURL
 	}
 
 	data, headers, status, err = web.Request(a.Client, a.DownloadURL, http.MethodGet, nil, nil, 5*time.Second)

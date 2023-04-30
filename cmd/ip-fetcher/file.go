@@ -5,11 +5,11 @@ import (
 	"path/filepath"
 )
 
-func saveFile(i saveFileInput) error {
+func saveFile(i saveFileInput) (path string, err error) {
 	pf, err := os.Stat(i.path)
 	if err != nil {
 		if !os.IsNotExist(err) {
-			return err
+			return path, err
 		}
 	}
 
@@ -19,16 +19,16 @@ func saveFile(i saveFileInput) error {
 
 	f, err := os.Create(i.path)
 	if err != nil {
-		return err
+		return path, err
 	}
 
 	defer f.Close()
 
 	if _, err = f.Write(i.data); err != nil {
-		return err
+		return path, err
 	}
 
-	return nil
+	return filepath.Abs(i.path)
 }
 
 type saveFileInput struct {
