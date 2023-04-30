@@ -18,13 +18,6 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://cloud.google.com/" target="_blank">GCP</a> (Google Cloud Platform)
 - <a href="https://www.maxmind.com" target="_blank">MaxMind GeoIP</a>
 
-- [cli](#cli)
-  - [install](#install)
-  - [run](#run)
-- [api](#api)
-  - [installation](#installation)
-  - [basic usage](#basic-usage)
-
 ## CLI
 
 ### install
