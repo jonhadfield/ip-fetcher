@@ -52,19 +52,19 @@ go get github.com/jonhadfield/ip-fetcher/providers/gcp
 package main
 
 import (
-	"fmt"
-	"github.com/jonhadfield/ip-fetcher/gcp"
+    "fmt"
+    "github.com/jonhadfield/ip-fetcher/providers/gcp"
 )
 
 func main() {
-	g := gcp.New() // initialise client
-	doc, err := g.Fetch() // fetch prefixes document
-	if err != nil {
-		panic(err)
-	}
+    g := gcp.New()         // initialise client
+    doc, err := g.Fetch()  // fetch prefixes document
+    if err != nil {
+        panic(err)
+    }
 
-	for _, p := range doc.IPv6Prefixes {
-		fmt.Printf("%s %s %s\n", p.IPv6Prefix.String(), p.Service, p.Scope)
-	}
+    for _, p := range doc.IPv6Prefixes {
+        fmt.Printf("%s %s %s\n", p.IPv6Prefix.String(), p.Service, p.Scope)
+    }
 }
 ```
