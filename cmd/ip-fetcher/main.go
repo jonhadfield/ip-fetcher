@@ -40,9 +40,8 @@ func getApp() *cli.App {
 			Email: "jon@lessknown.co.uk",
 		},
 	}
-	app.HelpName = ""
-	app.Description = "ip-fetcher is a tool to download and display network prefixes from various service providers."
-	app.Usage = "ip-fetcher [global options] provider [command options]"
+	app.Usage = "Download and display ips for various cloud providers and services"
+	// app.Usage = "ip-fetcher [global options] provider [command options]"
 	app.Flags = []cli.Flag{}
 	app.Commands = []*cli.Command{
 		abuseipdbCmd(),
