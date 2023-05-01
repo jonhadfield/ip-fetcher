@@ -12,10 +12,11 @@ Please raise an issue if you have any issues or suggestions for new providers.
 
 - <a href="https://www.abuseipdb.com/" target="_blank">AbuseIPDB</a>
 - <a href="https://aws.amazon.com/" target="_blank">AWS</a> (Amazon Web Services)
-- <a href="https://azure.microsoft.com" target="_blank">Azure</a>
+- <a href="https://azure.microsoft.com" target="_blank">Microsoft Azure</a>
 - <a href="https://www.cloudflare.com" target="_blank">Cloudflare</a>
 - <a href="https://www.digitalocean.com/" target="_blank">DigitalOcean</a>
 - <a href="https://cloud.google.com/" target="_blank">GCP</a> (Google Cloud Platform)
+- <a href="https://www.google.com/" target="_blank">Google</a>
 - <a href="https://www.maxmind.com" target="_blank">MaxMind GeoIP</a>
 
 ## CLI
