@@ -48,10 +48,11 @@ func getApp() *cli.App {
 		abuseipdbCmd(),
 		awsCmd(),
 		azureCmd(),
-		CloudflareCmd(),
+		cloudflareCmd(),
 		digitaloceanCmd(),
 		gcpCmd(),
 		geoipCmd(),
+		googleCmd(),
 	}
 
 	return app

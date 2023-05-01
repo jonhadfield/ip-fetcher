@@ -17,7 +17,7 @@ const (
 	ipsv6Filename = "ips-v6"
 )
 
-func CloudflareCmd() *cli.Command {
+func cloudflareCmd() *cli.Command {
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch Cloudflare ip ranges",
