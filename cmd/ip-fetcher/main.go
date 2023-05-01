@@ -30,7 +30,6 @@ func getApp() *cli.App {
 	app := cli.NewApp()
 
 	app.EnableBashCompletion = true
-
 	app.Name = "ip-fetcher"
 	app.Version = versionOutput
 	app.Compiled = time.Now()
@@ -41,8 +40,6 @@ func getApp() *cli.App {
 		},
 	}
 	app.Usage = "Download and display ips for various cloud providers and services"
-	// app.Usage = "ip-fetcher [global options] provider [command options]"
-	app.Flags = []cli.Flag{}
 	app.Commands = []*cli.Command{
 		abuseipdbCmd(),
 		awsCmd(),
