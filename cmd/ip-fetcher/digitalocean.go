@@ -14,6 +14,7 @@ func digitaloceanCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "digitalocean",
 		HelpName:  "- fetch DigitalOcean prefixes",
+		Usage:     "DigitalOcean",
 		UsageText: "ip-fetcher digitalocean {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)

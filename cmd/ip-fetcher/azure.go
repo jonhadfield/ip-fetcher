@@ -21,6 +21,7 @@ func azureCmd() *cli.Command {
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch Azure prefixes",
+		Usage:     "Microsoft Azure",
 		UsageText: "ip-fetcher azure {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)

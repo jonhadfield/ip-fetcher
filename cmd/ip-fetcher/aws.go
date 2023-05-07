@@ -19,6 +19,7 @@ func awsCmd() *cli.Command {
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch AWS prefixes",
+		Usage:     "Amazon Web Services",
 		UsageText: "ip-fetcher aws {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)

@@ -12,6 +12,7 @@ func abuseipdbCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "abuseipdb",
 		HelpName:  "- fetch AbuseIPDB prefixes",
+		Usage:     "AbuseIPDB",
 		UsageText: "ip-fetcher abuseipdb --key {--stdout | --path FILE} [--confidence] [--limit]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)

@@ -20,6 +20,7 @@ func gcpCmd() *cli.Command {
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch GCP prefixes",
+		Usage:     "Google Cloud Platform",
 		UsageText: "ip-fetcher gcp {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)

@@ -10,6 +10,7 @@ func geoipCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "geoip",
 		HelpName:  "- fetch MaxMind GeoIP prefixes",
+		Usage:     "MaxMind GeoIP",
 		UsageText: "ip-fetcher geoip --key=mykey --path=mypath [ --format=(csv | mmdb) ] [ --edition=(GeoLite2 | GeoIP) ] [ --extract ]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)

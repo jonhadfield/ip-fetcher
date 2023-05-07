@@ -21,6 +21,7 @@ func cloudflareCmd() *cli.Command {
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch Cloudflare ip ranges",
+		Usage:     "Cloudflare",
 		UsageText: "ip-fetcher cloudflare [-4 ipv4] [-6 ipv6] {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			// nolint:errcheck
