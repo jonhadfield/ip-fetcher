@@ -1,0 +1,130 @@
+package oci
+
+import (
+	"encoding/json"
+	"github.com/jonhadfield/ip-fetcher/internal/pflog"
+	"github.com/sirupsen/logrus"
+	"net/http"
+	"net/netip"
+	"time"
+
+	"github.com/hashicorp/go-retryablehttp"
+	"github.com/jonhadfield/ip-fetcher/internal/web"
+)
+
+const (
+	DownloadURL              = "https://docs.oracle.com/iaas/tools/public_ip_ranges.json"
+	downloadedFileTimeFormat = "2006-01-02T15:04:05.999999"
+)
+
+func New() OCI {
+	pflog.SetLogLevel()
+
+	rc := &http.Client{Transport: &http.Transport{}}
+	c := retryablehttp.NewClient()
+	if logrus.GetLevel() < logrus.DebugLevel {
+		c.Logger = nil
+	}
+	c.HTTPClient = rc
+	c.RetryMax = 1
+
+	return OCI{
+		DownloadURL: DownloadURL,
+		Client:      c,
+	}
+}
+
+type OCI struct {
+	Client      *retryablehttp.Client
+	DownloadURL string
+}
+
+type RawCIDR struct {
+	CIDR string   `json:"cidr"`
+	Tags []string `json:"tags"`
+}
+
+type CIDR struct {
+	CIDR netip.Prefix `json:"cidr"`
+	Tags []string     `json:"tags"`
+}
+type Region struct {
+	Region string `json:"region"`
+	CIDRS  []CIDR `json:"cidrs"`
+}
+
+type RawRegion struct {
+	Region string    `json:"region"`
+	CIDRS  []RawCIDR `json:"cidrs"`
+	Tags   []string  `json:"tags"`
+}
+
+type RawDoc struct {
+	LastUpdatedTimestamp string      `json:"last_updated_timestamp"`
+	RawRegions           []RawRegion `json:"regions"`
+}
+
+func (doc *Doc) UnmarshalJSON(p []byte) error {
+	var r RawDoc
+	if err := json.Unmarshal(p, &r); err != nil {
+		return err
+	}
+
+	ct, err := time.Parse(downloadedFileTimeFormat, r.LastUpdatedTimestamp)
+	if err != nil {
+		return err
+	}
+
+	var d Doc
+	d.LastUpdatedTimestamp = ct.UTC()
+
+	for _, rawRegion := range r.RawRegions {
+		var region Region
+		region.Region = rawRegion.Region
+
+		var finalCIDRS []CIDR
+		for _, rawCIDR := range rawRegion.CIDRS {
+			var finalCIDR CIDR
+			finalCIDR.Tags = rawCIDR.Tags
+			var prefix netip.Prefix
+			prefix, err = netip.ParsePrefix(rawCIDR.CIDR)
+			if err != nil {
+				return nil
+			}
+
+			finalCIDR.CIDR = prefix
+
+			finalCIDRS = append(finalCIDRS, finalCIDR)
+		}
+
+		region.CIDRS = finalCIDRS
+
+		d.Regions = append(d.Regions, region)
+	}
+
+	*doc = d
+	return nil
+}
+
+func (ora *OCI) FetchData() (data []byte, headers http.Header, status int, err error) {
+	if ora.DownloadURL == "" {
+		ora.DownloadURL = DownloadURL
+	}
+
+	return web.Request(ora.Client, ora.DownloadURL, http.MethodGet, nil, nil, 10*time.Second)
+}
+
+func (ora *OCI) Fetch() (doc Doc, err error) {
+	data, _, _, err := ora.FetchData()
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(data, &doc)
+
+	return doc, err
+}
+
+type Doc struct {
+	LastUpdatedTimestamp time.Time
+	Regions              []Region
+}
