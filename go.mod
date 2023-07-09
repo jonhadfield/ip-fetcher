@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/agiledragon/gomonkey/v2 v2.10.1
-	github.com/hashicorp/go-retryablehttp v0.7.2
+	github.com/hashicorp/go-retryablehttp v0.7.4
 	github.com/jszwec/csvutil v1.8.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/stretchr/testify v1.8.2
