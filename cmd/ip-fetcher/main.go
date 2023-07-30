@@ -50,6 +50,7 @@ func getApp() *cli.App {
 		geoipCmd(),
 		googleCmd(),
 		ociCmd(),
+		urlCmd(),
 	}
 
 	return app
