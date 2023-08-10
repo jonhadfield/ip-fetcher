@@ -3,6 +3,7 @@ package url
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"net/http"
 	"net/netip"
 	"net/url"
@@ -10,8 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
-	"github.com/jonhadfield/ipq/common"
 	"github.com/sirupsen/logrus"
 
 	"github.com/hashicorp/go-retryablehttp"
@@ -50,7 +49,7 @@ func (hf *HttpFiles) Add(urls []string) {
 
 	for _, u := range urls {
 		if _, err := url.Parse(u); err != nil {
-			logrus.Infof("%s | failed to parse %s", common.GetFunctionName(), u)
+			logrus.Infof("%s | failed to parse %s", pflog.GetFunctionName(), u)
 
 			continue
 		}
@@ -104,7 +103,7 @@ func (hf *HttpFiles) Fetch() (doc map[netip.Prefix][]string, err error) {
 }
 
 func extractNetFromString(in string) netip.Prefix {
-	funcName := common.GetFunctionName()
+	funcName := pflog.GetFunctionName()
 
 	r := regexp.MustCompile(`^[0-9a-fA-F](\S+)`)
 
@@ -158,7 +157,7 @@ func ReadRawPrefixesFromUrlResponse(response UrlResponse) (prefixes []netip.Pref
 }
 
 func GetPrefixURLMapFromUrlResponses(responses []UrlResponse) (prefixesWithPaths map[netip.Prefix][]string, err error) {
-	funcName := common.GetFunctionName()
+	funcName := pflog.GetFunctionName()
 
 	prefixesWithPaths = make(map[netip.Prefix][]string)
 
@@ -229,7 +228,7 @@ func (hf *HttpFiles) FetchUrls() (results []UrlResponse, err error) {
 	for _, hfUrl := range hf.Urls {
 		var result UrlResponse
 		if result, err = fetchUrlResponse(hf.Client, hfUrl); err != nil {
-			logrus.Debugf("%s | %s", common.GetFunctionName(), err.Error())
+			logrus.Debugf("%s | %s", pflog.GetFunctionName(), err.Error())
 		}
 
 		results = append(results, result)
