@@ -39,9 +39,14 @@ func New() HttpFiles {
 type HttpFiles struct {
 	Client *retryablehttp.Client
 	Urls   []string
+	Debug  bool
 }
 
 func (hf *HttpFiles) Add(urls []string) {
+	if hf.Debug {
+		logrus.SetLevel(logrus.DebugLevel)
+	}
+
 	for _, u := range urls {
 		if _, err := url.Parse(u); err != nil {
 			logrus.Infof("%s | failed to parse %s", common.GetFunctionName(), u)
@@ -64,6 +69,10 @@ type Responses []UrlResponse
 type PrefixesWithPaths map[netip.Prefix][]string
 
 func (hf *HttpFiles) FetchPrefixesAsText() (prefixes []string, err error) {
+	if hf.Debug {
+		logrus.SetLevel(logrus.DebugLevel)
+	}
+
 	urlResponses, err := hf.FetchUrls()
 	if err != nil {
 		return
@@ -79,6 +88,10 @@ func (hf *HttpFiles) FetchPrefixesAsText() (prefixes []string, err error) {
 }
 
 func (hf *HttpFiles) Fetch() (doc map[netip.Prefix][]string, err error) {
+	if hf.Debug {
+		logrus.SetLevel(logrus.DebugLevel)
+	}
+
 	urlResponses, err := hf.FetchUrls()
 	if err != nil {
 		return
@@ -185,7 +198,9 @@ func fetchUrlResponse(client *retryablehttp.Client, url string) (result UrlRespo
 	var status int
 
 	data, _, status, err = web.Request(client, url, http.MethodGet, nil, nil, 10*time.Second)
-
+	if err != nil {
+		logrus.Debug(err.Error())
+	}
 	if !(status >= 200 && status <= 299) {
 		return result, fmt.Errorf("failed to fetch: %s status: %d", url, status)
 	}
@@ -198,6 +213,10 @@ func fetchUrlResponse(client *retryablehttp.Client, url string) (result UrlRespo
 }
 
 func (hf *HttpFiles) FetchUrls() (results []UrlResponse, err error) {
+	if hf.Debug {
+		logrus.SetLevel(logrus.DebugLevel)
+	}
+
 	if len(hf.Urls) == 0 {
 		err = fmt.Errorf("no urls to fetch")
 
