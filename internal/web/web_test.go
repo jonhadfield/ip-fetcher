@@ -103,7 +103,6 @@ func TestRequestContentDispositionFileName(t *testing.T) {
 	// second attempt fails as gock only matching one time
 	_, err = RequestContentDispositionFileName(rc, testUrl, nil)
 	require.Error(t, err)
-
 }
 
 func TestPathDetails(t *testing.T) {

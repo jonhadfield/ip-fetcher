@@ -1,10 +1,11 @@
 package pflog
 
 import (
-	"github.com/sirupsen/logrus"
 	"os"
 	"runtime"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 const DefaultLogLevel = logrus.InfoLevel

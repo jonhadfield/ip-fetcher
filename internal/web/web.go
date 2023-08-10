@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"io"
 	"mime"
 	"net"
@@ -17,6 +16,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 
 	"github.com/hashicorp/go-retryablehttp"
 

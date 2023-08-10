@@ -4,16 +4,17 @@ import (
 	"archive/zip"
 	"errors"
 	"fmt"
-	"github.com/hashicorp/go-retryablehttp"
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
-	"github.com/jonhadfield/ip-fetcher/internal/web"
-	"github.com/sirupsen/logrus"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/hashicorp/go-retryablehttp"
+	"github.com/jonhadfield/ip-fetcher/internal/pflog"
+	"github.com/jonhadfield/ip-fetcher/internal/web"
+	"github.com/sirupsen/logrus"
 )
 
 func init() {

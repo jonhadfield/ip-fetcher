@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/jonhadfield/ip-fetcher/internal/pflog"
+	"github.com/sirupsen/logrus"
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/web"

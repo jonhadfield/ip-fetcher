@@ -4,12 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
-	"github.com/jonhadfield/ip-fetcher/internal/web"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"net/netip"
 	"time"
+
+	"github.com/jonhadfield/ip-fetcher/internal/pflog"
+	"github.com/jonhadfield/ip-fetcher/internal/web"
+	"github.com/sirupsen/logrus"
 
 	"github.com/hashicorp/go-retryablehttp"
 )

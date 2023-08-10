@@ -3,15 +3,16 @@ package url
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
-	"github.com/jonhadfield/ipq/common"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"net/netip"
 	"net/url"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/jonhadfield/ip-fetcher/internal/pflog"
+	"github.com/jonhadfield/ipq/common"
+	"github.com/sirupsen/logrus"
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
@@ -65,8 +66,10 @@ type RawDoc struct {
 	Entries       []json.RawMessage `json:"prefixes"`
 }
 
-type Responses []UrlResponse
-type PrefixesWithPaths map[netip.Prefix][]string
+type (
+	Responses         []UrlResponse
+	PrefixesWithPaths map[netip.Prefix][]string
+)
 
 func (hf *HttpFiles) FetchPrefixesAsText() (prefixes []string, err error) {
 	if hf.Debug {

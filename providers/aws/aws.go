@@ -2,13 +2,14 @@ package aws
 
 import (
 	"encoding/json"
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"net/netip"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/jonhadfield/ip-fetcher/internal/pflog"
+	"github.com/sirupsen/logrus"
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/web"

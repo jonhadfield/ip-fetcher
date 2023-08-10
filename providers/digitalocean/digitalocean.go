@@ -4,16 +4,17 @@ import (
 	"bytes"
 	"encoding/csv"
 	"fmt"
-	"github.com/hashicorp/go-retryablehttp"
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
-	"github.com/jonhadfield/ip-fetcher/internal/web"
-	"github.com/jszwec/csvutil"
-	"github.com/sirupsen/logrus"
 	"io"
 	"log"
 	"net/http"
 	"net/netip"
 	"time"
+
+	"github.com/hashicorp/go-retryablehttp"
+	"github.com/jonhadfield/ip-fetcher/internal/pflog"
+	"github.com/jonhadfield/ip-fetcher/internal/web"
+	"github.com/jszwec/csvutil"
+	"github.com/sirupsen/logrus"
 )
 
 const (

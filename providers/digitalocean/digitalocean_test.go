@@ -2,11 +2,12 @@ package digitalocean
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/require"
-	"gopkg.in/h2non/gock.v1"
 	"net/url"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
+	"gopkg.in/h2non/gock.v1"
 )
 
 func TestFetchData(t *testing.T) {

@@ -2,12 +2,13 @@ package geoip
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"gopkg.in/h2non/gock.v1"
 	"net/url"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/sirupsen/logrus"
+	"gopkg.in/h2non/gock.v1"
 
 	"github.com/stretchr/testify/require"
 )

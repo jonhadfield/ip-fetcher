@@ -2,13 +2,14 @@ package abuseipdb
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/require"
-	"gopkg.in/h2non/gock.v1"
 	"net/http"
 	"net/netip"
 	"net/url"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
+	"gopkg.in/h2non/gock.v1"
 )
 
 func TestParse(t *testing.T) {

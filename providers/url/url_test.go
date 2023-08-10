@@ -2,13 +2,14 @@ package url
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/slices"
-	"gopkg.in/h2non/gock.v1"
 	"net/netip"
 	"net/url"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+	"golang.org/x/exp/slices"
+	"gopkg.in/h2non/gock.v1"
 )
 
 func TestConstructor(t *testing.T) {

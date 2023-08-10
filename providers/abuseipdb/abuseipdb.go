@@ -6,16 +6,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/hashicorp/go-retryablehttp"
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
-	"github.com/jonhadfield/ip-fetcher/internal/web"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"net/netip"
 	"net/url"
 	"regexp"
 	"strconv"
 	"time"
+
+	"github.com/hashicorp/go-retryablehttp"
+	"github.com/jonhadfield/ip-fetcher/internal/pflog"
+	"github.com/jonhadfield/ip-fetcher/internal/web"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -130,7 +131,6 @@ func (a *AbuseIPDB) FetchData() (data []byte, headers http.Header, status int, e
 
 	blackList, headers, statusCode, err := web.Request(a.Client, reqUrl.String(), http.MethodGet, inHeaders, []string{a.APIKey}, 10*time.Second)
 	if statusCode == 0 && err != nil {
-
 		return
 	}
 
