@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/providers/abuseipdb"
-	"github.com/urfave/cli/v2"
 	"os"
 	"strings"
+
+	"github.com/jonhadfield/ip-fetcher/providers/abuseipdb"
+	"github.com/urfave/cli/v2"
 )
 
 func abuseipdbCmd() *cli.Command {

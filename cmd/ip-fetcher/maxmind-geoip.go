@@ -1,9 +1,10 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/jonhadfield/ip-fetcher/providers/maxmind/geoip"
 	"github.com/urfave/cli/v2"
-	"strings"
 )
 
 func geoipCmd() *cli.Command {

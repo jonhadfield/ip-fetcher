@@ -1,15 +1,16 @@
 package main
 
 import (
-	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestFileSave(t *testing.T) {
 	tDir := t.TempDir()
-	require.NoError(t, os.MkdirAll(filepath.Join(tDir, "f1", "f2"), 0755))
+	require.NoError(t, os.MkdirAll(filepath.Join(tDir, "f1", "f2"), 0o755))
 
 	// save file with dir + filename
 	_, err := saveFile(saveFileInput{

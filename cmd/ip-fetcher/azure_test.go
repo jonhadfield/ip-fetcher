@@ -2,13 +2,14 @@ package main
 
 import (
 	"bytes"
-	"github.com/jonhadfield/ip-fetcher/providers/azure"
-	"github.com/stretchr/testify/require"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
+
+	"github.com/jonhadfield/ip-fetcher/providers/azure"
+	"github.com/stretchr/testify/require"
 )
 
 const testAzureDownloadUrl = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20221212.json"

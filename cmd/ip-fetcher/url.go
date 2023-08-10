@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	_url "github.com/jonhadfield/ip-fetcher/providers/url"
-	"github.com/urfave/cli/v2"
-	"gopkg.in/h2non/gock.v1"
 	"net/url"
 	"os"
 	"strings"
+
+	_url "github.com/jonhadfield/ip-fetcher/providers/url"
+	"github.com/urfave/cli/v2"
+	"gopkg.in/h2non/gock.v1"
 )
 
 func urlCmd() *cli.Command {

@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/providers/cloudflare"
-	"github.com/urfave/cli/v2"
-	"gopkg.in/h2non/gock.v1"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/jonhadfield/ip-fetcher/providers/cloudflare"
+	"github.com/urfave/cli/v2"
+	"gopkg.in/h2non/gock.v1"
 )
 
 const (

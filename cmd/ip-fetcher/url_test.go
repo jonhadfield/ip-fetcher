@@ -2,14 +2,15 @@ package main
 
 import (
 	"bytes"
-	_ "github.com/agiledragon/gomonkey/v2"
-	_ "github.com/agiledragon/gomonkey/v2/test/fake"
-	"github.com/stretchr/testify/require"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
+
+	_ "github.com/agiledragon/gomonkey/v2"
+	_ "github.com/agiledragon/gomonkey/v2/test/fake"
+	"github.com/stretchr/testify/require"
 )
 
 const TestUrlAddr = "https://www.example.com/files/ips.txt"

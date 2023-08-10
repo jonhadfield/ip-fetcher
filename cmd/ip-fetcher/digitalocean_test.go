@@ -2,13 +2,14 @@ package main
 
 import (
 	"bytes"
-	"github.com/jonhadfield/ip-fetcher/providers/digitalocean"
-	"github.com/stretchr/testify/require"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
+
+	"github.com/jonhadfield/ip-fetcher/providers/digitalocean"
+	"github.com/stretchr/testify/require"
 )
 
 func DigitaloceanCmdNoStdOutNoPath() {

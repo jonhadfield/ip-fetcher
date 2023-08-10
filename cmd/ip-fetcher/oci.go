@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/providers/oci"
-	"github.com/urfave/cli/v2"
-	"gopkg.in/h2non/gock.v1"
 	"net/url"
 	"os"
 	"strings"
+
+	"github.com/jonhadfield/ip-fetcher/providers/oci"
+	"github.com/urfave/cli/v2"
+	"gopkg.in/h2non/gock.v1"
 )
 
 func ociCmd() *cli.Command {
