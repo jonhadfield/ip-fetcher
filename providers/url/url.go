@@ -120,7 +120,7 @@ func extractNetFromString(in string) netip.Prefix {
 
 	p, err := netip.ParsePrefix(s)
 	if err != nil {
-		logrus.Debugf("%s | failed to parse %s", funcName, s)
+		logrus.Tracef("%s | failed to parse %s", funcName, s)
 	}
 
 	return p
@@ -136,16 +136,27 @@ func ReadRawPrefixesFromFileData(data []byte) (ipnets []netip.Prefix, err error)
 		r = regexp.MustCompile(`^\s*#`)
 	}
 
+	var invalidCount int64
+	var commentedCount int64
 	for _, line := range text {
 		// exclude comments
 		if r.MatchString(line) {
+			commentedCount++
+
 			continue
 		}
 
 		if o := extractNetFromString(line); o.IsValid() {
 			ipnets = append(ipnets, o)
+
+			continue
 		}
+
+		invalidCount++
 	}
+
+	logrus.Debugf("%s | loaded %d prefixes from %d lines with %d commented and %d invalid", pflog.GetFunctionName(),
+		len(ipnets), len(text), commentedCount, invalidCount)
 
 	return
 }
