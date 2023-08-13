@@ -118,6 +118,38 @@ func TestFetch(t *testing.T) {
 	require.Equal(t, result[netip.MustParsePrefix("8.8.4.4/32")], []string{"https://www.example.com/files/ips.net"})
 }
 
+func TestFetchMultiple(t *testing.T) {
+	u1, err := url.Parse("https://www.example.com/files/ips1.net")
+	require.NoError(t, err)
+	url1Base := fmt.Sprintf("%s://%s", u1.Scheme, u1.Host)
+
+	gock.New(url1Base).
+		Get(u1.Path).
+		Reply(200).
+		File("testdata/ip-file-1.txt")
+
+	u2, err := url.Parse("https://www.example.com/files/ips2.net")
+	require.NoError(t, err)
+	url2Base := fmt.Sprintf("%s://%s", u2.Scheme, u2.Host)
+
+	gock.New(url2Base).
+		Get(u2.Path).
+		Reply(200).
+		File("testdata/ip-file-2.txt")
+
+	hf := New()
+	hf.Add([]string{"https://www.example.com/files/ips1.net", "https://www.example.com/files/ips2.net"})
+	gock.InterceptClient(hf.Client.HTTPClient)
+
+	result, err := hf.Fetch()
+	require.NoError(t, err)
+	require.NotEmpty(t, result)
+	require.Contains(t, result, netip.MustParsePrefix("9.9.9.0/24"))
+	require.Equal(t, result[netip.MustParsePrefix("9.9.9.0/24")], []string{"https://www.example.com/files/ips1.net"})
+	require.Equal(t, result[netip.MustParsePrefix("8.8.4.4/32")], []string{"https://www.example.com/files/ips1.net"})
+	require.Equal(t, result[netip.MustParsePrefix("16.16.15.0/24")], []string{"https://www.example.com/files/ips2.net"})
+}
+
 func TestFetchInvalidUrl(t *testing.T) {
 	hf := New()
 	hf.Add([]string{"https://ww^w.example.com/files/ips.net"})
