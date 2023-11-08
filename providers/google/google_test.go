@@ -2,6 +2,7 @@ package google
 
 import (
 	"fmt"
+	"net/netip"
 	"net/url"
 	"testing"
 
@@ -25,4 +26,7 @@ func TestFetch(t *testing.T) {
 	doc, err := ac.Fetch()
 	require.NoError(t, err)
 	require.NotEmpty(t, doc.IPv4Prefixes)
+	require.Contains(t, doc.IPv4Prefixes, IPv4Entry{netip.MustParsePrefix("34.2.0.0/16")})
+	require.NotEmpty(t, doc.IPv6Prefixes)
+	require.Contains(t, doc.IPv6Prefixes, IPv6Entry{netip.MustParsePrefix("2620:120:e001::/40")})
 }
