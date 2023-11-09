@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/jonhadfield/ip-fetcher/providers/googlebot"
 	"net/url"
 	"os"
 	"strings"
 
-	"github.com/jonhadfield/ip-fetcher/providers/google"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/h2non/gock.v1"
 )
@@ -45,16 +45,16 @@ func googlebotCmd() *cli.Command {
 				os.Exit(1)
 			}
 
-			a := google.New()
+			a := googlebot.New()
 
 			if os.Getenv("IP_FETCHER_MOCK_GOOGLEBOT") == "true" {
 				defer gock.Off()
-				urlBase := google.DownloadURL
+				urlBase := googlebot.DownloadURL
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).
 					Reply(200).
-					File("../../providers/google/testdata/goog.json")
+					File("../../providers/googlebot/testdata/googlebot.json")
 				gock.InterceptClient(a.Client.HTTPClient)
 			}
 
