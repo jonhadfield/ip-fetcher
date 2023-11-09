@@ -45,6 +45,7 @@ func getApp() *cli.App {
 		abuseipdbCmd(),
 		awsCmd(),
 		azureCmd(),
+		bingbotCmd(),
 		cloudflareCmd(),
 		digitaloceanCmd(),
 		gcpCmd(),
