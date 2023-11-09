@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"net/url"
 	"os"
 	"strings"
@@ -11,14 +13,15 @@ import (
 	"gopkg.in/h2non/gock.v1"
 )
 
+const (
+	providerNameGCP   = "gcp"
+	fileNameOutputGCP = "cloud.json"
+)
+
 func gcpCmd() *cli.Command {
-	const (
-		providerName = "gcp"
-		fileName     = "cloud.json"
-	)
 
 	return &cli.Command{
-		Name:      providerName,
+		Name:      providerNameGCP,
 		HelpName:  "- fetch GCP prefixes",
 		Usage:     "Google Cloud Platform",
 		UsageText: "ip-fetcher gcp {--stdout | --path FILE}",
@@ -35,6 +38,10 @@ func gcpCmd() *cli.Command {
 			&cli.BoolFlag{
 				Name:  "stdout",
 				Usage: "write to stdout", Aliases: []string{"s"},
+			},
+			&cli.StringFlag{
+				Name:  "format",
+				Usage: "json, yaml, lines, csv", Value: "json", Aliases: []string{"f"},
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -58,30 +65,91 @@ func gcpCmd() *cli.Command {
 				gock.InterceptClient(a.Client.HTTPClient)
 			}
 
-			data, _, _, err := a.FetchData()
-			if err != nil {
+			var doc gcp.Doc
+			var err error
+			// get data if json output is requested
+			if doc, err = a.Fetch(); err != nil {
 				return err
 			}
 
-			if path != "" {
-				var out string
-				if out, err = saveFile(saveFileInput{
-					provider:        providerName,
-					data:            data,
-					path:            path,
-					defaultFileName: fileName,
-				}); err != nil {
-					return err
-				}
-
-				_, _ = os.Stderr.WriteString(fmt.Sprintf("data written to %s\n", out))
-			}
-
-			if c.Bool("stdout") {
-				fmt.Printf("%s\n", data)
-			}
-
-			return nil
+			return output(doc, c.String("format"), c.Bool("stdout"), c.String("path"))
 		},
 	}
+}
+
+func output(doc gcp.Doc, format string, stdout bool, path string) (err error) {
+	var data []byte
+
+	switch format {
+	case "csv":
+		if data, err = csv(doc); err != nil {
+			return err
+		}
+	case "lines":
+		if data, err = lines(doc); err != nil {
+			return err
+		}
+	case "yaml":
+		if data, err = yaml.Marshal(doc); err != nil {
+			return err
+		}
+	case "json":
+		if data, err = json.MarshalIndent(doc, "", " "); err != nil {
+			return err
+		}
+	}
+
+	if stdout {
+		fmt.Printf("%s\n", data)
+	}
+
+	if path != "" {
+		var out string
+		if out, err = saveFile(saveFileInput{
+			provider:        providerNameGCP,
+			data:            data,
+			path:            path,
+			defaultFileName: fileNameOutputGCP,
+		}); err != nil {
+			return err
+		}
+
+		if _, err = os.Stderr.WriteString(fmt.Sprintf("data written to %s\n", out)); err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func lines(in gcp.Doc) ([]byte, error) {
+	sl := strings.Builder{}
+	for x := range in.IPv4Prefixes {
+		sl.WriteString(fmt.Sprintf("%s\n", in.IPv4Prefixes[x].IPv4Prefix.String()))
+	}
+	for x := range in.IPv6Prefixes {
+		sl.WriteString(fmt.Sprintf("%s\n", in.IPv6Prefixes[x].IPv6Prefix.String()))
+	}
+
+	return []byte(sl.String()), nil
+}
+
+func csv(in gcp.Doc) ([]byte, error) {
+	sl := strings.Builder{}
+	for x := range in.IPv4Prefixes {
+		sl.WriteString(fmt.Sprintf("\"%s\"", in.IPv4Prefixes[x].IPv4Prefix.String()))
+		// output comma if not last line and there are ipv6 prefixes
+		if x != len(in.IPv4Prefixes)-1 && len(in.IPv6Prefixes) > 0 {
+			sl.WriteString(",\n")
+		}
+	}
+
+	for x := range in.IPv6Prefixes {
+		sl.WriteString(fmt.Sprintf("\"%s\"", in.IPv6Prefixes[x].IPv6Prefix.String()))
+		if x != len(in.IPv6Prefixes)-1 {
+			sl.WriteString(",\n")
+		}
+	}
+
+	return []byte(sl.String()), nil
 }

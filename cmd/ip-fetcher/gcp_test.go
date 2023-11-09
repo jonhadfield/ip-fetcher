@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"testing"
 
 	_ "github.com/agiledragon/gomonkey/v2"
@@ -141,4 +142,36 @@ func TestGCPCmdStdOutAndFile(t *testing.T) {
 	out := <-outC
 	require.Contains(t, out, "35.219.128.0/24")
 	require.FileExists(t, filepath.Join(tDir, "cloud.json"))
+}
+
+func TestGCPCmdStdOutLines(t *testing.T) {
+	defer testCleanUp(os.Args)
+	_ = os.Setenv("IP_FETCHER_MOCK_GCP", "true")
+	defer os.Unsetenv("IP_FETCHER_MOCK_GCP")
+
+	tDir := t.TempDir()
+
+	// stdout
+	old := os.Stdout
+	r, w, err := os.Pipe()
+	require.NoError(t, err)
+
+	os.Stdout = w
+
+	outC := make(chan string)
+	go func() {
+		var buf bytes.Buffer
+		_, _ = io.Copy(&buf, r)
+		outC <- buf.String()
+	}()
+
+	app := getApp()
+	os.Args = []string{"ip-fetcher", "gcp", "--stdout", "--format", "lines", tDir}
+	require.NoError(t, app.Run(os.Args))
+
+	_ = w.Close()
+	os.Stdout = old
+	out := <-outC
+	require.Len(t, regexp.MustCompile(`35\.219\.128\.0/24(\r\n|\r|\n)`).FindAllString(out, -1), 1)
+	require.NoFileExists(t, filepath.Join(tDir, "cloud.json"))
 }
