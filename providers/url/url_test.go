@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"golang.org/x/exp/slices"
 	"gopkg.in/h2non/gock.v1"
+	"slices"
 )
 
 func TestConstructor(t *testing.T) {
