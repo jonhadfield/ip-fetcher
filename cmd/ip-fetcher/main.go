@@ -48,6 +48,7 @@ func getApp() *cli.App {
 		bingbotCmd(),
 		cloudflareCmd(),
 		digitaloceanCmd(),
+		fastlyCmd(),
 		gcpCmd(),
 		geoipCmd(),
 		googleCmd(),
