@@ -6,16 +6,19 @@
 ## about
 
 ip-fetcher is a go library and cli used to retrieve public ip prefixes from popular cloud and hosting providers.
-Please raise an issue if you have any issues or suggestions for new providers.  
+Please raise an issue if you have any issues or suggestions for new providers.
 
 ## supported providers
 
 - <a href="https://www.abuseipdb.com/" target="_blank">AbuseIPDB</a>
 - <a href="https://aws.amazon.com/" target="_blank">AWS</a> (Amazon Web Services)
-- <a href="https://www.cloudflare.com" target="_blank">Cloudflare</a>
+- <a href="https://www.bing.com/webmasters/help/which-crawlers-does-bing-use-8c184ec0" target="_blank">Bingbot</a>
+- <a href="https://www.cloudflare.com/" target="_blank">Cloudflare</a>
 - <a href="https://www.digitalocean.com/" target="_blank">DigitalOcean</a>
+- <a href="https://www.fastly.com/" target="_blank">Fastly</a>
 - <a href="https://cloud.google.com/" target="_blank">GCP</a> (Google Cloud Platform)
 - <a href="https://www.google.com/" target="_blank">Google</a>
+- <a href="https://developers.google.com/search/docs/crawling-indexing/googlebot" target="_blank">Googlebot</a>
 - <a href="https://www.maxmind.com" target="_blank">MaxMind GeoIP</a>
 - <a href="https://azure.microsoft.com" target="_blank">Microsoft Azure</a>
 
@@ -34,14 +37,14 @@ _use: `sudo install` if on linux_
 
 ```
 ip-fetcher <provider> <options>
-```  
-for example:  
+```
+for example:
 - output aws prefixes to the console: `ip-fetcher aws --stdout`
 - save gcp prefixes to a file: `ip-fetcher gcp --file prefixes.json`
 
 ## API
 
-The following example uses the GCP (Google Cloud Platform) provider. 
+The following example uses the GCP (Google Cloud Platform) provider.
 
 ### installation
 ```
