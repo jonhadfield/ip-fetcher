@@ -43,7 +43,7 @@ func fastlyCmd() *cli.Command {
 			},
 			&cli.StringFlag{
 				Name:  "format",
-				Usage: fmt.Sprintf(strings.Join(fastlyFormats, ", ")), Value: "json", Aliases: []string{"f"},
+				Usage: strings.Join(fastlyFormats, ", "), Value: "json", Aliases: []string{"f"},
 			},
 		},
 		Action: func(c *cli.Context) error {
