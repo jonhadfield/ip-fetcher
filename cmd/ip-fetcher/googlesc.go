@@ -20,7 +20,7 @@ func googlescCmd() *cli.Command {
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch Google Special Crawlers prefixes",
-		Usage:     "Googlesc",
+		Usage:     "Google Special Crawlers",
 		UsageText: "ip-fetcher googlesc {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)

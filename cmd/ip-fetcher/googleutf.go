@@ -20,7 +20,7 @@ func googleutfCmd() *cli.Command {
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch Google User Triggered Fetchers prefixes",
-		Usage:     "Googleutf",
+		Usage:     "Google User Triggered Fetchers",
 		UsageText: "ip-fetcher googleutf {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)

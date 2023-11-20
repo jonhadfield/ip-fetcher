@@ -20,7 +20,7 @@ func urlCmd() *cli.Command {
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch prefixes from URLs",
-		Usage:     "URL",
+		Usage:     "Read prefixes from a web URL",
 		UsageText: "ip-fetcher url {--stdout | --path FILE} URL [URL...]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)

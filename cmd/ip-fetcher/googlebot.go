@@ -20,7 +20,7 @@ func googlebotCmd() *cli.Command {
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch Googlebot prefixes",
-		Usage:     "Googlebot",
+		Usage:     "Google Web Crawlers (Desktop and Smartphone)",
 		UsageText: "ip-fetcher googlebot {--stdout | --path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
