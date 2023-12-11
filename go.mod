@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/agiledragon/gomonkey/v2 v2.11.0
 	github.com/hashicorp/go-retryablehttp v0.7.5
-	github.com/jszwec/csvutil v1.8.0
+	github.com/jszwec/csvutil v1.9.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.4
 	github.com/urfave/cli/v2 v2.25.7
