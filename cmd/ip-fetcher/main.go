@@ -55,6 +55,7 @@ func getApp() *cli.App {
 		googlebotCmd(),
 		googlescCmd(),
 		googleutfCmd(),
+		linodeCmd(),
 		ociCmd(),
 		urlCmd(),
 	}

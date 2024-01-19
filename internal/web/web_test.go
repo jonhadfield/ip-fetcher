@@ -38,8 +38,7 @@ func TestRequestFailure(t *testing.T) {
 	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s%s?%s", u.Scheme, u.Host, u.Path, u.RawQuery)
-	fmt.Println(urlBase)
-	fmt.Println(u.String())
+
 	gock.New(urlBase).
 		Get(u.Path).
 		Times(5).
