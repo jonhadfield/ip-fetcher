@@ -17,8 +17,9 @@ import (
 )
 
 const (
-	InitialURL          = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519"
-	errFailedToDownload = "failed to retrieve azure prefixes initial page"
+	InitialURL            = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519"
+	WorkaroundDownloadURL = "https://raw.githubusercontent.com/tobilg/public-cloud-provider-ip-ranges/main/data/providers/azure.json"
+	errFailedToDownload   = "failed to retrieve azure prefixes initial page"
 )
 
 type Azure struct {
@@ -90,7 +91,7 @@ func (a *Azure) FetchData() (data []byte, headers http.Header, status int, err e
 	// get download url if not specified
 	if a.DownloadURL == "" {
 		// hack whilst Akamai bot protection is in place
-		a.DownloadURL = "https://raw.githubusercontent.com/tobilg/public-cloud-provider-ip-ranges/main/data/providers/azure.json"
+		a.DownloadURL = WorkaroundDownloadURL
 		// a.DownloadURL, err = a.GetDownloadURL()
 		if err != nil {
 			return
