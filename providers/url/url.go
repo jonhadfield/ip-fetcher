@@ -319,6 +319,7 @@ func (c *Client) get(url *url.URL, header http.Header) (result UrlResponse, err 
 	}
 
 	return UrlResponse{
+		url:    url.String(),
 		data:   data,
 		status: status,
 	}, err
