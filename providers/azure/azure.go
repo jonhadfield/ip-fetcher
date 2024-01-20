@@ -89,7 +89,9 @@ func (a *Azure) GetDownloadURL() (url string, err error) {
 func (a *Azure) FetchData() (data []byte, headers http.Header, status int, err error) {
 	// get download url if not specified
 	if a.DownloadURL == "" {
-		a.DownloadURL, err = a.GetDownloadURL()
+		// hack whilst Akamai bot protection is in place
+		a.DownloadURL = "https://raw.githubusercontent.com/tobilg/public-cloud-provider-ip-ranges/main/data/providers/azure.json"
+		// a.DownloadURL, err = a.GetDownloadURL()
 		if err != nil {
 			return
 		}
