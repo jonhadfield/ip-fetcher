@@ -36,7 +36,7 @@ func TestGetDownloadURL(t *testing.T) {
 	dURL, err := ac.GetDownloadURL()
 	require.NoError(t, err)
 	require.NotEmpty(t, dURL)
-	require.Equal(t, "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20000000.json", dURL)
+	require.Equal(t, "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_2000000.json", dURL)
 }
 
 func TestFetchRaw(t *testing.T) {

@@ -91,8 +91,8 @@ func (a *Azure) FetchData() (data []byte, headers http.Header, status int, err e
 	// get download url if not specified
 	if a.DownloadURL == "" {
 		// hack whilst Akamai bot protection is in place
-		a.DownloadURL = WorkaroundDownloadURL
-		// a.DownloadURL, err = a.GetDownloadURL()
+		// a.DownloadURL = WorkaroundDownloadURL
+		a.DownloadURL, err = a.GetDownloadURL()
 		if err != nil {
 			return
 		}

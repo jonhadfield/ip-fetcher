@@ -152,19 +152,18 @@ func (c *Client) FetchPrefixes(requests []Request) (prefixes map[netip.Prefix][]
 		}
 
 		responses = append(responses, response)
-
 	}
 
-	pum, err := GetPrefixURLMapFromUrlResponses(&responses)
+	prefixes, err = GetPrefixURLMapFromUrlResponses(&responses)
 	if err != nil {
 		return
 	}
-
+	//
 	// for k := range pum {
 	// 	prefixes = append(prefixes, k)
 	// }
 
-	return pum, nil
+	return prefixes, nil
 }
 
 func (hf *HttpFile) FetchPrefixes() (prefixes []netip.Prefix, err error) {

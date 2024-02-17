@@ -12,8 +12,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// const testAzureDownloadUrl = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20221212.json"
-const testAzureDownloadUrl = azure.WorkaroundDownloadURL
+const testMockAzureDownloadUrl = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_2000000.json"
+
+// const testMockAzureDownloadUrl = azure.WorkaroundDownloadURL
 
 func AzureCmdNoStdOutNoPath() {
 	app := getApp()
@@ -49,7 +50,7 @@ func TestAzureCmdSavetoPath(t *testing.T) {
 	defer os.Unsetenv("IP_FETCHER_MOCK_AZURE")
 
 	ac := azure.New()
-	ac.DownloadURL = testAzureDownloadUrl
+	ac.DownloadURL = testMockAzureDownloadUrl
 
 	app := getApp()
 

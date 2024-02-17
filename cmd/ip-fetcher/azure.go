@@ -13,8 +13,8 @@ import (
 
 func azureCmd() *cli.Command {
 	const (
-		// testAzureDownloadURL     = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20000000.json"
-		testAzureDownloadURL     = azure.WorkaroundDownloadURL
+		testMockAzureDownloadURL = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_2000000.json"
+		// testMockAzureDownloadURL     = azure.WorkaroundDownloadURL
 		testAzureInitialFilePath = "../../providers/azure/testdata/initial.html"
 		testAzureDataFilePath    = "../../providers/azure/testdata/ServiceTags_Public_20221212.json"
 		providerName             = "azure"
@@ -60,8 +60,8 @@ func azureCmd() *cli.Command {
 					Reply(200).
 					File(testAzureInitialFilePath)
 
-				uDownload, _ := url.Parse(testAzureDownloadURL)
-				gock.New(testAzureDownloadURL).
+				uDownload, _ := url.Parse(testMockAzureDownloadURL)
+				gock.New(testMockAzureDownloadURL).
 					Get(uDownload.Path).
 					Reply(200).
 					File(testAzureDataFilePath)
