@@ -83,7 +83,8 @@ func TestFetchUrlsWithFailedRequest(t *testing.T) {
 	responses, err := hf.Get([]Request{
 		{
 			Url: u,
-		}})
+		},
+	})
 
 	require.Error(t, err)
 	require.Empty(t, responses)

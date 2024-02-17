@@ -3,10 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"net/url"
 	"os"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 
 	"github.com/jonhadfield/ip-fetcher/providers/gcp"
 	"github.com/urfave/cli/v2"
@@ -19,7 +20,6 @@ const (
 )
 
 func gcpCmd() *cli.Command {
-
 	return &cli.Command{
 		Name:      providerNameGCP,
 		HelpName:  "- fetch GCP prefixes",

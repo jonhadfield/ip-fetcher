@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/providers/googlesc"
 	"net/url"
 	"os"
 	"strings"
+
+	"github.com/jonhadfield/ip-fetcher/providers/googlesc"
 
 	"github.com/urfave/cli/v2"
 	"gopkg.in/h2non/gock.v1"

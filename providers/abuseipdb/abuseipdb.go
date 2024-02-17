@@ -80,14 +80,14 @@ func retryPolicy(ctx context.Context, resp *http.Response, err error) (bool, err
 
 func New() AbuseIPDB {
 	pflog.SetLogLevel()
-	rc := &http.Client{Transport: &http.Transport{}}
-	c := retryablehttp.NewClient()
+
+	c := web.NewHTTPClient()
+
 	if logrus.GetLevel() < logrus.DebugLevel {
 		c.Logger = nil
 	}
+
 	c.CheckRetry = retryPolicy
-	c.HTTPClient = rc
-	c.RetryMax = 1
 
 	return AbuseIPDB{
 		APIURL: APIURL,

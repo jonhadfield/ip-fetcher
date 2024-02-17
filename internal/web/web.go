@@ -33,6 +33,17 @@ func Resolve(name string) (ip netip.Addr, err error) {
 	return netip.ParseAddr(i.String())
 }
 
+func NewHTTPClient() *retryablehttp.Client {
+	rc := &http.Client{Transport: &http.Transport{}}
+	c := retryablehttp.NewClient()
+	c.HTTPClient = rc
+	c.RetryMax = 2
+	c.RetryWaitMin = 2 * time.Second
+	c.RetryWaitMax = 5 * time.Second
+
+	return c
+}
+
 func MaskSecrets(content string, secret []string) string {
 	for _, s := range secret {
 		content = strings.ReplaceAll(content, s, strings.Repeat("*", len(s)))
@@ -156,6 +167,10 @@ func pathDetails(path string) (output pathDetailsOutput, err error) {
 }
 
 func DownloadFile(client *retryablehttp.Client, u, path string) (downloadedFilePath string, err error) {
+	if u == "" {
+		return "", fmt.Errorf("path must not be empty")
+	}
+
 	logrus.Debugf("%s | downloading: %s to %s", pflog.GetFunctionName(), u, path)
 
 	details, err := pathDetails(path)

@@ -3,13 +3,14 @@ package url
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"net/http"
 	"net/netip"
 	"net/url"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 
 	"github.com/sirupsen/logrus"
 
@@ -20,15 +21,11 @@ import (
 func NewList() HttpFiles {
 	pflog.SetLogLevel()
 
-	rc := &http.Client{Transport: &http.Transport{}}
-	c := retryablehttp.NewClient()
+	c := web.NewHTTPClient()
 
 	if logrus.GetLevel() < logrus.DebugLevel {
 		c.Logger = nil
 	}
-
-	c.HTTPClient = rc
-	c.RetryMax = 1
 
 	return HttpFiles{
 		Urls:   []string{},
@@ -54,7 +51,7 @@ func New(opt ...Option) *Client {
 	}
 
 	if c.HttpClient == nil {
-		c.HttpClient = retryablehttp.NewClient()
+		c.HttpClient = web.NewHTTPClient()
 	}
 
 	return c

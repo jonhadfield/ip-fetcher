@@ -11,8 +11,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hashicorp/go-retryablehttp"
-
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 )
@@ -20,9 +18,7 @@ import (
 func TestRequestMethodNotSpecified(t *testing.T) {
 	testUrl := "https://www.example.com/mytextfile.txt?cred=secret-value&hello=world"
 
-	rc := retryablehttp.NewClient()
-	client := &http.Client{Transport: &http.Transport{}}
-	rc.HTTPClient = client
+	rc := NewHTTPClient()
 
 	body, headers, status, err := Request(rc, testUrl, "", nil, []string{}, 1*time.Second)
 	require.Error(t, err)
@@ -46,13 +42,11 @@ func TestRequestFailure(t *testing.T) {
 		MatchParam("hello", "world").
 		ReplyError(errors.New("no worky"))
 
-	rc := retryablehttp.NewClient()
-	rc.RetryMax = 2
-	client := &http.Client{Transport: &http.Transport{}}
-	rc.HTTPClient = client
+	c := NewHTTPClient()
+	c.RetryMax = 1
 
-	gock.InterceptClient(client)
-	body, headers, status, err := Request(rc, testUrl, http.MethodGet, nil, []string{}, 10*time.Second)
+	gock.InterceptClient(c.HTTPClient)
+	body, headers, status, err := Request(c, testUrl, http.MethodGet, nil, []string{}, 10*time.Second)
 	require.Error(t, err)
 	require.ErrorContains(t, err, "no worky")
 	require.Empty(t, headers)
@@ -85,22 +79,22 @@ func TestRequestContentDispositionFileName(t *testing.T) {
 		Reply(200).
 		SetHeader("content-disposition", "")
 
-	rc := retryablehttp.NewClient()
-	client := &http.Client{Transport: &http.Transport{}}
-	rc.HTTPClient = client
-	rc.RetryMax = 0
-	gock.InterceptClient(client)
-	fn, err := RequestContentDispositionFileName(rc, testUrl, nil)
+	c := NewHTTPClient()
+	c.RetryMax = 0
+
+	gock.InterceptClient(c.HTTPClient)
+
+	fn, err := RequestContentDispositionFileName(c, testUrl, nil)
 	require.NoError(t, err)
 	require.Equal(t, fileName, fn)
 
-	_, err = RequestContentDispositionFileName(rc, testUrl, nil)
+	_, err = RequestContentDispositionFileName(c, testUrl, nil)
 	require.Error(t, err)
 	require.ErrorContains(t, err, "failed to get Content-Disposition header")
 	require.ErrorContains(t, err, "mime: no media type")
 
 	// second attempt fails as gock only matching one time
-	_, err = RequestContentDispositionFileName(rc, testUrl, nil)
+	_, err = RequestContentDispositionFileName(c, testUrl, nil)
 	require.Error(t, err)
 }
 
@@ -190,12 +184,12 @@ func TestDownloadFileWithMissingDir(t *testing.T) {
 		File("testdata/mytextfile.txt").
 		SetHeader("hello", "World")
 
-	rc := retryablehttp.NewClient()
-	client := &http.Client{Transport: &http.Transport{}}
-	rc.HTTPClient = client
-	gock.InterceptClient(client)
+	c := NewHTTPClient()
+	gock.InterceptClient(c.HTTPClient)
+	c.RetryMax = 0
+
 	missingDir := "/a/non-existant-dir"
-	downloadedFilePath, err := DownloadFile(rc, "https://www.example.com/mytextfile.txt", missingDir)
+	downloadedFilePath, err := DownloadFile(c, "https://www.example.com/mytextfile.txt", missingDir)
 	require.Error(t, err)
 	require.Empty(t, downloadedFilePath)
 }
@@ -213,10 +207,9 @@ func TestDownloadFileWithDirSpecified(t *testing.T) {
 		File("testdata/mytextfile.txt").
 		SetHeader("hello", "World")
 
-	rc := retryablehttp.NewClient()
-	client := &http.Client{Transport: &http.Transport{}}
-	rc.HTTPClient = client
-	gock.InterceptClient(client)
+	rc := NewHTTPClient()
+
+	gock.InterceptClient(rc.HTTPClient)
 
 	tmpDir := t.TempDir()
 	df, err := DownloadFile(rc, "https://www.example.com/mytextfile.txt", tmpDir)
@@ -237,13 +230,12 @@ func TestDownloadFileWithFilePathSpecified(t *testing.T) {
 		File("testdata/mytextfile.txt").
 		SetHeader("hello", "World")
 
-	rc := retryablehttp.NewClient()
-	client := &http.Client{Transport: &http.Transport{}}
-	rc.HTTPClient = client
-	gock.InterceptClient(client)
+	c := NewHTTPClient()
+
+	gock.InterceptClient(c.HTTPClient)
 
 	tmpDir := t.TempDir()
-	df, err := DownloadFile(rc, "https://www.example.com/mytextfile.txt", path.Join(tmpDir, "mytextfile.txt"))
+	df, err := DownloadFile(c, "https://www.example.com/mytextfile.txt", path.Join(tmpDir, "mytextfile.txt"))
 	require.NoError(t, err)
 	require.Equal(t, filepath.Join(tmpDir, "mytextfile.txt"), df)
 }
@@ -261,12 +253,11 @@ func TestHTTPGet(t *testing.T) {
 		File("testdata/mytextfile.txt").
 		SetHeader("hello", "World")
 
-	client := &http.Client{Transport: &http.Transport{}}
-	gock.InterceptClient(client)
-	rc := retryablehttp.NewClient()
-	rc.HTTPClient = client
-	gock.InterceptClient(rc.HTTPClient)
-	b, headers, status, err := Request(rc, testUrl, http.MethodGet, nil, nil, 2*time.Second)
+	c := NewHTTPClient()
+
+	gock.InterceptClient(c.HTTPClient)
+
+	b, headers, status, err := Request(c, testUrl, http.MethodGet, nil, nil, 2*time.Second)
 	require.NoError(t, err)
 	require.Equal(t, 200, status)
 	require.Equal(t, "hello world", string(b))

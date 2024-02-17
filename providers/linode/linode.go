@@ -66,13 +66,12 @@ type Linode struct {
 
 func New() Linode {
 	pflog.SetLogLevel()
-	rc := &http.Client{Transport: &http.Transport{}}
-	c := retryablehttp.NewClient()
+
+	c := web.NewHTTPClient()
+
 	if logrus.GetLevel() < logrus.DebugLevel {
 		c.Logger = nil
 	}
-	c.HTTPClient = rc
-	c.RetryMax = 1
 
 	return Linode{
 		DownloadURL: DownloadURL,

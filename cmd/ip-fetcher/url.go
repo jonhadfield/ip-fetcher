@@ -54,7 +54,6 @@ func urlCmd() *cli.Command {
 				var pUrl *url.URL
 				var err error
 				if pUrl, err = url.Parse(u); err != nil {
-
 					continue
 				}
 

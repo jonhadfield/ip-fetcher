@@ -3,14 +3,15 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/providers/fastly"
-	"github.com/urfave/cli/v2"
-	"gopkg.in/h2non/gock.v1"
-	"gopkg.in/yaml.v3"
 	"net/url"
 	"os"
 	"slices"
 	"strings"
+
+	"github.com/jonhadfield/ip-fetcher/providers/fastly"
+	"github.com/urfave/cli/v2"
+	"gopkg.in/h2non/gock.v1"
+	"gopkg.in/yaml.v3"
 )
 
 const (

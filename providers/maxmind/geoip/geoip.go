@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -34,14 +33,12 @@ func init() {
 
 func New() GeoIP {
 	pflog.SetLogLevel()
-	rc := &http.Client{Transport: &http.Transport{}}
-	c := retryablehttp.NewClient()
+
+	c := web.NewHTTPClient()
 
 	if logrus.GetLevel() < logrus.DebugLevel {
 		c.Logger = nil
 	}
-	c.HTTPClient = rc
-	c.RetryMax = 1
 
 	return GeoIP{
 		Client: c,

@@ -2,10 +2,11 @@ package linode
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/require"
-	"gopkg.in/h2non/gock.v1"
 	"net/url"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+	"gopkg.in/h2non/gock.v1"
 )
 
 func TestFetchData(t *testing.T) {
