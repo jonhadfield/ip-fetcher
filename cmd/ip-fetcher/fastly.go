@@ -112,6 +112,7 @@ func fastlyOutput(doc fastly.Doc, format string, stdout bool, path string) (err 
 
 	if path != "" {
 		var out string
+
 		if out, err = saveFile(saveFileInput{
 			provider:        providerNameFastly,
 			data:            data,
@@ -134,6 +135,7 @@ func fastlyLines(in fastly.Doc) ([]byte, error) {
 	for x := range in.IPv4Prefixes {
 		sl.WriteString(fmt.Sprintf("%s\n", in.IPv4Prefixes[x].String()))
 	}
+
 	for x := range in.IPv6Prefixes {
 		sl.WriteString(fmt.Sprintf("%s\n", in.IPv6Prefixes[x].String()))
 	}
@@ -153,6 +155,7 @@ func fastlyCsv(in fastly.Doc) ([]byte, error) {
 
 	for x := range in.IPv6Prefixes {
 		sl.WriteString(fmt.Sprintf("\"%s\"", in.IPv6Prefixes[x].String()))
+
 		if x != len(in.IPv6Prefixes)-1 {
 			sl.WriteString(",\n")
 		}
