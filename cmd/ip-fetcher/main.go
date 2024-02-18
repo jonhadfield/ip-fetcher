@@ -57,6 +57,7 @@ func getApp() *cli.App {
 		googleutfCmd(),
 		linodeCmd(),
 		ociCmd(),
+		publishCmd(),
 		urlCmd(),
 	}
 
