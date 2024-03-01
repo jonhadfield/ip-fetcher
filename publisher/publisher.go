@@ -25,6 +25,7 @@ const (
 	sGCP       = "gcp"
 	sGoogle    = "google"
 	sGooglebot = "googlebot"
+	sLinode    = "linode"
 )
 
 type Publisher struct {
@@ -50,7 +51,7 @@ func New() *Publisher {
 	return &pub
 }
 
-var providerList = []string{sAWS, sAzure, sGCP, sGoogle, sGooglebot}
+var providerList = []string{sAWS, sAzure, sGCP, sGoogle, sGooglebot, sLinode}
 
 func (p *Publisher) Run() error {
 	fs := memfs.New()
@@ -86,6 +87,8 @@ func (p *Publisher) Run() error {
 			commit, err = syncGooglebot(w, fs)
 		case sGoogle:
 			commit, err = syncGoogle(w, fs)
+		case sLinode:
+			commit, err = syncLinode(w, fs)
 		}
 
 		if err != nil {
