@@ -11,14 +11,17 @@ import (
 	"gopkg.in/h2non/gock.v1"
 )
 
+const (
+	sLinode = "linode"
+)
+
 func linodeCmd() *cli.Command {
 	const (
-		providerName = "linode"
-		fileName     = "prefixes.csv"
+		fileName = "prefixes.csv"
 	)
 
 	return &cli.Command{
-		Name:      providerName,
+		Name:      sLinode,
 		HelpName:  "- fetch LINODE prefixes",
 		Usage:     "Linode",
 		UsageText: "ip-fetcher linode {--stdout | --path FILE}",

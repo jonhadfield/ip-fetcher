@@ -15,7 +15,7 @@ import (
 
 func LinodeCmdNoStdOutNoPath() {
 	app := getApp()
-	_ = app.Run([]string{"ip-fetcher", "linode"})
+	_ = app.Run([]string{"ip-fetcher", sLinode})
 }
 
 func TestLinodeCmdNoStdOutNoPath(t *testing.T) {
@@ -39,7 +39,7 @@ func LinodeCmdEmptyPath() {
 	defer testCleanUp(os.Args)
 
 	app := getApp()
-	_ = app.Run([]string{"ip-fetcher", "linode"})
+	_ = app.Run([]string{"ip-fetcher", sLinode})
 }
 
 func TestLinodeCmdEmptyPath(t *testing.T) {
@@ -72,12 +72,12 @@ func TestLinodeCmdSavetoPath(t *testing.T) {
 	app := getApp()
 
 	// with filename only
-	os.Args = []string{"ip-fetcher", "linode", "--path", filepath.Join(tDir, testFile)}
+	os.Args = []string{"ip-fetcher", sLinode, "--path", filepath.Join(tDir, testFile)}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, testFile))
 
 	// with directory only
-	os.Args = []string{"ip-fetcher", "linode", "--path", tDir}
+	os.Args = []string{"ip-fetcher", sLinode, "--path", tDir}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, "prefixes.csv"))
 }
@@ -102,7 +102,7 @@ func TestLinodeCmdStdOut(t *testing.T) {
 	}()
 
 	app := getApp()
-	os.Args = []string{"ip-fetcher", "linode", "--stdout"}
+	os.Args = []string{"ip-fetcher", sLinode, "--stdout"}
 	require.NoError(t, app.Run(os.Args))
 
 	_ = w.Close()
@@ -133,7 +133,7 @@ func TestLinodeCmdStdOutAndFile(t *testing.T) {
 	}()
 
 	app := getApp()
-	os.Args = []string{"ip-fetcher", "linode", "--stdout", "--path", tDir}
+	os.Args = []string{"ip-fetcher", sLinode, "--stdout", "--path", tDir}
 	require.NoError(t, app.Run(os.Args))
 
 	_ = w.Close()

@@ -122,6 +122,7 @@ func (a *Linode) Fetch() (doc Doc, err error) {
 	doc.ETag = etag
 
 	var lastModifiedTime time.Time
+
 	lastModifiedRaw := headers.Values("last-modified")
 	if len(lastModifiedRaw) != 0 {
 		if lastModifiedTime, err = time.Parse(time.RFC1123, lastModifiedRaw[0]); err != nil {
