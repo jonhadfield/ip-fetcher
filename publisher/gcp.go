@@ -31,7 +31,7 @@ func syncGCP(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
 			return plumbing.ZeroHash, err
 		}
 
-		slog.Info("aws.json", "up to date", upToDate)
+		slog.Info("gcp.json", "up to date", upToDate)
 	}
 
 	if err = createFile(fs, "gcp.json", originContent); err != nil {
