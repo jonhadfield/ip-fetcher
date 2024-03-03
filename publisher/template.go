@@ -2,6 +2,11 @@ package publisher
 
 import (
 	"fmt"
+	"os"
+	"path"
+	"strings"
+	"time"
+
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -16,13 +21,10 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/googleutf"
 	"github.com/jonhadfield/ip-fetcher/providers/linode"
 	"github.com/jonhadfield/ip-fetcher/providers/oci"
-	"os"
-	"path"
-	"strings"
-	"time"
 )
 
 type Provider struct {
+	SyncFunc  func(*git.Worktree, billy.Filesystem) (plumbing.Hash, error)
 	ShortName string
 	File      string
 	FullName  string
@@ -31,17 +33,17 @@ type Provider struct {
 }
 
 var providers = []Provider{
-	{aws.ShortName, awsFile, aws.FullName, aws.HostType, aws.SourceURL},
-	{azure.ShortName, azureFile, azure.FullName, azure.HostType, azure.InitialURL},
-	{cloudflare.ShortName, cloudflareFile, cloudflare.FullName, cloudflare.HostType, cloudflare.SourceURL},
-	{fastly.ShortName, fastlyFile, fastly.FullName, fastly.HostType, fastly.SourceURL},
-	{gcp.ShortName, gcpFile, gcp.FullName, gcp.HostType, gcp.SourceURL},
-	{google.ShortName, googleFile, google.FullName, google.HostType, google.SourceURL},
-	{googlebot.ShortName, googlebotFile, googlebot.FullName, googlebot.HostType, googlebot.SourceURL},
-	{googlesc.ShortName, googlescFile, googlesc.FullName, googlesc.HostType, googlesc.SourceURL},
-	{googleutf.ShortName, googleutfFile, googleutf.FullName, googleutf.HostType, googleutf.SourceURL},
-	{linode.ShortName, linodeFile, linode.FullName, linode.HostType, linode.SourceURL},
-	{oci.ShortName, ociFile, oci.FullName, oci.HostType, oci.SourceURL},
+	{syncAWS, aws.ShortName, awsFile, aws.FullName, aws.HostType, aws.SourceURL},
+	{syncAzure, azure.ShortName, azureFile, azure.FullName, azure.HostType, azure.InitialURL},
+	{syncCloudflare, cloudflare.ShortName, cloudflareFile, cloudflare.FullName, cloudflare.HostType, cloudflare.SourceURL},
+	{syncFastly, fastly.ShortName, fastlyFile, fastly.FullName, fastly.HostType, fastly.SourceURL},
+	{syncGCP, gcp.ShortName, gcpFile, gcp.FullName, gcp.HostType, gcp.SourceURL},
+	{syncGoogle, google.ShortName, googleFile, google.FullName, google.HostType, google.SourceURL},
+	{syncGooglebot, googlebot.ShortName, googlebotFile, googlebot.FullName, googlebot.HostType, googlebot.SourceURL},
+	{syncGoogleSC, googlesc.ShortName, googlescFile, googlesc.FullName, googlesc.HostType, googlesc.SourceURL},
+	{syncGoogleUTF, googleutf.ShortName, googleutfFile, googleutf.FullName, googleutf.HostType, googleutf.SourceURL},
+	{syncLinode, linode.ShortName, linodeFile, linode.FullName, linode.HostType, linode.SourceURL},
+	{syncOCI, oci.ShortName, ociFile, oci.FullName, oci.HostType, oci.SourceURL},
 }
 
 func generateReadMeContent(included []string) (string, error) {
