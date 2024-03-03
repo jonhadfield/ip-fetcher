@@ -15,12 +15,34 @@ import (
 	"github.com/jonhadfield/ip-fetcher/internal/web"
 )
 
-const DownloadURL = "https://ip-ranges.amazonaws.com/ip-ranges.json"
+const (
+	ShortName   = "aws"
+	FullName    = "Amazon Web Services"
+	HostType    = "cloud"
+	SourceURL   = "https://docs.aws.amazon.com/vpc/latest/userguide/aws-ip-ranges.html"
+	DownloadURL = "https://ip-ranges.amazonaws.com/ip-ranges.json"
+)
 
 type AWS struct {
 	Client      *retryablehttp.Client
 	InitialURL  string
 	DownloadURL string
+}
+
+func (a *AWS) ShortName() string {
+	return ShortName
+}
+
+func (a *AWS) FullName() string {
+	return FullName
+}
+
+func (a *AWS) HostType() string {
+	return HostType
+}
+
+func (a *AWS) SourceURL() string {
+	return SourceURL
 }
 
 func New() AWS {

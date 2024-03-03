@@ -14,6 +14,10 @@ import (
 )
 
 const (
+	ShortName                = "gcp"
+	FullName                 = "Google Cloud Platform"
+	HostType                 = "cloud"
+	SourceURL                = "https://cloud.google.com/compute/docs/faq#find_ip_range"
 	DownloadURL              = "https://www.gstatic.com/ipranges/cloud.json"
 	downloadedFileTimeFormat = "2006-01-02T15:04:05.999999"
 )

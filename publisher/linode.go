@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-const linodeFileName = "linode.json"
+const linodeFile = "linode.json"
 
 func getLinodeJSON() ([]byte, error) {
 	a := linode.New()
@@ -30,7 +30,7 @@ func syncLinode(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
 		return plumbing.ZeroHash, err
 	}
 
-	rgb, err := fs.Open(linodeFileName)
+	rgb, err := fs.Open(linodeFile)
 	if err != nil && !os.IsNotExist(err) {
 		return plumbing.ZeroHash, err
 	}
@@ -43,15 +43,15 @@ func syncLinode(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
 			return plumbing.ZeroHash, err
 		}
 
-		slog.Info(linodeFileName, "up to date", upToDate)
+		slog.Info(linodeFile, "up to date", upToDate)
 	}
 
-	if err = createFile(fs, linodeFileName, linodeJSON); err != nil {
+	if err = createFile(fs, linodeFile, linodeJSON); err != nil {
 		return plumbing.ZeroHash, err
 	}
 
 	// Adds the new file to the staging area.
-	_, err = wt.Add(linodeFileName)
+	_, err = wt.Add(linodeFile)
 	if err != nil {
 		return plumbing.ZeroHash, err
 	}

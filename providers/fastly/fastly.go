@@ -13,7 +13,13 @@ import (
 	"github.com/hashicorp/go-retryablehttp"
 )
 
-const DefaultUrl = "https://api.fastly.com/public-ip-list"
+const (
+	ShortName   = "fastly"
+	FullName    = "Fastly"
+	HostType    = "cdn"
+	SourceURL   = "https://www.fastly.com/documentation/reference/api/utils/public-ip-list/"
+	DownloadURL = "https://api.fastly.com/public-ip-list"
+)
 
 func New() Fastly {
 	pflog.SetLogLevel()
@@ -25,7 +31,7 @@ func New() Fastly {
 	}
 
 	return Fastly{
-		DownloadURL: DefaultUrl,
+		DownloadURL: DownloadURL,
 		Client:      c,
 	}
 }
@@ -37,7 +43,7 @@ type Fastly struct {
 
 func (f *Fastly) FetchData() (data []byte, headers http.Header, status int, err error) {
 	if f.DownloadURL == "" {
-		f.DownloadURL = DefaultUrl
+		f.DownloadURL = DownloadURL
 	}
 
 	return web.Request(f.Client, f.DownloadURL, http.MethodGet, nil, nil, 10*time.Second)

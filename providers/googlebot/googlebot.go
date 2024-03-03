@@ -14,6 +14,10 @@ import (
 )
 
 const (
+	ShortName                = "googlebot"
+	FullName                 = "Google Crawler Bots"
+	HostType                 = "crawlers"
+	SourceURL                = "https://developers.google.com/search/docs/crawling-indexing/verifying-googlebot"
 	DownloadURL              = "https://developers.google.com/static/search/apis/ipranges/googlebot.json"
 	downloadedFileTimeFormat = "2006-01-02T15:04:05.999999"
 )

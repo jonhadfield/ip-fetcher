@@ -14,6 +14,10 @@ import (
 )
 
 const (
+	ShortName                = "oci"
+	FullName                 = "Oracle Cloud Infrastructure"
+	HostType                 = "hosting"
+	SourceURL                = "https://docs.oracle.com/en-us/iaas/Content/General/Concepts/addressranges.htm"
 	DownloadURL              = "https://docs.oracle.com/iaas/tools/public_ip_ranges.json"
 	downloadedFileTimeFormat = "2006-01-02T15:04:05.999999"
 )

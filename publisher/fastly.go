@@ -5,22 +5,22 @@ import (
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/jonhadfield/ip-fetcher/providers/google"
+	"github.com/jonhadfield/ip-fetcher/providers/fastly"
 	"log/slog"
 	"os"
 )
 
-const googleFile = "google.json"
+const fastlyFile = "fastly.json"
 
-func syncGoogle(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
-	a := google.New()
+func syncFastly(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
+	a := fastly.New()
 
 	originContent, _, _, err := a.FetchData()
 	if err != nil {
 		return plumbing.ZeroHash, err
 	}
 
-	rgb, err := fs.Open(googleFile)
+	rgb, err := fs.Open(fastlyFile)
 	if err != nil && !os.IsNotExist(err) {
 		return plumbing.ZeroHash, err
 	}
@@ -33,18 +33,18 @@ func syncGoogle(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
 			return plumbing.ZeroHash, err
 		}
 
-		slog.Info(googleFile, "up to date", upToDate)
+		slog.Info(fastlyFile, "up to date", upToDate)
 	}
 
-	if err = createFile(fs, googleFile, originContent); err != nil {
+	if err = createFile(fs, fastlyFile, originContent); err != nil {
 		return plumbing.ZeroHash, err
 	}
 
 	// Adds the new file to the staging area.
-	_, err = wt.Add(googleFile)
+	_, err = wt.Add(fastlyFile)
 	if err != nil {
 		return plumbing.ZeroHash, err
 	}
 
-	return createCommit(wt, "update google data")
+	return createCommit(wt, "update fastly data")
 }

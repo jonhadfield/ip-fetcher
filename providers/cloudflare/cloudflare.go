@@ -3,7 +3,6 @@ package cloudflare
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"net/http"
 	"net/netip"
 	"time"
@@ -16,6 +15,10 @@ import (
 )
 
 const (
+	ShortName      = "cloudflare"
+	FullName       = "Cloudflare"
+	HostType       = "cdn"
+	SourceURL      = "https://www.cloudflare.com/en-gb/ips/"
 	DefaultIPv4URL = "https://www.cloudflare.com/ips-v4"
 	DefaultIPv6URL = "https://www.cloudflare.com/ips-v6"
 )
@@ -95,7 +98,7 @@ func ProcessData(data []byte) (prefixes []netip.Prefix, err error) {
 
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
-		fmt.Println(scanner.Text()) // Println will add back the final '\n'
+		// fmt.Println(scanner.Text()) // Println will add back the final '\n'
 
 		var prefix netip.Prefix
 

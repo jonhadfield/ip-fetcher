@@ -10,7 +10,9 @@ import (
 	"os"
 )
 
-func syncAWSData(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
+const awsFile = "aws.json"
+
+func syncAWS(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
 	a := aws.New()
 
 	originContent, _, _, err := a.FetchData()

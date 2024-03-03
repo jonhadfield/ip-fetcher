@@ -11,9 +11,11 @@ import (
 	"gopkg.in/h2non/gock.v1"
 )
 
+const sOCI = "oci"
+
 func ociCmd() *cli.Command {
 	const (
-		providerName = "oci"
+		providerName = sOCI
 		fileName     = "public_ip_ranges.json"
 	)
 
