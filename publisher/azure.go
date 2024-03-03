@@ -10,7 +10,9 @@ import (
 	"os"
 )
 
-func syncAzureData(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
+const azureFile = "azure.json"
+
+func syncAzure(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
 	a := azure.New()
 
 	originContent, _, _, err := a.FetchData()

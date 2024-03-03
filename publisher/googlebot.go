@@ -10,6 +10,8 @@ import (
 	"os"
 )
 
+const googlebotFile = "googlebot.json"
+
 func syncGooglebot(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
 	a := googlebot.New()
 
@@ -18,7 +20,7 @@ func syncGooglebot(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error)
 		return plumbing.ZeroHash, err
 	}
 
-	rgb, err := fs.Open("googlebot.json")
+	rgb, err := fs.Open(googlebotFile)
 	if err != nil && !os.IsNotExist(err) {
 		return plumbing.ZeroHash, err
 	}
@@ -31,15 +33,15 @@ func syncGooglebot(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error)
 			return plumbing.ZeroHash, err
 		}
 
-		slog.Info("aws.json", "up to date", upToDate)
+		slog.Info(googlebotFile, "up to date", upToDate)
 	}
 
-	if err = createFile(fs, "googlebot.json", originContent); err != nil {
+	if err = createFile(fs, googlebotFile, originContent); err != nil {
 		return plumbing.ZeroHash, err
 	}
 
 	// Adds the new file to the staging area.
-	_, err = wt.Add("googlebot.json")
+	_, err = wt.Add(googlebotFile)
 	if err != nil {
 		return plumbing.ZeroHash, err
 	}

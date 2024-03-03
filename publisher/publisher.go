@@ -3,11 +3,13 @@ package publisher
 import (
 	"crypto/sha256"
 	"fmt"
+	"github.com/jonhadfield/ip-fetcher/providers/aws"
+	"github.com/jonhadfield/ip-fetcher/providers/azure"
+	"github.com/jonhadfield/ip-fetcher/providers/cloudflare"
+	"github.com/jonhadfield/ip-fetcher/providers/gcp"
 	"io"
-	"log"
 	"log/slog"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/go-git/go-billy/v5"
@@ -20,12 +22,17 @@ import (
 )
 
 const (
-	sAWS       = "aws"
-	sAzure     = "azure"
-	sGCP       = "gcp"
-	sGoogle    = "google"
-	sGooglebot = "googlebot"
-	sLinode    = "linode"
+	sAWS        = "aws"
+	sAzure      = "azure"
+	sCloudflare = "cloudflare"
+	sFastly     = "fastly"
+	sGCP        = "gcp"
+	sGoogle     = "google"
+	sGooglebot  = "googlebot"
+	sGoogleSC   = "googlesc"
+	sGoogleUTF  = "googleutf"
+	sLinode     = "linode"
+	sOCI        = "oci"
 )
 
 type Publisher struct {
@@ -38,7 +45,7 @@ func Publish() {
 
 	err := p.Run()
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("publish failed", "error", err)
 	}
 }
 
@@ -51,7 +58,19 @@ func New() *Publisher {
 	return &pub
 }
 
-var providerList = []string{sAWS, sAzure, sGCP, sGoogle, sGooglebot, sLinode}
+var providerList = []string{
+	sAWS,
+	sAzure,
+	sCloudflare,
+	sFastly,
+	sGCP,
+	sGoogle,
+	sGooglebot,
+	sGoogleSC,
+	sGoogleUTF,
+	sLinode,
+	sOCI,
+}
 
 func (p *Publisher) Run() error {
 	fs := memfs.New()
@@ -70,31 +89,113 @@ func (p *Publisher) Run() error {
 		return err
 	}
 
-	// for each provider, fetch latest data and compare with the current file in the repo
-	var needPush bool
+	// create list of providers to include in README
+	var included []string
 
 	for _, provider := range providerList {
 		var commit plumbing.Hash
 
+		// TODO: allow stale if source is down
 		switch provider {
-		case sAWS:
-			commit, err = syncAWSData(w, fs)
-		case sAzure:
-			commit, err = syncAzureData(w, fs)
-		case sGCP:
+		case aws.ShortName:
+			commit, err = syncAWS(w, fs)
+			if err != nil {
+				slog.Error("failed to sync", provider, err.Error())
+
+				break
+			}
+
+			included = append(included, provider)
+		case azure.ShortName:
+			commit, err = syncAzure(w, fs)
+			if err != nil {
+				slog.Error("failed to sync", provider, err.Error())
+
+				break
+			}
+
+			included = append(included, provider)
+		case cloudflare.ShortName:
+			commit, err = syncCloudflare(w, fs)
+			if err != nil {
+				slog.Error("failed to sync", provider, err.Error())
+
+				break
+			}
+
+			included = append(included, provider)
+		case sFastly:
+			commit, err = syncFastly(w, fs)
+			if err != nil {
+				slog.Error("failed to sync", provider, err.Error())
+
+				break
+			}
+
+			included = append(included, provider)
+		case gcp.ShortName:
 			commit, err = syncGCP(w, fs)
-		case sGooglebot:
-			commit, err = syncGooglebot(w, fs)
+			if err != nil {
+				slog.Error("failed to sync", provider, err.Error())
+
+				break
+			}
+
+			included = append(included, provider)
 		case sGoogle:
 			commit, err = syncGoogle(w, fs)
+			if err != nil {
+				slog.Error("failed to sync", provider, err.Error())
+
+				break
+			}
+
+			included = append(included, provider)
+		case sGooglebot:
+			commit, err = syncGooglebot(w, fs)
+			if err != nil {
+				slog.Error("failed to sync", provider, err.Error())
+
+				break
+			}
+
+			included = append(included, provider)
+		case sGoogleSC:
+			commit, err = syncGoogleSC(w, fs)
+			if err != nil {
+				slog.Error("failed to sync", provider, err.Error())
+
+				break
+			}
+
+			included = append(included, provider)
+		case sGoogleUTF:
+			commit, err = syncGoogleUTF(w, fs)
+			if err != nil {
+				slog.Error("failed to sync", provider, err.Error())
+
+				break
+			}
+
+			included = append(included, provider)
 		case sLinode:
 			commit, err = syncLinode(w, fs)
-		}
+			if err != nil {
+				slog.Error("failed to sync", provider, err.Error())
 
-		if err != nil {
-			slog.Error("failed to sync", provider, err.Error())
+				break
+			}
 
-			return err
+			included = append(included, provider)
+		case sOCI:
+			commit, err = syncOCI(w, fs)
+			if err != nil {
+				slog.Error("failed to sync", provider, err.Error())
+
+				break
+			}
+
+			included = append(included, provider)
 		}
 
 		if commit.IsZero() {
@@ -109,12 +210,16 @@ func (p *Publisher) Run() error {
 		if err != nil {
 			return err
 		}
-
-		needPush = true
 	}
 
-	if !needPush {
-		return nil
+	commit, err := syncReadMe(included, w, fs)
+	if err != nil {
+		return err
+	}
+
+	_, err = repo.CommitObject(commit)
+	if err != nil {
+		return err
 	}
 
 	slog.Info("pushing changes")
@@ -126,6 +231,8 @@ func (p *Publisher) Run() error {
 	if err != nil {
 		return err
 	}
+
+	slog.Info("publish successful", "url", p.GitHubRepoURL)
 
 	return nil
 }
@@ -180,14 +287,17 @@ func createFile(fs billy.Filesystem, name string, content []byte) error {
 		return err
 	}
 
-	var n int
-
-	n, err = gbFile.Write(content)
-	if err != nil {
+	if _, err = gbFile.Write(content); err != nil {
 		return err
 	}
 
-	slog.Info("wrote bytes", strconv.Itoa(n), name)
+	if name == "README.md" {
+		slog.Info("README.md updated")
+
+		return nil
+	}
+
+	slog.Info("provider", name, "updated")
 
 	return nil
 }

@@ -10,6 +10,8 @@ import (
 	"os"
 )
 
+const gcpFile = "gcp.json"
+
 func syncGCP(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
 	a := gcp.New()
 
@@ -18,7 +20,7 @@ func syncGCP(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
 		return plumbing.ZeroHash, err
 	}
 
-	rgb, err := fs.Open("gcp.json")
+	rgb, err := fs.Open(gcpFile)
 	if err != nil && !os.IsNotExist(err) {
 		return plumbing.ZeroHash, err
 	}
@@ -34,12 +36,12 @@ func syncGCP(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
 		slog.Info("gcp.json", "up to date", upToDate)
 	}
 
-	if err = createFile(fs, "gcp.json", originContent); err != nil {
+	if err = createFile(fs, gcpFile, originContent); err != nil {
 		return plumbing.ZeroHash, err
 	}
 
 	// Adds the new file to the staging area.
-	_, err = wt.Add("gcp.json")
+	_, err = wt.Add(gcpFile)
 	if err != nil {
 		return plumbing.ZeroHash, err
 	}

@@ -14,6 +14,10 @@ import (
 )
 
 const (
+	ShortName                = "google"
+	FullName                 = "Google"
+	HostType                 = "hosting"
+	SourceURL                = "https://support.google.com/a/answer/10026322"
 	DownloadURL              = "https://www.gstatic.com/ipranges/goog.json"
 	downloadedFileTimeFormat = "2006-01-02T15:04:05.999999"
 )

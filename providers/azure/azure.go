@@ -17,6 +17,9 @@ import (
 )
 
 const (
+	ShortName             = "azure"
+	FullName              = "Microsoft Azure"
+	HostType              = "cloud"
 	InitialURL            = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519"
 	WorkaroundDownloadURL = "https://raw.githubusercontent.com/tobilg/public-cloud-provider-ip-ranges/main/data/providers/azure.json"
 	errFailedToDownload   = "failed to retrieve azure prefixes initial page"
@@ -26,6 +29,22 @@ type Azure struct {
 	Client      *retryablehttp.Client
 	InitialURL  string
 	DownloadURL string
+}
+
+func (a *Azure) ShortName() string {
+	return ShortName
+}
+
+func (a *Azure) FullName() string {
+	return FullName
+}
+
+func (a *Azure) HostType() string {
+	return HostType
+}
+
+func (a *Azure) SourceURL() string {
+	return InitialURL
 }
 
 func New() Azure {

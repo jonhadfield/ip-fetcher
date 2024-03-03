@@ -21,6 +21,15 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	ShortName           = "linode"
+	FullName            = "Linode"
+	HostType            = "hosting"
+	SourceURL           = "-"
+	DownloadURL         = "https://geoip.linode.com/"
+	errFailedToDownload = "failed to download Linode prefixes document "
+)
+
 func IsIPv4(address string) bool {
 	return strings.Count(address, ":") < 2
 }
@@ -53,11 +62,6 @@ func extractNetFromString(in string) string {
 
 	return s
 }
-
-const (
-	DownloadURL         = "https://geoip.linode.com/"
-	errFailedToDownload = "failed to download Linode prefixes document "
-)
 
 type Linode struct {
 	Client      *retryablehttp.Client

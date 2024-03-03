@@ -142,9 +142,8 @@ func cloudflareCmd() *cli.Command {
 			if msg != "" {
 				if stdOut {
 					fmt.Println()
+					_, _ = os.Stderr.WriteString(msg)
 				}
-
-				_, _ = os.Stderr.WriteString(msg)
 			}
 
 			return nil
