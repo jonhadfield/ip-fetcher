@@ -3,11 +3,8 @@ package publisher
 import (
 	"crypto/sha256"
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/providers/aws"
-	"github.com/jonhadfield/ip-fetcher/providers/azure"
-	"github.com/jonhadfield/ip-fetcher/providers/cloudflare"
-	"github.com/jonhadfield/ip-fetcher/providers/gcp"
 	"io"
+	"log"
 	"log/slog"
 	"os"
 	"time"
@@ -19,20 +16,6 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/go-git/go-git/v5/storage/memory"
-)
-
-const (
-	sAWS        = "aws"
-	sAzure      = "azure"
-	sCloudflare = "cloudflare"
-	sFastly     = "fastly"
-	sGCP        = "gcp"
-	sGoogle     = "google"
-	sGooglebot  = "googlebot"
-	sGoogleSC   = "googlesc"
-	sGoogleUTF  = "googleutf"
-	sLinode     = "linode"
-	sOCI        = "oci"
 )
 
 type Publisher struct {
@@ -58,20 +41,6 @@ func New() *Publisher {
 	return &pub
 }
 
-var providerList = []string{
-	sAWS,
-	sAzure,
-	sCloudflare,
-	sFastly,
-	sGCP,
-	sGoogle,
-	sGooglebot,
-	sGoogleSC,
-	sGoogleUTF,
-	sLinode,
-	sOCI,
-}
-
 func (p *Publisher) Run() error {
 	fs := memfs.New()
 	storer := memory.NewStorage()
@@ -92,119 +61,24 @@ func (p *Publisher) Run() error {
 	// create list of providers to include in README
 	var included []string
 
-	for _, provider := range providerList {
+	for _, provider := range providers {
 		var commit plumbing.Hash
 
-		// TODO: allow stale if source is down
-		switch provider {
-		case aws.ShortName:
-			commit, err = syncAWS(w, fs)
-			if err != nil {
-				slog.Error("failed to sync", provider, err.Error())
-
-				break
-			}
-
-			included = append(included, provider)
-		case azure.ShortName:
-			commit, err = syncAzure(w, fs)
-			if err != nil {
-				slog.Error("failed to sync", provider, err.Error())
-
-				break
-			}
-
-			included = append(included, provider)
-		case cloudflare.ShortName:
-			commit, err = syncCloudflare(w, fs)
-			if err != nil {
-				slog.Error("failed to sync", provider, err.Error())
-
-				break
-			}
-
-			included = append(included, provider)
-		case sFastly:
-			commit, err = syncFastly(w, fs)
-			if err != nil {
-				slog.Error("failed to sync", provider, err.Error())
-
-				break
-			}
-
-			included = append(included, provider)
-		case gcp.ShortName:
-			commit, err = syncGCP(w, fs)
-			if err != nil {
-				slog.Error("failed to sync", provider, err.Error())
-
-				break
-			}
-
-			included = append(included, provider)
-		case sGoogle:
-			commit, err = syncGoogle(w, fs)
-			if err != nil {
-				slog.Error("failed to sync", provider, err.Error())
-
-				break
-			}
-
-			included = append(included, provider)
-		case sGooglebot:
-			commit, err = syncGooglebot(w, fs)
-			if err != nil {
-				slog.Error("failed to sync", provider, err.Error())
-
-				break
-			}
-
-			included = append(included, provider)
-		case sGoogleSC:
-			commit, err = syncGoogleSC(w, fs)
-			if err != nil {
-				slog.Error("failed to sync", provider, err.Error())
-
-				break
-			}
-
-			included = append(included, provider)
-		case sGoogleUTF:
-			commit, err = syncGoogleUTF(w, fs)
-			if err != nil {
-				slog.Error("failed to sync", provider, err.Error())
-
-				break
-			}
-
-			included = append(included, provider)
-		case sLinode:
-			commit, err = syncLinode(w, fs)
-			if err != nil {
-				slog.Error("failed to sync", provider, err.Error())
-
-				break
-			}
-
-			included = append(included, provider)
-		case sOCI:
-			commit, err = syncOCI(w, fs)
-			if err != nil {
-				slog.Error("failed to sync", provider, err.Error())
-
-				break
-			}
-
-			included = append(included, provider)
+		commit, err = provider.SyncFunc(w, fs)
+		if err != nil {
+			log.Printf("failed to sync %s: %v", provider.ShortName, err)
+			continue
 		}
 
+		included = append(included, provider.ShortName)
+
 		if commit.IsZero() {
-			slog.Info("provider", provider, "in sync")
+			slog.Info("provider", provider.ShortName, "in sync")
 
 			continue
 		}
 
-		slog.Info("provider", provider, "not in sync")
+		slog.Info("provider", provider.ShortName, "not in sync")
 
 		_, err = repo.CommitObject(commit)
 		if err != nil {
@@ -251,7 +125,6 @@ func isUpToDate(origin, repo io.Reader) (bool, error) {
 	}
 
 	if originHash == repoHash {
-
 		return true, nil
 	}
 

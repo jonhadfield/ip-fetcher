@@ -3,12 +3,13 @@ package publisher
 import (
 	"bytes"
 	"encoding/json"
+	"log/slog"
+	"os"
+
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/jonhadfield/ip-fetcher/providers/cloudflare"
-	"log/slog"
-	"os"
 )
 
 const (
