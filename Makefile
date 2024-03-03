@@ -59,6 +59,25 @@ mac-install: build
 linux-install: build-linux
 	sudo install dist/ip-fetcher_linux_amd64 /usr/local/bin/ip-fetcher
 
+NAME   := ghcr.io/jonhadfield/ip-fetcher
+TAG    := $(shell git rev-parse --short HEAD)
+IMG    := ${NAME}:${TAG}
+LATEST := ${NAME}:latest
+
+build-docker:
+	docker build --platform=linux/x86_64 --build-arg VERSION_VAR="[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC" -t ${IMG} .
+	docker tag ${IMG} ${LATEST}
+	docker tag ${LATEST} ip-fetcher:latest
+
+scan-image:
+	trivy image ip-fetcher:latest
+
+release-docker: build-docker scan-image docker-push
+
+docker-push: login
+	docker --log-level debug push ${IMG}
+	docker --log-level debug push ${LATEST}
+
 find-updates:
 	go list -u -m -json all | go-mod-outdated -update -direct
 
