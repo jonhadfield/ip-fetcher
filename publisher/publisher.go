@@ -7,6 +7,7 @@ import (
 	"log"
 	"log/slog"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/go-git/go-billy/v5"
@@ -37,8 +38,8 @@ func Publish() {
 func New() *Publisher {
 	var pub Publisher
 
-	pub.GitHubRepoURL = os.Getenv("GITHUB_PUBLISH_URL")
-	pub.GitHubToken = os.Getenv("GITHUB_TOKEN")
+	pub.GitHubRepoURL = strings.TrimSpace(os.Getenv("GITHUB_PUBLISH_URL"))
+	pub.GitHubToken = strings.TrimSpace(os.Getenv("GITHUB_TOKEN"))
 
 	return &pub
 }
