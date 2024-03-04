@@ -29,6 +29,8 @@ func Publish() {
 	err := p.Run()
 	if err != nil {
 		slog.Error("publish failed", "error", err)
+
+		os.Exit(1)
 	}
 }
 
