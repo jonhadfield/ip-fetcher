@@ -39,7 +39,16 @@ func New() *Publisher {
 	var pub Publisher
 
 	pub.GitHubRepoURL = strings.TrimSpace(os.Getenv("GITHUB_PUBLISH_URL"))
+	if pub.GitHubRepoURL == "" {
+		slog.Error("GITHUB_PUBLISH_URL not set")
+		os.Exit(1)
+	}
+
 	pub.GitHubToken = strings.TrimSpace(os.Getenv("GITHUB_TOKEN"))
+	if pub.GitHubToken == "" {
+		slog.Error("GITHUB_TOKEN not set")
+		os.Exit(1)
+	}
 
 	return &pub
 }
@@ -53,7 +62,7 @@ func (p *Publisher) Run() error {
 		Password: p.GitHubToken,
 	}, URL: p.GitHubRepoURL})
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to clone repo: %w", err)
 	}
 
 	w, err := repo.Worktree()
