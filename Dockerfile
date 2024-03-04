@@ -30,5 +30,5 @@ WORKDIR /app
 COPY publisher/README.template /app/publisher/README.template
 COPY --from=builder /out/ip-fetcher /app/ip-fetcher
 ENV GITHUB_TOKEN=$GITHUB_TOKEN
-ENV GITHUB_PUBLISH_URL:=$GITHUB_PUBLISH_URL
+ENV GITHUB_PUBLISH_URL=$GITHUB_PUBLISH_URL
 ENTRYPOINT ["/app/ip-fetcher"]
