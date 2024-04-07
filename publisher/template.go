@@ -1,9 +1,9 @@
 package publisher
 
 import (
+	_ "embed"
+
 	"fmt"
-	"os"
-	"path"
 	"strings"
 	"time"
 
@@ -22,6 +22,9 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/linode"
 	"github.com/jonhadfield/ip-fetcher/providers/oci"
 )
+
+//go:embed README.template
+var ReadMeTemplate string
 
 type Provider struct {
 	SyncFunc  func(*git.Worktree, billy.Filesystem) (plumbing.Hash, error)
@@ -47,11 +50,6 @@ var providers = []Provider{
 }
 
 func generateReadMeContent(included []string) (string, error) {
-	templateFile, err := os.ReadFile(path.Join("publisher", "README.template"))
-	if err != nil {
-		return "", fmt.Errorf("failed to read README template: %w", err)
-	}
-
 	rows := strings.Builder{}
 
 	for _, inc := range included {
@@ -62,7 +60,7 @@ func generateReadMeContent(included []string) (string, error) {
 		}
 	}
 
-	content := strings.ReplaceAll(string(templateFile), "{{ date }}", time.Now().UTC().Format(time.RFC1123))
+	content := strings.ReplaceAll(ReadMeTemplate, "{{ date }}", time.Now().UTC().Format(time.RFC1123))
 	content = strings.ReplaceAll(content, "{{ rows }}", rows.String())
 
 	return content, nil

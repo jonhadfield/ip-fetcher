@@ -13,7 +13,8 @@ import (
 
 func azureCmd() *cli.Command {
 	const (
-		testMockAzureDownloadURL = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_2000000.json"
+		testMockAzureDownloadURL = azure.WorkaroundDownloadURL
+		// testMockAzureDownloadURL = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_2000000.json"
 		// testMockAzureDownloadURL     = azure.WorkaroundDownloadURL
 		testAzureInitialFilePath = "../../providers/azure/testdata/initial.html"
 		testAzureDataFilePath    = "../../providers/azure/testdata/ServiceTags_Public_20221212.json"
@@ -54,11 +55,11 @@ func azureCmd() *cli.Command {
 
 			if os.Getenv("IP_FETCHER_MOCK_AZURE") == "true" {
 				defer gock.Off()
-				u, _ := url.Parse(azure.InitialURL)
-				gock.New(azure.InitialURL).
-					Get(u.Path).
-					Reply(200).
-					File(testAzureInitialFilePath)
+				// u, _ := url.Parse(azure.InitialURL)
+				// gock.New(azure.InitialURL).
+				// 	Get(u.Path).
+				// 	Reply(200).
+				// 	File(testAzureInitialFilePath)
 
 				uDownload, _ := url.Parse(testMockAzureDownloadURL)
 				gock.New(testMockAzureDownloadURL).
