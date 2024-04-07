@@ -22,7 +22,8 @@ const (
 	HostType              = "cloud"
 	InitialURL            = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519"
 	WorkaroundDownloadURL = "https://raw.githubusercontent.com/tobilg/public-cloud-provider-ip-ranges/main/data/providers/azure.json"
-	errFailedToDownload   = "failed to retrieve azure prefixes initial page"
+
+	errFailedToDownload = "failed to retrieve azure prefixes initial page"
 )
 
 type Azure struct {
@@ -107,14 +108,18 @@ func (a *Azure) GetDownloadURL() (url string, err error) {
 
 func (a *Azure) FetchData() (data []byte, headers http.Header, status int, err error) {
 	// get download url if not specified
-	if a.DownloadURL == "" {
-		// hack whilst Akamai bot protection is in place
-		// a.DownloadURL = WorkaroundDownloadURL
-		a.DownloadURL, err = a.GetDownloadURL()
-		if err != nil {
-			return
-		}
-	}
+	// if a.DownloadURL == "" {
+	// 	// hack whilst Akamai bot protection is in place
+	// 	// a.DownloadURL = WorkaroundDownloadURL
+	// 	a.DownloadURL, err = a.GetDownloadURL()
+	// 	if err != nil {
+	// 		return
+	// 	}
+	// }
+
+	// hack whilst Akamai bot protection workaround not in place
+	// provided by https://github.com/tobilg/public-cloud-provider-ip-ranges
+	a.DownloadURL = WorkaroundDownloadURL
 
 	data, headers, status, err = web.Request(a.Client, a.DownloadURL, http.MethodGet, nil, nil, 5*time.Second)
 	if status >= 400 {
