@@ -22,8 +22,6 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://www.maxmind.com" target="_blank">MaxMind GeoIP</a>
 - <a href="https://azure.microsoft.com" target="_blank">Microsoft Azure</a>
 
-Note: Azure data currently fetched from [https://github.com/tobilg/public-cloud-provider-ip-ranges](https://github.com/tobilg/public-cloud-provider-ip-ranges).
-
 ## CLI
 
 ### install

@@ -164,8 +164,10 @@ func TestFetch(t *testing.T) {
 	gock.InterceptClient(ac.Client.HTTPClient)
 
 	prefixes, _, err := ac.Fetch()
-	ac.DownloadURL = urlBase
 	require.NoError(t, err)
+
+	ac.DownloadURL = urlBase
+
 	require.Equal(t, "Public", prefixes.Cloud)
 	require.Equal(t, 232, prefixes.ChangeNumber)
 	require.Equal(t, 2643, len(prefixes.Values))
