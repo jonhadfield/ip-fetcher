@@ -119,7 +119,9 @@ func (a *Azure) FetchData() (data []byte, headers http.Header, status int, err e
 
 	// hack whilst Akamai bot protection workaround not in place
 	// provided by https://github.com/tobilg/public-cloud-provider-ip-ranges
-	a.DownloadURL = WorkaroundDownloadURL
+	if a.DownloadURL == "" {
+		a.DownloadURL = WorkaroundDownloadURL
+	}
 
 	data, headers, status, err = web.Request(a.Client, a.DownloadURL, http.MethodGet, nil, nil, 5*time.Second)
 	if status >= 400 {
