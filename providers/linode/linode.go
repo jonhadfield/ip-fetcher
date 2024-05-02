@@ -140,11 +140,11 @@ func (a *Linode) Fetch() (doc Doc, err error) {
 }
 
 type Entry struct {
-	Prefix      string `csv:"prefix,omitempty"`
-	Country     string `csv:"country,omitempty"`
-	Subdivision string `csv:"subdivision,omitempty"`
-	City        string `csv:"city,omitempty"`
-	PostalCode  string `csv:"postal_code,omitempty"`
+	Prefix     string `csv:"ip_prefix,omitempty"`
+	Alpha2Code string `csv:"alpha2code,omitempty"`
+	Region     string `csv:"region,omitempty"`
+	City       string `csv:"city,omitempty"`
+	PostalCode string `csv:"postal_code,omitempty"`
 }
 
 func Parse(data []byte) (records []Record, err error) {
@@ -168,6 +168,7 @@ Loop:
 	for {
 		var c Record
 		err = dec.Decode(&c)
+
 		switch err {
 		case io.EOF:
 			err = nil
@@ -182,9 +183,7 @@ Loop:
 			if err != nil {
 				return records, err
 			}
-
 			c.Prefix = pcn
-
 			records = append(records, c)
 		default:
 			return
@@ -194,20 +193,20 @@ Loop:
 	return
 }
 
-// prefix, country, subdivision, city, postal_code
+// prefix, alpha2code, region, city, postal_code
 type Record struct {
-	Prefix      netip.Prefix
-	PrefixText  string `csv:"prefix,omitempty"`
-	Country     string `csv:"country,omitempty"`
-	Subdivision string `csv:"subdivision,omitempty"`
-	City        string `csv:"city,omitempty"`
-	PostalCode  string `csv:"postal_code,omitempty"`
+	Prefix     netip.Prefix
+	PrefixText string `csv:"ip_prefix,omitempty"`
+	Alpha2Code string `csv:"alpha2code,omitempty"`
+	Region     string `csv:"region,omitempty"`
+	City       string `csv:"city,omitempty"`
+	PostalCode string `csv:"postal_code,omitempty"`
 }
 
 type CSVEntry struct {
-	Prefix      string `csv:"prefix,omitempty"`
-	Country     string `csv:"country,omitempty"`
-	Subdivision string `csv:"subdivision,omitempty"`
-	City        string `csv:"city,omitempty"`
-	PostalCode  string `csv:"postal_code,omitempty"`
+	Prefix     string `csv:"ip_prefix,omitempty"`
+	Alpha2Code string `csv:"alpha2code,omitempty"`
+	Region     string `csv:"region,omitempty"`
+	City       string `csv:"city,omitempty"`
+	PostalCode string `csv:"postal_code,omitempty"`
 }

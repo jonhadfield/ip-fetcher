@@ -2,6 +2,7 @@ package linode
 
 import (
 	"fmt"
+	"net/netip"
 	"net/url"
 	"testing"
 
@@ -36,7 +37,7 @@ func TestFetchData(t *testing.T) {
 	require.Len(t, headers.Values("last-modified"), 1)
 	require.Equal(t, lastModified, headers.Values("last-modified")[0])
 	require.Equal(t, 200, status)
-	require.Len(t, data, 711)
+	require.Len(t, data, 681)
 }
 
 func TestFetch(t *testing.T) {
@@ -68,10 +69,15 @@ func TestFetch(t *testing.T) {
 	require.Len(t, headers.Values("last-modified"), 1)
 	require.Equal(t, lastModified, headers.Values("last-modified")[0])
 	require.Equal(t, 200, status)
-	require.Len(t, data, 711)
+	require.Len(t, data, 681)
 
 	doc, err := ld.Fetch()
 	require.NoError(t, err)
 	require.NotNil(t, doc)
 	require.NotEmpty(t, doc.Records)
+
+	require.Equal(t, "US", doc.Records[0].Alpha2Code)
+	require.Equal(t, "US-TX", doc.Records[0].Region)
+	require.Equal(t, "Richardson", doc.Records[0].City)
+	require.Equal(t, netip.MustParsePrefix("2600:3c00::/32"), doc.Records[0].Prefix)
 }
