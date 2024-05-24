@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/jonhadfield/ip-fetcher/providers/bingbot"
 	"net/url"
 	"os"
 	"strings"
-
-	"github.com/jonhadfield/ip-fetcher/providers/google"
 
 	"github.com/urfave/cli/v2"
 	"gopkg.in/h2non/gock.v1"
@@ -46,11 +45,11 @@ func bingbotCmd() *cli.Command {
 				os.Exit(1)
 			}
 
-			a := google.New()
+			a := bingbot.New()
 
 			if os.Getenv("IP_FETCHER_MOCK_BINGBOT") == "true" {
 				defer gock.Off()
-				urlBase := google.DownloadURL
+				urlBase := bingbot.DownloadURL
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).
