@@ -37,7 +37,7 @@ require (
 	github.com/klauspost/compress v1.17.6 // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/quic-go/quic-go v0.41.0 // indirect
+	github.com/quic-go/quic-go v0.42.0 // indirect
 	github.com/refraction-networking/utls v1.6.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
@@ -45,6 +45,7 @@ require (
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	github.com/xrash/smetrics v0.0.0-20240312152122-5f08fbb34913 // indirect
 	golang.org/x/crypto v0.21.0 // indirect
+	golang.org/x/exp v0.0.0-20221205204356-47842c84f3db // indirect
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/net v0.23.0 // indirect
 	golang.org/x/sys v0.20.0 // indirect
