@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/Danny-Dasilva/CycleTLS/cycletls v1.0.26
-	github.com/agiledragon/gomonkey/v2 v2.11.0
+	github.com/agiledragon/gomonkey/v2 v2.12.0
 	github.com/go-git/go-billy/v5 v5.5.0
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/hashicorp/go-retryablehttp v0.7.7
