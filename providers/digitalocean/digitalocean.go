@@ -139,7 +139,8 @@ Loop:
 
 			records = append(records, c)
 		default:
-			return
+			// skip invalid records
+			continue
 		}
 	}
 
