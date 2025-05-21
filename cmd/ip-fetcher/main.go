@@ -49,6 +49,8 @@ func getApp() *cli.App {
 		cloudflareCmd(),
 		digitaloceanCmd(),
 		fastlyCmd(),
+		akamaiCmd(),
+		hetznerCmd(),
 		gcpCmd(),
 		geoipCmd(),
 		googleCmd(),
@@ -58,6 +60,7 @@ func getApp() *cli.App {
 		iCloudPRCmd(),
 		linodeCmd(),
 		ociCmd(),
+		zscalerCmd(),
 		publishCmd(),
 		urlCmd(),
 	}
