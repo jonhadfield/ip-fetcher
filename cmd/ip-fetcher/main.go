@@ -59,6 +59,8 @@ func getApp() *cli.App {
 		googleutfCmd(),
 		iCloudPRCmd(),
 		linodeCmd(),
+		githubCmd(),
+		ovhCmd(),
 		ociCmd(),
 		zscalerCmd(),
 		publishCmd(),

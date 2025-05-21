@@ -1,0 +1,10 @@
+{
+  "verifiable_password_authentication": true,
+  "github_services_sha": "deadbeef",
+  "hooks": ["192.30.252.0/22"],
+  "web": ["140.82.112.0/20"],
+  "api": ["192.30.252.0/22"],
+  "git": ["192.30.252.0/22"],
+  "pages": ["185.199.108.0/22"],
+  "actions": ["185.199.108.0/22"]
+}

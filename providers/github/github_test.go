@@ -1,0 +1,30 @@
+package github
+
+import (
+	"fmt"
+	"net/netip"
+	"net/url"
+	"testing"
+
+	"github.com/stretchr/testify/require"
+	"gopkg.in/h2non/gock.v1"
+)
+
+func TestFetch(t *testing.T) {
+	u, err := url.Parse(DownloadURL)
+	require.NoError(t, err)
+	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
+
+	gock.New(urlBase).
+		Get(u.Path).
+		Reply(200).
+		File("testdata/meta.json")
+
+	gh := New()
+	gock.InterceptClient(gh.Client.HTTPClient)
+
+	prefixes, err := gh.Fetch()
+	require.NoError(t, err)
+	require.Contains(t, prefixes, netip.MustParsePrefix("192.30.252.0/22"))
+	require.Contains(t, prefixes, netip.MustParsePrefix("140.82.112.0/20"))
+}
