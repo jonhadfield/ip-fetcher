@@ -106,45 +106,37 @@ type Entry struct {
 	ZipCode     string `csv:"zipcode,omitempty"`
 }
 
-func Parse(data []byte) (records []Record, err error) {
-	reader := bytes.NewReader(data)
-	csvReader := csv.NewReader(reader)
-	doHeader, err := csvutil.Header(Entry{}, "csv")
+func Parse(data []byte) ([]Record, error) {
+	r := csv.NewReader(bytes.NewReader(data))
+
+	header, err := csvutil.Header(Entry{}, "csv")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	dec, err := csvutil.NewDecoder(csvReader, doHeader...)
+	dec, err := csvutil.NewDecoder(r, header...)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-Loop:
+	var records []Record
 	for {
-		var c Record
-		err = dec.Decode(&c)
-		switch err {
-		case io.EOF:
-			err = nil
-
-			break Loop
-		case nil:
-			var pcn netip.Prefix
-
-			pcn, err = netip.ParsePrefix(c.NetworkText)
-			c.Network = pcn
-			if err != nil {
-				return records, err
+		var rec Record
+		if err = dec.Decode(&rec); err != nil {
+			if err == io.EOF {
+				return records, nil
 			}
-
-			records = append(records, c)
-		default:
 			// skip invalid records
 			continue
 		}
-	}
 
-	return
+		p, perr := netip.ParsePrefix(rec.NetworkText)
+		if perr != nil {
+			return records, perr
+		}
+		rec.Network = p
+		records = append(records, rec)
+	}
 }
 
 type Record struct {

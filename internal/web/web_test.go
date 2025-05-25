@@ -100,14 +100,14 @@ func TestRequestContentDispositionFileName(t *testing.T) {
 
 func TestPathDetails(t *testing.T) {
 	// Test a missing file with an missing 'would-be' parent
-	output, err := pathDetails(filepath.Join("a", "missing", "directory"))
+	output, err := getPathInfo(filepath.Join("a", "missing", "directory"))
 	require.NoError(t, err)
-	require.Equal(t, pathDetailsOutput{
-		found:       false,
-		parentFound: false,
-		isDir:       false,
-		parent:      "",
-		mode:        0,
+	require.Equal(t, pathInfo{
+		exists:       false,
+		parentExists: false,
+		isDir:        false,
+		parent:       "",
+		mode:         0,
 	}, output)
 
 	// Test a missing file with a valid parent
@@ -117,14 +117,14 @@ func TestPathDetails(t *testing.T) {
 
 	parentMode := f.Mode()
 
-	output, err = pathDetails(filepath.Join(tmpDir, "testfile.txt"))
+	output, err = getPathInfo(filepath.Join(tmpDir, "testfile.txt"))
 	require.NoError(t, err)
-	require.Equal(t, pathDetailsOutput{
-		found:       false,
-		parentFound: true,
-		isDir:       false,
-		parent:      filepath.Clean(tmpDir),
-		mode:        parentMode,
+	require.Equal(t, pathInfo{
+		exists:       false,
+		parentExists: true,
+		isDir:        false,
+		parent:       filepath.Clean(tmpDir),
+		mode:         parentMode,
 	}, output)
 
 	// Test a valid directory
@@ -134,14 +134,14 @@ func TestPathDetails(t *testing.T) {
 
 	parentMode = f.Mode()
 
-	output, err = pathDetails(tmpDir)
+	output, err = getPathInfo(tmpDir)
 	require.NoError(t, err)
-	require.Equal(t, pathDetailsOutput{
-		found:       true,
-		parentFound: true,
-		isDir:       true,
-		parent:      filepath.Clean(tmpDir),
-		mode:        parentMode,
+	require.Equal(t, pathInfo{
+		exists:       true,
+		parentExists: true,
+		isDir:        true,
+		parent:       filepath.Clean(tmpDir),
+		mode:         parentMode,
 	}, output)
 
 	// Test a valid file
@@ -160,14 +160,14 @@ func TestPathDetails(t *testing.T) {
 
 	fileMode := f.Mode()
 
-	output, err = pathDetails(filePath)
+	output, err = getPathInfo(filePath)
 	require.NoError(t, err)
-	require.Equal(t, pathDetailsOutput{
-		found:       true,
-		parentFound: true,
-		isDir:       false,
-		parent:      filepath.Clean(tmpDir),
-		mode:        fileMode,
+	require.Equal(t, pathInfo{
+		exists:       true,
+		parentExists: true,
+		isDir:        false,
+		parent:       filepath.Clean(tmpDir),
+		mode:         fileMode,
 	}, output)
 }
 
