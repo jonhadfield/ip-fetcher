@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"os"
@@ -40,7 +41,9 @@ func hetznerCmd() *cli.Command {
 			path := strings.TrimSpace(c.String("path"))
 			if path == "" && !c.Bool("stdout") {
 				_ = cli.ShowSubcommandHelp(c)
+
 				fmt.Println("\nerror: must specify at least one of stdout and path")
+
 				os.Exit(1)
 			}
 
@@ -62,10 +65,21 @@ func hetznerCmd() *cli.Command {
 				return err
 			}
 
+			var asnIPs hetzner.Doc
+			if err = json.Unmarshal(data, &asnIPs); err != nil {
+				return fmt.Errorf("failed to unmarshal Hetzner data: %w", err)
+			}
+
+			asnPrefixes, err := json.MarshalIndent(asnIPs, "", "  ")
+			if err != nil {
+				return fmt.Errorf("failed to marshal Hetzner data: %w", err)
+			}
+
+			var out string
 			if path != "" {
-				out, err := saveFile(saveFileInput{
+				out, err = saveFile(saveFileInput{
 					provider:        providerName,
-					data:            data,
+					data:            asnPrefixes,
 					path:            path,
 					defaultFileName: fileName,
 				})
@@ -76,7 +90,7 @@ func hetznerCmd() *cli.Command {
 			}
 
 			if c.Bool("stdout") {
-				fmt.Printf("%s\n", data)
+				fmt.Printf("%s\n", asnPrefixes)
 			}
 
 			return nil
