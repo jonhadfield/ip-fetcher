@@ -1,7 +1,8 @@
-package gcp
+package gcp_test
 
 import (
 	"fmt"
+	"github.com/jonhadfield/ip-fetcher/providers/gcp"
 	"net/url"
 	"testing"
 
@@ -10,7 +11,7 @@ import (
 )
 
 func TestFetch(t *testing.T) {
-	u, err := url.Parse(DownloadURL)
+	u, err := url.Parse(gcp.DownloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
@@ -20,7 +21,7 @@ func TestFetch(t *testing.T) {
 		// SetHeader("Etag", "cd5e4f079775994d8e49f63ae9a84065").
 		File("testdata/cloud.json")
 
-	ac := New()
+	ac := gcp.New()
 	gock.InterceptClient(ac.Client.HTTPClient)
 
 	doc, err := ac.Fetch()

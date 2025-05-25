@@ -66,7 +66,7 @@ func TestLinodeCmdSavetoPath(t *testing.T) {
 
 	tDir := t.TempDir()
 
-	_ = os.Setenv("IP_FETCHER_MOCK_LINODE", "true")
+	t.Setenv("IP_FETCHER_MOCK_LINODE", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_LINODE")
 
 	app := getApp()
@@ -84,7 +84,7 @@ func TestLinodeCmdSavetoPath(t *testing.T) {
 
 func TestLinodeCmdStdOut(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_LINODE", "true")
+	t.Setenv("IP_FETCHER_MOCK_LINODE", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_LINODE")
 
 	// stdout
@@ -113,7 +113,7 @@ func TestLinodeCmdStdOut(t *testing.T) {
 
 func TestLinodeCmdStdOutAndFile(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_LINODE", "true")
+	t.Setenv("IP_FETCHER_MOCK_LINODE", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_LINODE")
 
 	tDir := t.TempDir()

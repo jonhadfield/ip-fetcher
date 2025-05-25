@@ -39,7 +39,7 @@ func TestCloudflareCmdNoStdOutNoPath(t *testing.T) {
 func TestCloudflareCmdSavetoPath(t *testing.T) {
 	defer testCleanUp(os.Args)
 
-	_ = os.Setenv("IP_FETCHER_MOCK_CLOUDFLARE", "true")
+	t.Setenv("IP_FETCHER_MOCK_CLOUDFLARE", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_CLOUDFLARE")
 
 	tDir := t.TempDir()
@@ -80,7 +80,7 @@ func TestCloudflareCmdStdOut(t *testing.T) {
 
 	tDir := t.TempDir()
 
-	_ = os.Setenv("IP_FETCHER_MOCK_CLOUDFLARE", "true")
+	t.Setenv("IP_FETCHER_MOCK_CLOUDFLARE", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_CLOUDFLARE")
 
 	// stdout only
@@ -117,7 +117,7 @@ func TestCloudflareCmdStdOutAndFiles(t *testing.T) {
 
 	tDir := t.TempDir()
 
-	_ = os.Setenv("IP_FETCHER_MOCK_CLOUDFLARE", "true")
+	t.Setenv("IP_FETCHER_MOCK_CLOUDFLARE", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_CLOUDFLARE")
 
 	ac := cloudflare.New()

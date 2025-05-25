@@ -38,7 +38,7 @@ func TestOVHCmdSaveToPath(t *testing.T) {
 	defer testCleanUp(os.Args)
 
 	tDir := t.TempDir()
-	_ = os.Setenv("IP_FETCHER_MOCK_OVH", "true")
+	t.Setenv("IP_FETCHER_MOCK_OVH", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_OVH")
 
 	app := getApp()
@@ -51,7 +51,7 @@ func TestOVHCmdSaveToPath(t *testing.T) {
 func TestOVHCmdStdOut(t *testing.T) {
 	defer testCleanUp(os.Args)
 
-	_ = os.Setenv("IP_FETCHER_MOCK_OVH", "true")
+	t.Setenv("IP_FETCHER_MOCK_OVH", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_OVH")
 
 	old := os.Stdout

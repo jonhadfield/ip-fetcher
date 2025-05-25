@@ -48,7 +48,7 @@ func TestAzureCmdSavetoPath(t *testing.T) {
 
 	tDir := t.TempDir()
 
-	_ = os.Setenv("IP_FETCHER_MOCK_AZURE", "true")
+	t.Setenv("IP_FETCHER_MOCK_AZURE", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_AZURE")
 
 	ac := azure.New()
@@ -70,7 +70,7 @@ func TestAzureCmdSavetoPath(t *testing.T) {
 func TestAzureCmdStdOut(t *testing.T) {
 	defer testCleanUp(os.Args)
 
-	_ = os.Setenv("IP_FETCHER_MOCK_AZURE", "true")
+	t.Setenv("IP_FETCHER_MOCK_AZURE", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_AZURE")
 
 	// stdout only
@@ -104,7 +104,7 @@ func TestAzureCmdStdOutAndFile(t *testing.T) {
 
 	tDir := t.TempDir()
 
-	_ = os.Setenv("IP_FETCHER_MOCK_AZURE", "true")
+	t.Setenv("IP_FETCHER_MOCK_AZURE", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_AZURE")
 
 	// stdout and file

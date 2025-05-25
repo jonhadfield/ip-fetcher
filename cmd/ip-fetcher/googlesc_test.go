@@ -66,7 +66,7 @@ func TestGooglescCmdSavetoPath(t *testing.T) {
 
 	tDir := t.TempDir()
 
-	_ = os.Setenv("IP_FETCHER_MOCK_GOOGLESC", "true")
+	t.Setenv("IP_FETCHER_MOCK_GOOGLESC", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GOOGLESC")
 
 	app := getApp()
@@ -84,7 +84,7 @@ func TestGooglescCmdSavetoPath(t *testing.T) {
 
 func TestGooglescCmdStdOut(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_GOOGLESC", "true")
+	t.Setenv("IP_FETCHER_MOCK_GOOGLESC", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GOOGLESC")
 
 	// stdout
@@ -113,7 +113,7 @@ func TestGooglescCmdStdOut(t *testing.T) {
 
 func TestGooglescCmdStdOutAndFile(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_GOOGLESC", "true")
+	t.Setenv("IP_FETCHER_MOCK_GOOGLESC", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GOOGLESC")
 
 	tDir := t.TempDir()

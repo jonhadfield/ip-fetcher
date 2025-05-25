@@ -67,7 +67,7 @@ func TestGCPCmdSavetoPath(t *testing.T) {
 
 	tDir := t.TempDir()
 
-	_ = os.Setenv("IP_FETCHER_MOCK_GCP", "true")
+	t.Setenv("IP_FETCHER_MOCK_GCP", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GCP")
 
 	app := getApp()
@@ -85,7 +85,7 @@ func TestGCPCmdSavetoPath(t *testing.T) {
 
 func TestGCPCmdStdOut(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_GCP", "true")
+	t.Setenv("IP_FETCHER_MOCK_GCP", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GCP")
 
 	// stdout
@@ -114,7 +114,7 @@ func TestGCPCmdStdOut(t *testing.T) {
 
 func TestGCPCmdStdOutAndFile(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_GCP", "true")
+	t.Setenv("IP_FETCHER_MOCK_GCP", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GCP")
 
 	tDir := t.TempDir()
@@ -146,7 +146,7 @@ func TestGCPCmdStdOutAndFile(t *testing.T) {
 
 func TestGCPCmdStdOutLines(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_GCP", "true")
+	t.Setenv("IP_FETCHER_MOCK_GCP", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GCP")
 
 	tDir := t.TempDir()

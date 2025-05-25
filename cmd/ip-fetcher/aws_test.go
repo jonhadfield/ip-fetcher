@@ -66,7 +66,7 @@ func TestAWSCmdSavetoPath(t *testing.T) {
 
 	tDir := t.TempDir()
 
-	_ = os.Setenv("IP_FETCHER_MOCK_AWS", "true")
+	t.Setenv("IP_FETCHER_MOCK_AWS", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_AWS")
 
 	app := getApp()
@@ -84,7 +84,7 @@ func TestAWSCmdSavetoPath(t *testing.T) {
 
 func TestAWSCmdStdOut(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_AWS", "true")
+	t.Setenv("IP_FETCHER_MOCK_AWS", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_AWS")
 
 	// stdout
@@ -113,7 +113,7 @@ func TestAWSCmdStdOut(t *testing.T) {
 
 func TestAWSCmdStdOutAndFile(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_AWS", "true")
+	t.Setenv("IP_FETCHER_MOCK_AWS", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_AWS")
 
 	tDir := t.TempDir()

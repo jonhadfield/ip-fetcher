@@ -66,7 +66,7 @@ func TestICloudPRCmdSavetoPath(t *testing.T) {
 
 	tDir := t.TempDir()
 
-	_ = os.Setenv("IP_FETCHER_MOCK_ICLOUDPR", "true")
+	t.Setenv("IP_FETCHER_MOCK_ICLOUDPR", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_ICLOUDPR")
 
 	app := getApp()
@@ -84,7 +84,7 @@ func TestICloudPRCmdSavetoPath(t *testing.T) {
 
 func TestICloudPRCmdStdOut(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_ICLOUDPR", "true")
+	t.Setenv("IP_FETCHER_MOCK_ICLOUDPR", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_ICLOUDPR")
 
 	// stdout
@@ -114,7 +114,7 @@ func TestICloudPRCmdStdOut(t *testing.T) {
 
 func TestICloudPRCmdStdOutAndFile(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_ICLOUDPR", "true")
+	t.Setenv("IP_FETCHER_MOCK_ICLOUDPR", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_ICLOUDPR")
 
 	tDir := t.TempDir()

@@ -127,10 +127,10 @@ func (a *Linode) Fetch() (doc Doc, err error) {
 
 	var lastModifiedTime time.Time
 
-	lastModifiedRaw := headers.Values("last-modified")
+	lastModifiedRaw := headers.Values(web.LastModifiedHeader)
 	if len(lastModifiedRaw) != 0 {
 		if lastModifiedTime, err = time.Parse(time.RFC1123, lastModifiedRaw[0]); err != nil {
-			return
+			return Doc{}, err
 		}
 	}
 

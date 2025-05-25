@@ -66,7 +66,7 @@ func TestOCICmdSavetoPathFileNameOnly(t *testing.T) {
 
 	tDir := t.TempDir()
 
-	_ = os.Setenv("IP_FETCHER_MOCK_OCI", "true")
+	t.Setenv("IP_FETCHER_MOCK_OCI", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_OCI")
 
 	app := getApp()
@@ -82,7 +82,7 @@ func TestOCICmdSavetoPathDirectoryOnly(t *testing.T) {
 
 	tDir := t.TempDir()
 
-	_ = os.Setenv("IP_FETCHER_MOCK_OCI", "true")
+	t.Setenv("IP_FETCHER_MOCK_OCI", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_OCI")
 
 	app := getApp()
@@ -95,7 +95,7 @@ func TestOCICmdSavetoPathDirectoryOnly(t *testing.T) {
 
 func TestOCICmdStdOut(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_OCI", "true")
+	t.Setenv("IP_FETCHER_MOCK_OCI", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_OCI")
 
 	// stdout
@@ -124,7 +124,7 @@ func TestOCICmdStdOut(t *testing.T) {
 
 func TestOCICmdStdOutAndFile(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_OCI", "true")
+	t.Setenv("IP_FETCHER_MOCK_OCI", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_OCI")
 
 	tDir := t.TempDir()

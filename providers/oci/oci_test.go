@@ -1,7 +1,8 @@
-package oci
+package oci_test
 
 import (
 	"fmt"
+	"github.com/jonhadfield/ip-fetcher/providers/oci"
 	"net/netip"
 	"net/url"
 	"testing"
@@ -11,7 +12,7 @@ import (
 )
 
 func TestFetch(t *testing.T) {
-	u, err := url.Parse(DownloadURL)
+	u, err := url.Parse(oci.DownloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
@@ -20,7 +21,7 @@ func TestFetch(t *testing.T) {
 		Reply(200).
 		File("testdata/public_ip_ranges.json")
 
-	ac := New()
+	ac := oci.New()
 	gock.InterceptClient(ac.Client.HTTPClient)
 
 	doc, err := ac.Fetch()

@@ -1,7 +1,8 @@
-package github
+package github_test
 
 import (
 	"fmt"
+	"github.com/jonhadfield/ip-fetcher/providers/github"
 	"net/netip"
 	"net/url"
 	"testing"
@@ -11,7 +12,7 @@ import (
 )
 
 func TestFetch(t *testing.T) {
-	u, err := url.Parse(DownloadURL)
+	u, err := url.Parse(github.DownloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
@@ -20,7 +21,7 @@ func TestFetch(t *testing.T) {
 		Reply(200).
 		File("testdata/meta.json")
 
-	gh := New()
+	gh := github.New()
 	gock.InterceptClient(gh.Client.HTTPClient)
 
 	prefixes, err := gh.Fetch()

@@ -66,7 +66,7 @@ func TestBingbotCmdSavetoPath(t *testing.T) {
 
 	tDir := t.TempDir()
 
-	_ = os.Setenv("IP_FETCHER_MOCK_BINGBOT", "true")
+	t.Setenv("IP_FETCHER_MOCK_BINGBOT", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_BINGBOT")
 
 	app := getApp()
@@ -84,7 +84,7 @@ func TestBingbotCmdSavetoPath(t *testing.T) {
 
 func TestBingbotCmdStdOut(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_BINGBOT", "true")
+	t.Setenv("IP_FETCHER_MOCK_BINGBOT", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_BINGBOT")
 
 	// stdout
@@ -113,7 +113,7 @@ func TestBingbotCmdStdOut(t *testing.T) {
 
 func TestBingbotCmdStdOutAndFile(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_BINGBOT", "true")
+	t.Setenv("IP_FETCHER_MOCK_BINGBOT", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_BINGBOT")
 
 	tDir := t.TempDir()

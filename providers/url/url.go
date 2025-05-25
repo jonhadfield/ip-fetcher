@@ -92,7 +92,6 @@ func (c *Client) FetchPrefixesAsText(requests []Request) (prefixes []string, err
 		}
 
 		responses = append(responses, response)
-
 	}
 
 	pum, err := GetPrefixURLMapFromUrlResponses(&responses)

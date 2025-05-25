@@ -38,7 +38,7 @@ func TestGithubCmdSaveToPath(t *testing.T) {
 	defer testCleanUp(os.Args)
 
 	tDir := t.TempDir()
-	_ = os.Setenv("IP_FETCHER_MOCK_GITHUB", "true")
+	t.Setenv("IP_FETCHER_MOCK_GITHUB", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GITHUB")
 
 	app := getApp()
@@ -51,7 +51,7 @@ func TestGithubCmdSaveToPath(t *testing.T) {
 func TestGithubCmdStdOut(t *testing.T) {
 	defer testCleanUp(os.Args)
 
-	_ = os.Setenv("IP_FETCHER_MOCK_GITHUB", "true")
+	t.Setenv("IP_FETCHER_MOCK_GITHUB", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GITHUB")
 
 	old := os.Stdout

@@ -41,7 +41,7 @@ func TestDigitaloceanCmdSavetoPath(t *testing.T) {
 	testFile := "test.csv"
 
 	tDir := t.TempDir()
-	_ = os.Setenv("IP_FETCHER_MOCK_DIGITALOCEAN", "true")
+	t.Setenv("IP_FETCHER_MOCK_DIGITALOCEAN", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_DIGITALOCEAN")
 
 	ac := digitalocean.New()
@@ -63,7 +63,7 @@ func TestDigitaloceanCmdSavetoPath(t *testing.T) {
 func TestDigitaloceanCmdStdOut(t *testing.T) {
 	defer testCleanUp(os.Args)
 
-	_ = os.Setenv("IP_FETCHER_MOCK_DIGITALOCEAN", "true")
+	t.Setenv("IP_FETCHER_MOCK_DIGITALOCEAN", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_DIGITALOCEAN")
 
 	// stdout only
@@ -95,7 +95,7 @@ func TestDigitaloceanCmdStdOut(t *testing.T) {
 func TestDigitaloceanCmdStdOutAndFile(t *testing.T) {
 	defer testCleanUp(os.Args)
 
-	_ = os.Setenv("IP_FETCHER_MOCK_DIGITALOCEAN", "true")
+	t.Setenv("IP_FETCHER_MOCK_DIGITALOCEAN", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_DIGITALOCEAN")
 
 	tDir := t.TempDir()

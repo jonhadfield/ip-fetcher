@@ -1,7 +1,9 @@
-package linode
+package linode_test
 
 import (
 	"fmt"
+	"github.com/jonhadfield/ip-fetcher/internal/web"
+	"github.com/jonhadfield/ip-fetcher/providers/linode"
 	"net/netip"
 	"net/url"
 	"testing"
@@ -11,7 +13,7 @@ import (
 )
 
 func TestFetchData(t *testing.T) {
-	u, err := url.Parse(DownloadURL)
+	u, err := url.Parse(linode.DownloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
@@ -22,10 +24,10 @@ func TestFetchData(t *testing.T) {
 		Get(u.Path).
 		Reply(200).
 		SetHeader("etag", etag).
-		SetHeader("last-modified", lastModified).
+		SetHeader(web.LastModifiedHeader, lastModified).
 		File("testdata/prefixes.csv")
 
-	ld := New()
+	ld := linode.New()
 	defer gock.Off()
 
 	gock.InterceptClient(ld.Client.HTTPClient)
@@ -34,14 +36,14 @@ func TestFetchData(t *testing.T) {
 	require.NotEmpty(t, data)
 	require.Len(t, headers.Values("etag"), 1)
 	require.Equal(t, etag, headers.Values("etag")[0])
-	require.Len(t, headers.Values("last-modified"), 1)
-	require.Equal(t, lastModified, headers.Values("last-modified")[0])
+	require.Len(t, headers.Values(web.LastModifiedHeader), 1)
+	require.Equal(t, lastModified, headers.Values(web.LastModifiedHeader)[0])
 	require.Equal(t, 200, status)
 	require.Len(t, data, 681)
 }
 
 func TestFetch(t *testing.T) {
-	u, err := url.Parse(DownloadURL)
+	u, err := url.Parse(linode.DownloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
@@ -53,12 +55,12 @@ func TestFetch(t *testing.T) {
 		Times(2).
 		Reply(200).
 		SetHeader("etag", etag).
-		SetHeader("last-modified", lastModified).
+		SetHeader(web.LastModifiedHeader, lastModified).
 		File("testdata/prefixes.csv")
 
 	defer gock.Off()
 
-	ld := New()
+	ld := linode.New()
 	gock.InterceptClient(ld.Client.HTTPClient)
 
 	data, headers, status, err := ld.FetchData()
@@ -66,8 +68,8 @@ func TestFetch(t *testing.T) {
 	require.NotEmpty(t, data)
 	require.Len(t, headers.Values("etag"), 1)
 	require.Equal(t, etag, headers.Values("etag")[0])
-	require.Len(t, headers.Values("last-modified"), 1)
-	require.Equal(t, lastModified, headers.Values("last-modified")[0])
+	require.Len(t, headers.Values(web.LastModifiedHeader), 1)
+	require.Equal(t, lastModified, headers.Values(web.LastModifiedHeader)[0])
 	require.Equal(t, 200, status)
 	require.Len(t, data, 681)
 

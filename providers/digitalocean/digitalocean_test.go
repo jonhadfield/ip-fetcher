@@ -2,6 +2,7 @@ package digitalocean
 
 import (
 	"fmt"
+	"github.com/jonhadfield/ip-fetcher/internal/web"
 	"net/url"
 	"testing"
 	"time"
@@ -22,7 +23,7 @@ func TestFetchData(t *testing.T) {
 		Get(u.Path).
 		Reply(200).
 		SetHeader("etag", etag).
-		SetHeader("last-modified", lastModified).
+		SetHeader(web.LastModifiedHeader, lastModified).
 		File("testdata/google.csv")
 
 	ac := New()
@@ -33,8 +34,8 @@ func TestFetchData(t *testing.T) {
 	require.NotEmpty(t, data)
 	require.Len(t, headers.Values("etag"), 1)
 	require.Equal(t, etag, headers.Values("etag")[0])
-	require.Len(t, headers.Values("last-modified"), 1)
-	require.Equal(t, lastModified, headers.Values("last-modified")[0])
+	require.Len(t, headers.Values(web.LastModifiedHeader), 1)
+	require.Equal(t, lastModified, headers.Values(web.LastModifiedHeader)[0])
 	require.Equal(t, 200, status)
 }
 
@@ -50,7 +51,7 @@ func TestFetch(t *testing.T) {
 		Get(u.Path).
 		Reply(200).
 		SetHeader("etag", etag).
-		SetHeader("last-modified", lastModified).
+		SetHeader(web.LastModifiedHeader, lastModified).
 		File("testdata/google.csv")
 
 	ac := New()

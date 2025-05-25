@@ -66,7 +66,7 @@ func TestGooglebotCmdSavetoPath(t *testing.T) {
 
 	tDir := t.TempDir()
 
-	_ = os.Setenv("IP_FETCHER_MOCK_GOOGLEBOT", "true")
+	t.Setenv("IP_FETCHER_MOCK_GOOGLEBOT", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GOOGLEBOT")
 
 	app := getApp()
@@ -84,7 +84,7 @@ func TestGooglebotCmdSavetoPath(t *testing.T) {
 
 func TestGooglebotCmdStdOut(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_GOOGLEBOT", "true")
+	t.Setenv("IP_FETCHER_MOCK_GOOGLEBOT", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GOOGLEBOT")
 
 	// stdout
@@ -113,7 +113,7 @@ func TestGooglebotCmdStdOut(t *testing.T) {
 
 func TestGooglebotCmdStdOutAndFile(t *testing.T) {
 	defer testCleanUp(os.Args)
-	_ = os.Setenv("IP_FETCHER_MOCK_GOOGLEBOT", "true")
+	t.Setenv("IP_FETCHER_MOCK_GOOGLEBOT", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GOOGLEBOT")
 
 	tDir := t.TempDir()
