@@ -2,6 +2,8 @@ package publisher
 
 import (
 	_ "embed"
+	"github.com/jonhadfield/ip-fetcher/providers/hetzner"
+	"github.com/jonhadfield/ip-fetcher/providers/zscaler"
 
 	"fmt"
 	"strings"
@@ -35,7 +37,7 @@ type Provider struct {
 	SourceURL string
 }
 
-var providers = []Provider{
+var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{syncAWS, aws.ShortName, awsFile, aws.FullName, aws.HostType, aws.SourceURL},
 	{syncAzure, azure.ShortName, azureFile, azure.FullName, azure.HostType, azure.InitialURL},
 	{syncCloudflare, cloudflare.ShortName, cloudflareFile, cloudflare.FullName, cloudflare.HostType, cloudflare.SourceURL},
@@ -45,8 +47,10 @@ var providers = []Provider{
 	{syncGooglebot, googlebot.ShortName, googlebotFile, googlebot.FullName, googlebot.HostType, googlebot.SourceURL},
 	{syncGoogleSC, googlesc.ShortName, googlescFile, googlesc.FullName, googlesc.HostType, googlesc.SourceURL},
 	{syncGoogleUTF, googleutf.ShortName, googleutfFile, googleutf.FullName, googleutf.HostType, googleutf.SourceURL},
+	{syncHetzner, hetzner.ShortName, hetznerFile, hetzner.FullName, hetzner.HostType, hetzner.SourceURL},
 	{syncLinode, linode.ShortName, linodeFile, linode.FullName, linode.HostType, linode.SourceURL},
 	{syncOCI, oci.ShortName, ociFile, oci.FullName, oci.HostType, oci.SourceURL},
+	{syncZscaler, zscaler.ShortName, zscalerFile, zscaler.FullName, zscaler.HostType, zscaler.SourceURL},
 }
 
 func generateReadMeContent(included []string) (string, error) {

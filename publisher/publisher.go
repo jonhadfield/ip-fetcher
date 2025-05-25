@@ -4,7 +4,6 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io"
-	"log"
 	"log/slog"
 	"os"
 	"strings"
@@ -40,13 +39,13 @@ func New() *Publisher {
 
 	pub.GitHubRepoURL = strings.TrimSpace(os.Getenv("GITHUB_PUBLISH_URL"))
 	if pub.GitHubRepoURL == "" {
-		slog.Error("GITHUB_PUBLISH_URL not set")
+		slog.Error("GITHUB_PUBLISH_URL not set") //nolint:sloglint
 		os.Exit(1)
 	}
 
 	pub.GitHubToken = strings.TrimSpace(os.Getenv("GITHUB_TOKEN"))
 	if pub.GitHubToken == "" {
-		slog.Error("GITHUB_TOKEN not set")
+		slog.Error("GITHUB_TOKEN not set") //nolint:sloglint
 		os.Exit(1)
 	}
 
@@ -78,7 +77,7 @@ func (p *Publisher) Run() error {
 
 		commit, err = provider.SyncFunc(w, fs)
 		if err != nil {
-			log.Printf("failed to sync %s: %v", provider.ShortName, err)
+			slog.Info("failed to sync", "provider", provider.ShortName, "error", err)
 			continue
 		}
 
