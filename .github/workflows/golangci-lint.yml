@@ -21,4 +21,4 @@ jobs:
         uses: golangci/golangci-lint-action@v8
         with:
           version: latest
-          args: -v --disable lll --disable interfacer --disable gochecknoglobals
+          args: -v --disable lll --disable gochecknoglobals
