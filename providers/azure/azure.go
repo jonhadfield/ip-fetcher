@@ -23,7 +23,7 @@ const (
 	FullName              = "Microsoft Azure"
 	HostType              = "cloud"
 	InitialURL            = "https://www.microsoft.com/en-gb/download/details.aspx?id=56519"
-	WorkaroundDownloadURL = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20240610.json"
+	WorkaroundDownloadURL = "https://download.microsoft.com/download/7/1/d/71d86715-5596-4529-9b13-da13a5de5b63/ServiceTags_Public_20250519.json"
 
 	errFailedToDownload = "failed to retrieve azure prefixes initial page"
 )
@@ -65,12 +65,14 @@ func New() Azure {
 	}
 }
 
-func (a *Azure) GetDownloadURL() (url string, err error) {
+func (a *Azure) GetDownloadURL() (string, error) {
 	if a.InitialURL == "" {
 		a.InitialURL = InitialURL
 	}
 
 	client := cycletls.Init()
+
+	var url string
 
 	response, err := client.Do(a.InitialURL, cycletls.Options{
 		Body:      "",
@@ -113,17 +115,17 @@ func (a *Azure) GetDownloadURL() (url string, err error) {
 		}
 	}
 
-	return
+	return url, nil
 }
 
 func (a *Azure) FetchData() (data []byte, headers http.Header, status int, err error) {
 	// get download url if not specified
 	if a.DownloadURL == "" {
-		// a.DownloadURL = WorkaroundDownloadURL
-		a.DownloadURL, err = a.GetDownloadURL()
-		if err != nil {
-			return
-		}
+		a.DownloadURL = WorkaroundDownloadURL
+		// a.DownloadURL, err = a.GetDownloadURL()
+		// if err != nil {
+		// 	return
+		// }
 	}
 
 	// if a.DownloadURL == "" {
@@ -131,7 +133,7 @@ func (a *Azure) FetchData() (data []byte, headers http.Header, status int, err e
 	// }
 
 	data, headers, status, err = web.Request(a.Client, a.DownloadURL, http.MethodGet, nil, nil, 5*time.Second)
-	if status >= 400 {
+	if status >= http.StatusBadRequest {
 		return nil, nil, status, fmt.Errorf("failed to download prefixes. http status code: %d", status)
 	}
 

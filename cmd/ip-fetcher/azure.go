@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
@@ -46,7 +47,7 @@ func azureCmd() *cli.Command {
 			if path == "" && !c.Bool("stdout") {
 				_ = cli.ShowSubcommandHelp(c)
 
-				fmt.Println("\nerror: must specify at least one of stdout and path")
+				fmt.Println("\nerror: must specify at least one of stdout and path") //nolint:forbidigo
 
 				os.Exit(1)
 			}
@@ -64,7 +65,7 @@ func azureCmd() *cli.Command {
 				uDownload, _ := url.Parse(testMockAzureDownloadURL)
 				gock.New(testMockAzureDownloadURL).
 					Get(uDownload.Path).
-					Reply(200).
+					Reply(http.StatusOK).
 					File(testAzureDataFilePath)
 
 				gock.InterceptClient(a.Client.HTTPClient)
@@ -87,7 +88,7 @@ func azureCmd() *cli.Command {
 					return err
 				}
 
-				_, _ = os.Stderr.WriteString(fmt.Sprintf("data written to %s\n", out))
+				_, _ = os.Stderr.WriteString(fmt.Sprintf("data written to %s\n", out)) //nolint:forbidigo
 			}
 
 			if c.Bool("stdout") {
