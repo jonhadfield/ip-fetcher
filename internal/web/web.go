@@ -108,121 +108,99 @@ func GetResourceHeaderValue(client *retryablehttp.Client, url, method, header st
 	return response.Get(header), err
 }
 
-type pathDetailsOutput struct {
-	found, parentFound, isDir bool
-	parent                    string
-	mode                      os.FileMode
+type pathInfo struct {
+	exists, parentExists, isDir bool
+	parent                      string
+	mode                        os.FileMode
 }
 
-func pathDetails(path string) (output pathDetailsOutput, err error) {
-	f, err := os.Stat(path)
-	if err != nil {
-		// if we have an error other than it not existing, then fail
-		if !os.IsNotExist(err) {
-			return
+func getPathInfo(p string) (pathInfo, error) {
+	info, err := os.Stat(p)
+	if err == nil {
+		parent := p
+		if !info.IsDir() {
+			parent = filepath.Dir(p)
 		}
-	} else {
-		parentPath := path
-
-		if !f.IsDir() {
-			parentPath = filepath.Dir(path)
-		}
-
-		return pathDetailsOutput{
-			found:       true,
-			parentFound: true,
-			isDir:       f.IsDir(),
-			parent:      parentPath,
-			mode:        f.Mode(),
+		return pathInfo{
+			exists:       true,
+			parentExists: true,
+			isDir:        info.IsDir(),
+			parent:       parent,
+			mode:         info.Mode(),
 		}, nil
 	}
-
-	// path isn't found, so check if it's would-be parent exists
-	parent := filepath.Dir(path)
-
-	f, err = os.Stat(parent)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return pathDetailsOutput{
-				found:       false,
-				parentFound: false,
-				isDir:       false,
-				parent:      "",
-				mode:        0,
-			}, nil
-		}
-
-		// return unexpected error
-		return
+	if !os.IsNotExist(err) {
+		return pathInfo{}, err
 	}
 
-	// return would-be file's parent
-	return pathDetailsOutput{
-		found:       false,
-		parentFound: true,
-		isDir:       false,
-		parent:      parent,
-		mode:        f.Mode(),
+	parent := filepath.Dir(p)
+	info, perr := os.Stat(parent)
+	if perr != nil {
+		if os.IsNotExist(perr) {
+			return pathInfo{exists: false, parentExists: false}, nil
+		}
+		return pathInfo{}, perr
+	}
+
+	return pathInfo{
+		exists:       false,
+		parentExists: true,
+		parent:       parent,
+		mode:         info.Mode(),
 	}, nil
 }
 
-func DownloadFile(client *retryablehttp.Client, u, path string) (downloadedFilePath string, err error) {
+func DownloadFile(client *retryablehttp.Client, u, path string) (string, error) {
 	if u == "" {
-		return "", fmt.Errorf("path must not be empty")
+		return "", fmt.Errorf("url must not be empty")
 	}
 
 	logrus.Debugf("%s | downloading: %s to %s", pflog.GetFunctionName(), u, path)
 
-	details, err := pathDetails(path)
+	info, err := getPathInfo(path)
 	if err != nil {
-		return
+		return "", err
 	}
 
-	// default download path to that provided
-	if details.found {
-		downloadedFilePath = path
-
-		if details.isDir {
-			var pU *url.URL
-
-			pU, err = url.Parse(u)
-			if err != nil {
-				return
-			}
-
-			downloadedFilePath = filepath.Join(path, filepath.Base(pU.Path))
+	switch {
+	case info.exists && info.isDir:
+		pU, err := url.Parse(u)
+		if err != nil {
+			return "", err
 		}
+		path = filepath.Join(path, filepath.Base(pU.Path))
+	case info.exists || info.parentExists:
+		// path is valid as provided
+	default:
+		return "", fmt.Errorf("parent directory does not exist")
 	}
 
-	if !details.found && details.parentFound {
-		downloadedFilePath = path
-	}
-
-	logrus.Infof("downloading %s to %s", u, downloadedFilePath)
+	logrus.Infof("downloading %s to %s", u, path)
 
 	resp, err := client.Get(u)
 	if err != nil {
-		return downloadedFilePath, err
+		return "", err
 	}
-
 	defer resp.Body.Close()
 
-	if resp.StatusCode > 299 {
-		return downloadedFilePath, fmt.Errorf("server responded with status %d", resp.StatusCode)
+	if resp.StatusCode > http.StatusMultipleChoices {
+		return "", fmt.Errorf("server responded with status %d", resp.StatusCode)
 	}
 
-	logrus.Infof("writing to path: %s", downloadedFilePath)
+	logrus.Infof("writing to path: %s", path)
 
-	out, err := os.Create(downloadedFilePath)
+	out, err := os.Create(path)
 	if err != nil {
-		return downloadedFilePath, err
+		return "", err
 	}
-
 	defer out.Close()
 
 	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return "", err
+	}
 
-	return downloadedFilePath, err
+	return path, nil
 }
 
 func RequestContentDispositionFileName(httpClient *retryablehttp.Client, url string, secrets []string) (filename string, err error) {
