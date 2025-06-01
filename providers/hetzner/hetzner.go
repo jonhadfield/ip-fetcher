@@ -1,8 +1,6 @@
 package hetzner
 
 import (
-	"bufio"
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -128,7 +126,6 @@ func (h *Hetzner) FetchData() (data []byte, headers http.Header, status int, err
 	for _, response := range bgpViewResponses {
 		for _, prefix := range response.Data.Ipv4Prefixes {
 			var p netip.Prefix
-
 			p, err = netip.ParsePrefix(prefix.Prefix)
 			if err != nil {
 				return nil, nil, 0, fmt.Errorf("error parsing IPv4 prefix %s: %w", prefix.Prefix, err)
@@ -160,37 +157,25 @@ func (h *Hetzner) FetchData() (data []byte, headers http.Header, status int, err
 }
 
 type Doc struct {
-	IPv4Prefixes []netip.Prefix
-	IPv6Prefixes []netip.Prefix
+	IPv4Prefixes []netip.Prefix `json:"IPv4Prefixes"`
+	IPv6Prefixes []netip.Prefix `json:"IPv6Prefixes"`
 }
 
-func (h *Hetzner) Fetch() ([]netip.Prefix, error) {
+func (h *Hetzner) Fetch() (Doc, error) {
 	data, _, _, err := h.FetchData()
 	if err != nil {
-		return nil, err
+		return Doc{}, err
 	}
 
 	return ProcessData(data)
 }
 
-func ProcessData(data []byte) ([]netip.Prefix, error) {
-	var err error
-	var prefixes []netip.Prefix
-
-	r := bytes.NewReader(data)
-	scanner := bufio.NewScanner(r)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if line == "" {
-			continue
-		}
-		var prefix netip.Prefix
-		prefix, err = netip.ParsePrefix(line)
-		if err != nil {
-			continue
-		}
-		prefixes = append(prefixes, prefix)
+func ProcessData(data []byte) (Doc, error) {
+	var doc Doc
+	err := json.Unmarshal(data, &doc)
+	if err != nil {
+		return Doc{}, fmt.Errorf("error unmarshalling Hetzner doc: %w", err)
 	}
 
-	return prefixes, nil
+	return doc, nil
 }

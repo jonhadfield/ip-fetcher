@@ -56,7 +56,7 @@ func hetznerCmd() *cli.Command {
 				gock.New(urlBase).
 					Get(u.Path).
 					Reply(200).
-					File("../../providers/hetzner/testdata/prefixes.txt")
+					File("../../providers/hetzner/testdata/prefixes.json")
 				gock.InterceptClient(h.Client.HTTPClient)
 			}
 
