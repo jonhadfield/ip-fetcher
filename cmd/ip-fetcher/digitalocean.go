@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
@@ -48,7 +49,7 @@ func digitaloceanCmd() *cli.Command {
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).
-					Reply(200).
+					Reply(http.StatusOK).
 					File("../../providers/digitalocean/testdata/google.csv")
 				gock.InterceptClient(a.Client.HTTPClient)
 			}

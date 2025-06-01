@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
@@ -55,7 +56,7 @@ func hetznerCmd() *cli.Command {
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).
-					Reply(200).
+					Reply(http.StatusOK).
 					File("../../providers/hetzner/testdata/prefixes.json")
 				gock.InterceptClient(h.Client.HTTPClient)
 			}

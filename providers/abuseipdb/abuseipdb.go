@@ -71,7 +71,7 @@ func retryPolicy(ctx context.Context, resp *http.Response, err error) (bool, err
 		return false, fmt.Errorf("exceeded number of allowed blacklist downloads in last 24 hours")
 	}
 
-	if resp.StatusCode == 0 || (resp.StatusCode >= 500 && resp.StatusCode != http.StatusNotImplemented) {
+	if resp.StatusCode == 0 || (resp.StatusCode >= http.StatusInternalServerError && resp.StatusCode != http.StatusNotImplemented) {
 		return true, fmt.Errorf("unexpected HTTP status %s", resp.Status)
 	}
 
@@ -140,7 +140,7 @@ func (a *AbuseIPDB) FetchData() (data []byte, headers http.Header, status int, e
 		return
 	}
 
-	if statusCode >= 400 && statusCode < 500 {
+	if statusCode >= http.StatusBadRequest && statusCode < http.StatusInternalServerError {
 		err = parseAPIErrorResponse(blackList)
 	}
 

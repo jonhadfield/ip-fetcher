@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
@@ -54,7 +55,7 @@ func googleutfCmd() *cli.Command {
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).
-					Reply(200).
+					Reply(http.StatusOK).
 					File("../../providers/googleutf/testdata/user-triggered-fetchers.json")
 				gock.InterceptClient(g.Client.HTTPClient)
 			}

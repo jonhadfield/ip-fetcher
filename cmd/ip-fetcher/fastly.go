@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"slices"
@@ -62,7 +63,7 @@ func fastlyCmd() *cli.Command {
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).
-					Reply(200).
+					Reply(http.StatusOK).
 					File("../../providers/fastly/testdata/fastly.json")
 				gock.InterceptClient(a.Client.HTTPClient)
 			}

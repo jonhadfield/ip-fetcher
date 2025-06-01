@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
@@ -54,7 +55,7 @@ func githubCmd() *cli.Command {
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).
-					Reply(200).
+					Reply(http.StatusOK).
 					File("../../providers/github/testdata/meta.json")
 				gock.InterceptClient(gh.Client.HTTPClient)
 			}
