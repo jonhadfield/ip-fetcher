@@ -1,4 +1,4 @@
-package googlesc
+package googlesc_test
 
 import (
 	"fmt"

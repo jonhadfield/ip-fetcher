@@ -1,4 +1,4 @@
-package googleutf
+package googleutf_test
 
 import (
 	"fmt"

@@ -1,4 +1,4 @@
-package publisher
+package publisher_test
 
 import (
 	"fmt"

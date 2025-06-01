@@ -1,4 +1,4 @@
-package ovh
+package ovh_test
 
 import (
 	"fmt"

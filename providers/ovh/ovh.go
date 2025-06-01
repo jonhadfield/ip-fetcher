@@ -39,7 +39,7 @@ func New() OVH {
 	}
 }
 
-func (o *OVH) FetchData() (data []byte, headers http.Header, status int, err error) {
+func (o *OVH) FetchData() ([]byte, http.Header, int, error) {
 	if o.DownloadURL == "" {
 		o.DownloadURL = DownloadURL
 	}
@@ -47,18 +47,19 @@ func (o *OVH) FetchData() (data []byte, headers http.Header, status int, err err
 	return web.Request(o.Client, o.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
 }
 
-func (o *OVH) Fetch() (prefixes []netip.Prefix, err error) {
+func (o *OVH) Fetch() ([]netip.Prefix, error) {
 	data, _, _, err := o.FetchData()
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	return ProcessData(data)
 }
 
-func ProcessData(data []byte) (prefixes []netip.Prefix, err error) {
+func ProcessData(data []byte) ([]netip.Prefix, error) {
 	r := bytes.NewReader(data)
 	scanner := bufio.NewScanner(r)
+	var prefixes []netip.Prefix
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "" {
@@ -70,5 +71,8 @@ func ProcessData(data []byte) (prefixes []netip.Prefix, err error) {
 		}
 		prefixes = append(prefixes, p)
 	}
-	return
+	if err := scanner.Err(); err != nil {
+		return prefixes, err
+	}
+	return prefixes, nil
 }

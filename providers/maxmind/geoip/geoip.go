@@ -145,9 +145,9 @@ func (gc *GeoIP) Validate() error {
 	return nil
 }
 
-func (gc *GeoIP) FetchFileName(dbName string) (filename string, err error) {
-	if err = gc.Validate(); err != nil {
-		return
+func (gc *GeoIP) FetchFileName(dbName string) (string, error) {
+	if err := gc.Validate(); err != nil {
+		return "", err
 	}
 
 	downloadURL := constructDownloadURL(gc.LicenseKey, gc.Edition, dbName, gc.DBFormat)
@@ -155,39 +155,39 @@ func (gc *GeoIP) FetchFileName(dbName string) (filename string, err error) {
 	return web.RequestContentDispositionFileName(gc.Client, downloadURL, []string{gc.LicenseKey})
 }
 
-func (gc *GeoIP) FetchFile(dbName string) (filePath string, err error) {
+func (gc *GeoIP) FetchFile(dbName string) (string, error) {
 	logrus.Debugf("%s | fetching File %s", pflog.GetFunctionName(), dbName)
 
-	if err = gc.Validate(); err != nil {
-		return
+	if err := gc.Validate(); err != nil {
+		return "", err
 	}
 
 	downloadURL := constructDownloadURL(gc.LicenseKey, gc.Edition, dbName, gc.DBFormat)
 
 	filename, err := web.RequestContentDispositionFileName(gc.Client, downloadURL, []string{gc.LicenseKey})
 	if err != nil {
-		return
+		return "", err
 	}
 
-	filePath = filepath.Join(gc.Root, filename)
+	filePath := filepath.Join(gc.Root, filename)
 	// check if zip already exists
 	if _, err = os.Stat(filePath); err != nil {
 		if !errors.Is(err, os.ErrNotExist) {
-			return
+			return "", err
 		}
 
 		logrus.Debugf("%s | filepath: %s doesn't exist", pflog.GetFunctionName(), filePath)
 	} else {
 		logrus.Debugf("%s | filepath: %s already exists", pflog.GetFunctionName(), filePath)
 		// zip already exists
-		return
+		return filePath, nil
 	}
 
 	if _, err = web.DownloadFile(gc.Client, downloadURL, filePath); err != nil {
-		return
+		return "", err
 	}
 
-	return
+	return filePath, nil
 }
 
 type FetchFilesOutput struct {
@@ -286,9 +286,9 @@ func UnzipFiles(src, dest string) error {
 	return err
 }
 
-func CheckFileExists(filePath string) (exists bool, err error) {
-	if _, err = os.Stat(filePath); err != nil {
-		return
+func CheckFileExists(filePath string) (bool, error) {
+	if _, err := os.Stat(filePath); err != nil {
+		return false, err
 	}
 
 	return true, nil
@@ -370,14 +370,12 @@ func ExtractCity(zipPath, dest string) error {
 	return UnzipFiles(zipPath, dest)
 }
 
-func getVersionFromZipFilePath(in string) (version string, err error) {
+func getVersionFromZipFilePath(in string) (string, error) {
 	fNameWithoutExt := fileNameWithoutExtension(filepath.Base(in))
 
 	fNameParts := strings.Split(fNameWithoutExt, "_")
 	if len(fNameParts) != 2 {
-		err = fmt.Errorf("filename should be in format GeoLite2-<Type>-CSV_YYMMDD.zip but presented was '%s'", in)
-
-		return
+		return "", fmt.Errorf("filename should be in format GeoLite2-<Type>-CSV_YYMMDD.zip but presented was '%s'", in)
 	}
 
 	return fNameParts[1], nil
@@ -397,15 +395,18 @@ type FetchASNFilesOutput struct {
 	IPv6FilePath   string
 }
 
-func (gc *GeoIP) FetchASNFiles() (output FetchASNFilesOutput, err error) {
+func (gc *GeoIP) FetchASNFiles() (FetchASNFilesOutput, error) {
 	logrus.Debugf("%s | fetching ASN Files", pflog.GetFunctionName())
+
+	var output FetchASNFilesOutput
+	var err error
 	output.CompressedPath, err = gc.FetchFile(NameASN)
 	if err != nil {
-		return
+		return FetchASNFilesOutput{}, err
 	}
 
 	if output.Version, err = getVersionFromZipFilePath(output.CompressedPath); err != nil {
-		return
+		return FetchASNFilesOutput{}, err
 	}
 
 	if gc.Extract {
@@ -413,7 +414,7 @@ func (gc *GeoIP) FetchASNFiles() (output FetchASNFilesOutput, err error) {
 
 		extractPath := gc.Root
 		if err = ExtractASN(output.CompressedPath, extractPath); err != nil {
-			return
+			return FetchASNFilesOutput{}, err
 		}
 
 		zipMinusExtension := fileNameWithoutExtension(filepath.Base(output.CompressedPath))
@@ -422,7 +423,7 @@ func (gc *GeoIP) FetchASNFiles() (output FetchASNFilesOutput, err error) {
 		output.IPv6FilePath = filepath.Join(output.DataRoot, GeoLite2ASNBlocksIPv6CSVFileName)
 	}
 
-	return output, err
+	return output, nil
 }
 
 type FetchCityFilesOutput struct {
@@ -434,20 +435,23 @@ type FetchCityFilesOutput struct {
 	LocationsFilePath string
 }
 
-func (gc *GeoIP) FetchCityFiles() (output FetchCityFilesOutput, err error) {
+func (gc *GeoIP) FetchCityFiles() (FetchCityFilesOutput, error) {
+	var output FetchCityFilesOutput
+	var err error
+
 	output.CompressedPath, err = gc.FetchFile(NameCity)
 	if err != nil {
-		return
+		return FetchCityFilesOutput{}, err
 	}
 
 	if output.Version, err = getVersionFromZipFilePath(output.CompressedPath); err != nil {
-		return
+		return FetchCityFilesOutput{}, err
 	}
 	logrus.Debugf("%s | extracted version %s from %s", pflog.GetFunctionName(), output.Version, output.CompressedPath)
 	if gc.Extract {
 		extractPath := gc.Root
 		if err = ExtractCity(output.CompressedPath, extractPath); err != nil {
-			return
+			return FetchCityFilesOutput{}, err
 		}
 
 		zipMinusExtension := fileNameWithoutExtension(filepath.Base(output.CompressedPath))
@@ -457,7 +461,7 @@ func (gc *GeoIP) FetchCityFiles() (output FetchCityFilesOutput, err error) {
 		output.LocationsFilePath = filepath.Join(output.DataRoot, GeoLite2CityLocationsEnCSVFileName)
 	}
 
-	return output, err
+	return output, nil
 }
 
 type FetchCountryFilesOutput struct {
@@ -469,20 +473,23 @@ type FetchCountryFilesOutput struct {
 	LocationsFilePath string
 }
 
-func (gc *GeoIP) FetchCountryFiles() (output FetchCountryFilesOutput, err error) {
+func (gc *GeoIP) FetchCountryFiles() (FetchCountryFilesOutput, error) {
+	var output FetchCountryFilesOutput
+	var err error
+
 	output.CompressedPath, err = gc.FetchFile(NameCountry)
 	if err != nil {
-		return
+		return FetchCountryFilesOutput{}, err
 	}
 
 	if output.Version, err = getVersionFromZipFilePath(output.CompressedPath); err != nil {
-		return
+		return FetchCountryFilesOutput{}, err
 	}
 
 	if gc.Extract {
 		extractPath := gc.Root
 		if err = ExtractCountry(output.CompressedPath, extractPath); err != nil {
-			return
+			return FetchCountryFilesOutput{}, err
 		}
 
 		zipMinusExtension := fileNameWithoutExtension(filepath.Base(output.CompressedPath))
@@ -496,18 +503,18 @@ func (gc *GeoIP) FetchCountryFiles() (output FetchCountryFilesOutput, err error)
 		logrus.Debugf("GeoLite2CountryLocationsEnCSVFileName path: %s", output.LocationsFilePath)
 	}
 
-	return output, err
+	return output, nil
 }
 
-func (gc *GeoIP) FetchAllFiles() (output FetchFilesOutput, err error) {
-	if err = gc.Validate(); err != nil {
-		return
+func (gc *GeoIP) FetchAllFiles() (FetchFilesOutput, error) {
+	var output FetchFilesOutput
+	if err := gc.Validate(); err != nil {
+		return FetchFilesOutput{}, err
 	}
 
-	var asnOut FetchASNFilesOutput
-	asnOut, err = gc.FetchASNFiles()
+	asnOut, err := gc.FetchASNFiles()
 	if err != nil {
-		return
+		return FetchFilesOutput{}, err
 	}
 
 	output.ASNCompressedFilePath = asnOut.CompressedPath
@@ -515,10 +522,9 @@ func (gc *GeoIP) FetchAllFiles() (output FetchFilesOutput, err error) {
 	output.ASNIPv6FilePath = asnOut.IPv6FilePath
 	output.ASNVersion = asnOut.Version
 
-	var CountryOut FetchCountryFilesOutput
-	CountryOut, err = gc.FetchCountryFiles()
+	CountryOut, err := gc.FetchCountryFiles()
 	if err != nil {
-		return
+		return FetchFilesOutput{}, err
 	}
 
 	output.CountryCompressedFilePath = CountryOut.CompressedPath
@@ -527,12 +533,11 @@ func (gc *GeoIP) FetchAllFiles() (output FetchFilesOutput, err error) {
 	output.CountryLocationsFilePath = CountryOut.LocationsFilePath
 	output.CountryVersion = CountryOut.Version
 
-	var CityOut FetchCityFilesOutput
-	CityOut, err = gc.FetchCityFiles()
+	CityOut, err := gc.FetchCityFiles()
 	if err != nil {
 		logrus.Errorf("%s | %s", pflog.GetFunctionName(), err.Error())
 
-		return
+		return FetchFilesOutput{}, err
 	}
 
 	output.CityCompressedFilePath = CityOut.CompressedPath
@@ -541,19 +546,19 @@ func (gc *GeoIP) FetchAllFiles() (output FetchFilesOutput, err error) {
 	output.CityLocationsFilePath = CityOut.LocationsFilePath
 	output.CityVersion = CityOut.Version
 
-	return
+	return output, nil
 }
 
-func (gc *GeoIP) FetchFiles(input FetchFilesInput) (output FetchFilesOutput, err error) {
-	if err = gc.Validate(); err != nil {
-		return
+func (gc *GeoIP) FetchFiles(input FetchFilesInput) (FetchFilesOutput, error) {
+	var output FetchFilesOutput
+	if err := gc.Validate(); err != nil {
+		return FetchFilesOutput{}, err
 	}
 
 	if input.ASN {
-		var asnOut FetchASNFilesOutput
-		asnOut, err = gc.FetchASNFiles()
+		asnOut, err := gc.FetchASNFiles()
 		if err != nil {
-			return
+			return FetchFilesOutput{}, err
 		}
 
 		output.ASNDataPath = asnOut.DataRoot
@@ -564,10 +569,9 @@ func (gc *GeoIP) FetchFiles(input FetchFilesInput) (output FetchFilesOutput, err
 	}
 
 	if input.Country {
-		var CountryOut FetchCountryFilesOutput
-		CountryOut, err = gc.FetchCountryFiles()
+		CountryOut, err := gc.FetchCountryFiles()
 		if err != nil {
-			return
+			return FetchFilesOutput{}, err
 		}
 
 		output.CountryDataPath = CountryOut.DataRoot
@@ -579,10 +583,9 @@ func (gc *GeoIP) FetchFiles(input FetchFilesInput) (output FetchFilesOutput, err
 	}
 
 	if input.City {
-		var CityOut FetchCityFilesOutput
-		CityOut, err = gc.FetchCityFiles()
+		CityOut, err := gc.FetchCityFiles()
 		if err != nil {
-			return
+			return FetchFilesOutput{}, err
 		}
 
 		output.CityDataPath = CityOut.DataRoot
@@ -593,5 +596,5 @@ func (gc *GeoIP) FetchFiles(input FetchFilesInput) (output FetchFilesOutput, err
 		output.CityVersion = CityOut.Version
 	}
 
-	return
+	return output, nil
 }

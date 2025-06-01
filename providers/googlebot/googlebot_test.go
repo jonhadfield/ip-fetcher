@@ -1,4 +1,4 @@
-package googlebot
+package googlebot_test
 
 import (
 	"fmt"
