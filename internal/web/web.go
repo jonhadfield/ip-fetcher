@@ -115,45 +115,45 @@ func GetResourceHeaderValue(client *retryablehttp.Client, url, method, header st
 	return response.Get(header), nil
 }
 
-type pathInfo struct {
-	exists, parentExists, isDir bool
-	parent                      string
-	mode                        os.FileMode
+type PathInfo struct {
+	Exists, ParentExists, IsDir bool
+	Parent                      string
+	Mode                        os.FileMode
 }
 
-func getPathInfo(p string) (pathInfo, error) {
+func GetPathInfo(p string) (PathInfo, error) {
 	info, err := os.Stat(p)
 	if err == nil {
 		parent := p
 		if !info.IsDir() {
 			parent = filepath.Dir(p)
 		}
-		return pathInfo{
-			exists:       true,
-			parentExists: true,
-			isDir:        info.IsDir(),
-			parent:       parent,
-			mode:         info.Mode(),
+		return PathInfo{
+			Exists:       true,
+			ParentExists: true,
+			IsDir:        info.IsDir(),
+			Parent:       parent,
+			Mode:         info.Mode(),
 		}, nil
 	}
 	if !os.IsNotExist(err) {
-		return pathInfo{}, err
+		return PathInfo{}, err
 	}
 
 	parent := filepath.Dir(p)
 	info, perr := os.Stat(parent)
 	if perr != nil {
 		if os.IsNotExist(perr) {
-			return pathInfo{exists: false, parentExists: false}, nil
+			return PathInfo{Exists: false, ParentExists: false}, nil
 		}
-		return pathInfo{}, perr
+		return PathInfo{}, perr
 	}
 
-	return pathInfo{
-		exists:       false,
-		parentExists: true,
-		parent:       parent,
-		mode:         info.Mode(),
+	return PathInfo{
+		Exists:       false,
+		ParentExists: true,
+		Parent:       parent,
+		Mode:         info.Mode(),
 	}, nil
 }
 
@@ -164,22 +164,22 @@ func DownloadFile(client *retryablehttp.Client, u, path string) (string, error) 
 
 	logrus.Debugf("%s | downloading: %s to %s", pflog.GetFunctionName(), u, path)
 
-	info, err := getPathInfo(path)
+	info, err := GetPathInfo(path)
 	if err != nil {
 		return "", err
 	}
 
 	switch {
-	case info.exists && info.isDir:
+	case info.Exists && info.IsDir:
 		pU, err := url.Parse(u)
 		if err != nil {
 			return "", err
 		}
 		path = filepath.Join(path, filepath.Base(pU.Path))
-	case info.exists || info.parentExists:
+	case info.Exists || info.ParentExists:
 		// path is valid as provided
 	default:
-		return "", errors.New("parent directory does not exist")
+		return "", errors.New("Parent directory does not exist")
 	}
 
 	logrus.Infof("downloading %s to %s", u, path)

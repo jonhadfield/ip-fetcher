@@ -23,14 +23,14 @@ func hetznerCmd() *cli.Command {
 		Name:      providerName,
 		HelpName:  "- fetch Hetzner prefixes",
 		Usage:     "Hetzner",
-		UsageText: "ip-fetcher hetzner {--stdout | --path FILE}",
+		UsageText: "ip-fetcher hetzner {--stdout | --Path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 			return err
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "path",
+				Name:  "Path",
 				Usage: "where to save the file", Aliases: []string{"p"}, TakesFile: true,
 			},
 			&cli.BoolFlag{
@@ -39,11 +39,11 @@ func hetznerCmd() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("path"))
+			path := strings.TrimSpace(c.String("Path"))
 			if path == "" && !c.Bool("stdout") {
 				_ = cli.ShowSubcommandHelp(c)
 
-				fmt.Println("\nerror: must specify at least one of stdout and path")
+				fmt.Println("\nerror: must specify at least one of stdout and Path")
 
 				os.Exit(1)
 			}
@@ -68,26 +68,26 @@ func hetznerCmd() *cli.Command {
 
 			var asnIPs hetzner.Doc
 			if err = json.Unmarshal(data, &asnIPs); err != nil {
-				return fmt.Errorf("failed to unmarshal Hetzner data: %w", err)
+				return fmt.Errorf("failed to unmarshal Hetzner Data: %w", err)
 			}
 
 			asnPrefixes, err := json.MarshalIndent(asnIPs, "", "  ")
 			if err != nil {
-				return fmt.Errorf("failed to marshal Hetzner data: %w", err)
+				return fmt.Errorf("failed to marshal Hetzner Data: %w", err)
 			}
 
 			var out string
 			if path != "" {
-				out, err = saveFile(saveFileInput{
-					provider:        providerName,
-					data:            asnPrefixes,
-					path:            path,
-					defaultFileName: fileName,
+				out, err = SaveFile(SaveFileInput{
+					Provider:        providerName,
+					Data:            asnPrefixes,
+					Path:            path,
+					DefaultFileName: fileName,
 				})
 				if err != nil {
 					return err
 				}
-				_, _ = os.Stderr.WriteString(fmt.Sprintf("data written to %s\n", out))
+				_, _ = os.Stderr.WriteString(fmt.Sprintf("Data written to %s\n", out))
 			}
 
 			if c.Bool("stdout") {

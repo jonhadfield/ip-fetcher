@@ -2,18 +2,25 @@ package main_test
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
 
+	mainpkg "github.com/jonhadfield/ip-fetcher/cmd/ip-fetcher"
 	"github.com/jonhadfield/ip-fetcher/providers/cloudflare"
 	"github.com/stretchr/testify/require"
 )
 
+const (
+	IPsV4Filename = "ips-v4"
+	IPsV6Filename = "ips-v6"
+)
+
 func CloudflareCmdNoStdOutNoPaths() {
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "cloudflare"})
 }
 
@@ -48,31 +55,31 @@ func TestCloudflareCmdSavetoPath(t *testing.T) {
 	ac.IPv4DownloadURL = cloudflare.DefaultIPv4URL
 	ac.IPv6DownloadURL = cloudflare.DefaultIPv6URL
 
-	app := getApp()
+	app := mainpkg.GetApp()
 
 	// with 4 only
-	os.Args = []string{"ip-fetcher", "cloudflare", "--path", tDir, "-4"}
+	os.Args = []string{"ip-fetcher", "cloudflare", "--Path", tDir, "-4"}
 	require.NoError(t, app.Run(os.Args))
-	require.NoFileExists(t, filepath.Join(tDir, ipsv6Filename))
-	require.FileExists(t, filepath.Join(tDir, ipsv4Filename))
+	require.NoFileExists(t, filepath.Join(tDir, IPsV6Filename))
+	require.FileExists(t, filepath.Join(tDir, IPsV4Filename))
 
 	// new tmpDir now that previous test polluted it
 	tDir = t.TempDir()
 
 	// with 6 only
-	os.Args = []string{"ip-fetcher", "cloudflare", "--path", tDir, "-6"}
+	os.Args = []string{"ip-fetcher", "cloudflare", "--Path", tDir, "-6"}
 	require.NoError(t, app.Run(os.Args))
-	require.NoFileExists(t, filepath.Join(tDir, ipsv4Filename))
-	require.FileExists(t, filepath.Join(tDir, ipsv6Filename))
+	require.NoFileExists(t, filepath.Join(tDir, IPsV4Filename))
+	require.FileExists(t, filepath.Join(tDir, IPsV6Filename))
 
 	// new tmpDir now that previous test polluted it
 	tDir = t.TempDir()
 
 	// with 4 & 6
-	os.Args = []string{"ip-fetcher", "cloudflare", "--path", tDir, "-4", "-6"}
+	os.Args = []string{"ip-fetcher", "cloudflare", "--Path", tDir, "-4", "-6"}
 	require.NoError(t, app.Run(os.Args))
-	require.FileExists(t, filepath.Join(tDir, ipsv4Filename))
-	require.FileExists(t, filepath.Join(tDir, ipsv6Filename))
+	require.FileExists(t, filepath.Join(tDir, IPsV4Filename))
+	require.FileExists(t, filepath.Join(tDir, IPsV6Filename))
 }
 
 func TestCloudflareCmdStdOut(t *testing.T) {
@@ -97,7 +104,7 @@ func TestCloudflareCmdStdOut(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	os.Args = []string{"ip-fetcher", "cloudflare", "--stdout"}
 
 	require.NoError(t, app.Run(os.Args))
@@ -105,7 +112,7 @@ func TestCloudflareCmdStdOut(t *testing.T) {
 	_ = w.Close()
 	os.Stdout = old
 	out := <-outC
-
+	fmt.Printf("%#+v\n", out)
 	require.Contains(t, out, "131.0.72.1/22")
 	require.Contains(t, out, "2a06:98c0::/29")
 	require.NoFileExists(t, tDir, "ips-v4")
@@ -138,8 +145,8 @@ func TestCloudflareCmdStdOutAndFiles(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
-	os.Args = []string{"ip-fetcher", "cloudflare", "--stdout", "--path", tDir}
+	app := mainpkg.GetApp()
+	os.Args = []string{"ip-fetcher", "cloudflare", "--stdout", "--Path", tDir}
 
 	require.NoError(t, app.Run(os.Args))
 
@@ -150,6 +157,6 @@ func TestCloudflareCmdStdOutAndFiles(t *testing.T) {
 	require.Contains(t, out, "131.0.72.1/22")
 	require.Contains(t, out, "2a06:98c0::/29")
 
-	require.FileExists(t, filepath.Join(tDir, ipsv4Filename))
-	require.FileExists(t, filepath.Join(tDir, ipsv6Filename))
+	require.FileExists(t, filepath.Join(tDir, IPsV4Filename))
+	require.FileExists(t, filepath.Join(tDir, IPsV6Filename))
 }

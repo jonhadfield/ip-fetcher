@@ -23,7 +23,7 @@ func urlCmd() *cli.Command {
 		Name:      providerName,
 		HelpName:  "- fetch prefixes from URLs",
 		Usage:     "Read prefixes from a web URL",
-		UsageText: "ip-fetcher url {--stdout | --path FILE} URL [URL...]",
+		UsageText: "ip-fetcher url {--stdout | --Path FILE} URL [URL...]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 
@@ -31,7 +31,7 @@ func urlCmd() *cli.Command {
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "path",
+				Name:  "Path",
 				Usage: "where to save the file", Aliases: []string{"p"}, TakesFile: true,
 			},
 			&cli.BoolFlag{
@@ -41,11 +41,11 @@ func urlCmd() *cli.Command {
 		},
 		Action: func(c *cli.Context) error {
 			urlList := c.Args().Slice()
-			path := strings.TrimSpace(c.String("path"))
+			path := strings.TrimSpace(c.String("Path"))
 			if path == "" && !c.Bool("stdout") {
 				_ = cli.ShowSubcommandHelp(c)
 
-				fmt.Println("\nerror: must specify at least one of stdout and path")
+				fmt.Println("\nerror: must specify at least one of stdout and Path")
 
 				os.Exit(1)
 			}
@@ -60,7 +60,7 @@ func urlCmd() *cli.Command {
 				}
 
 				requests = append(requests, _url.Request{
-					Url:    pUrl,
+					URL:    pUrl,
 					Method: "GET",
 				})
 			}
@@ -88,16 +88,16 @@ func urlCmd() *cli.Command {
 			if path != "" {
 				var out string
 
-				if out, err = saveFile(saveFileInput{
-					provider:        providerName,
-					data:            []byte(strings.Join(prefixes, "\n")),
-					path:            path,
-					defaultFileName: fileName,
+				if out, err = SaveFile(SaveFileInput{
+					Provider:        providerName,
+					Data:            []byte(strings.Join(prefixes, "\n")),
+					Path:            path,
+					DefaultFileName: fileName,
 				}); err != nil {
 					return err
 				}
 
-				_, _ = os.Stderr.WriteString(fmt.Sprintf("data written to %s\n", out))
+				_, _ = os.Stderr.WriteString(fmt.Sprintf("Data written to %s\n", out))
 			}
 
 			if c.Bool("stdout") {

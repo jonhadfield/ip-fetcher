@@ -34,9 +34,7 @@ const (
 	_SignatureScheme_name_8 = "PSSWithSHA256PSSWithSHA384PSSWithSHA512Ed25519"
 )
 
-var (
-	_SignatureScheme_index_8 = [...]uint8{0, 13, 26, 39, 46}
-)
+var _SignatureScheme_index_8 = [...]uint8{0, 13, 26, 39, 46}
 
 func (i SignatureScheme) String() string {
 	switch {
@@ -63,6 +61,7 @@ func (i SignatureScheme) String() string {
 		return "SignatureScheme(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
 }
+
 func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
@@ -80,9 +79,7 @@ const (
 	_CurveID_name_2 = "X25519MLKEM768"
 )
 
-var (
-	_CurveID_index_0 = [...]uint8{0, 9, 18, 27}
-)
+var _CurveID_index_0 = [...]uint8{0, 9, 18, 27}
 
 func (i CurveID) String() string {
 	switch {
@@ -97,6 +94,7 @@ func (i CurveID) String() string {
 		return "CurveID(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
 }
+
 func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.

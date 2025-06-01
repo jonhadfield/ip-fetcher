@@ -8,12 +8,13 @@ import (
 	"path/filepath"
 	"testing"
 
+	mainpkg "github.com/jonhadfield/ip-fetcher/cmd/ip-fetcher"
 	"github.com/jonhadfield/ip-fetcher/providers/digitalocean"
 	"github.com/stretchr/testify/require"
 )
 
 func DigitaloceanCmdNoStdOutNoPath() {
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "digitalocean"})
 }
 
@@ -47,15 +48,15 @@ func TestDigitaloceanCmdSavetoPath(t *testing.T) {
 	ac := digitalocean.New()
 	ac.DownloadURL = digitalocean.DigitaloceanDownloadURL
 
-	app := getApp()
+	app := mainpkg.GetApp()
 
 	// with directory and filename
-	os.Args = []string{"ip-fetcher", "digitalocean", "--path", filepath.Join(tDir, testFile)}
+	os.Args = []string{"ip-fetcher", "digitalocean", "--Path", filepath.Join(tDir, testFile)}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, testFile))
 
 	// with directory only
-	os.Args = []string{"ip-fetcher", "digitalocean", "--path", tDir}
+	os.Args = []string{"ip-fetcher", "digitalocean", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, "google.csv"))
 }
@@ -80,7 +81,7 @@ func TestDigitaloceanCmdStdOut(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	os.Args = []string{"ip-fetcher", "digitalocean", "--stdout"}
 
 	require.NoError(t, app.Run(os.Args))
@@ -114,8 +115,8 @@ func TestDigitaloceanCmdStdOutAndFile(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
-	os.Args = []string{"ip-fetcher", "digitalocean", "--stdout", "--path", tDir}
+	app := mainpkg.GetApp()
+	os.Args = []string{"ip-fetcher", "digitalocean", "--stdout", "--Path", tDir}
 
 	require.NoError(t, app.Run(os.Args))
 

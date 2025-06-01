@@ -8,11 +8,12 @@ import (
 	"path/filepath"
 	"testing"
 
+	mainpkg "github.com/jonhadfield/ip-fetcher/cmd/ip-fetcher"
 	"github.com/stretchr/testify/require"
 )
 
 func OVHCmdNoStdOutNoPath() {
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "ovh"})
 }
 
@@ -41,9 +42,9 @@ func TestOVHCmdSaveToPath(t *testing.T) {
 	t.Setenv("IP_FETCHER_MOCK_OVH", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_OVH")
 
-	app := getApp()
+	app := mainpkg.GetApp()
 
-	os.Args = []string{"ip-fetcher", "ovh", "--path", tDir}
+	os.Args = []string{"ip-fetcher", "ovh", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, "prefixes.txt"))
 }
@@ -67,7 +68,7 @@ func TestOVHCmdStdOut(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	os.Args = []string{"ip-fetcher", "ovh", "--stdout"}
 
 	require.NoError(t, app.Run(os.Args))

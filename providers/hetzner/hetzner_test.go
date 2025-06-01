@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/jonhadfield/ip-fetcher/providers/hetzner"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 )
@@ -13,7 +14,7 @@ import (
 const TestASN = "24940"
 
 func TestFetch(t *testing.T) {
-	u, err := url.Parse(fmt.Sprintf(DownloadURL, TestASN))
+	u, err := url.Parse(fmt.Sprintf(hetzner.DownloadURL, TestASN))
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 	gock.New(urlBase).
@@ -21,7 +22,7 @@ func TestFetch(t *testing.T) {
 		Reply(200).
 		File("testdata/prefixes.json")
 
-	ac := New()
+	ac := hetzner.New()
 	ac.ASNs = []string{TestASN}
 	gock.InterceptClient(ac.Client.HTTPClient)
 

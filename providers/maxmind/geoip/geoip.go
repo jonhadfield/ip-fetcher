@@ -75,7 +75,7 @@ const (
 	GeoLite2CountryLocationsEnCSVFileName = "GeoLite2-Country-Locations-en.csv"
 )
 
-func constructDownloadURL(licenseKey, edition, dbName, dbFormat string) string {
+func ConstructDownloadURL(licenseKey, edition, dbName, dbFormat string) string {
 	suffix := "zip"
 	if strings.EqualFold(dbFormat, "mmdb") {
 		suffix = "tar.gz"
@@ -150,7 +150,7 @@ func (gc *GeoIP) FetchFileName(dbName string) (string, error) {
 		return "", err
 	}
 
-	downloadURL := constructDownloadURL(gc.LicenseKey, gc.Edition, dbName, gc.DBFormat)
+	downloadURL := ConstructDownloadURL(gc.LicenseKey, gc.Edition, dbName, gc.DBFormat)
 
 	return web.RequestContentDispositionFileName(gc.Client, downloadURL, []string{gc.LicenseKey})
 }
@@ -162,7 +162,7 @@ func (gc *GeoIP) FetchFile(dbName string) (string, error) {
 		return "", err
 	}
 
-	downloadURL := constructDownloadURL(gc.LicenseKey, gc.Edition, dbName, gc.DBFormat)
+	downloadURL := ConstructDownloadURL(gc.LicenseKey, gc.Edition, dbName, gc.DBFormat)
 
 	filename, err := web.RequestContentDispositionFileName(gc.Client, downloadURL, []string{gc.LicenseKey})
 	if err != nil {
@@ -370,7 +370,7 @@ func ExtractCity(zipPath, dest string) error {
 	return UnzipFiles(zipPath, dest)
 }
 
-func getVersionFromZipFilePath(in string) (string, error) {
+func GetVersionFromZipFilePath(in string) (string, error) {
 	fNameWithoutExt := fileNameWithoutExtension(filepath.Base(in))
 
 	fNameParts := strings.Split(fNameWithoutExt, "_")
@@ -405,7 +405,7 @@ func (gc *GeoIP) FetchASNFiles() (FetchASNFilesOutput, error) {
 		return FetchASNFilesOutput{}, err
 	}
 
-	if output.Version, err = getVersionFromZipFilePath(output.CompressedPath); err != nil {
+	if output.Version, err = GetVersionFromZipFilePath(output.CompressedPath); err != nil {
 		return FetchASNFilesOutput{}, err
 	}
 
@@ -444,7 +444,7 @@ func (gc *GeoIP) FetchCityFiles() (FetchCityFilesOutput, error) {
 		return FetchCityFilesOutput{}, err
 	}
 
-	if output.Version, err = getVersionFromZipFilePath(output.CompressedPath); err != nil {
+	if output.Version, err = GetVersionFromZipFilePath(output.CompressedPath); err != nil {
 		return FetchCityFilesOutput{}, err
 	}
 	logrus.Debugf("%s | extracted version %s from %s", pflog.GetFunctionName(), output.Version, output.CompressedPath)
@@ -482,7 +482,7 @@ func (gc *GeoIP) FetchCountryFiles() (FetchCountryFilesOutput, error) {
 		return FetchCountryFilesOutput{}, err
 	}
 
-	if output.Version, err = getVersionFromZipFilePath(output.CompressedPath); err != nil {
+	if output.Version, err = GetVersionFromZipFilePath(output.CompressedPath); err != nil {
 		return FetchCountryFilesOutput{}, err
 	}
 

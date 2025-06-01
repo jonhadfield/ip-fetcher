@@ -5,13 +5,15 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/jonhadfield/ip-fetcher/providers/azure"
+
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 )
 
 const (
 	// testDownloadURL     = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20221212.json"
-	testDownloadURL     = WorkaroundDownloadURL
+	testDownloadURL     = azure.WorkaroundDownloadURL
 	testInitialURL      = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=00000"
 	testInitialFilePath = "testdata/initial.html"
 	testDataFilePath    = "testdata/ServiceTags_Public_20221212.json"
@@ -58,7 +60,7 @@ func TestFetchRaw(t *testing.T) {
 		AddHeader("ETag", exEtag).
 		File(testDataFilePath)
 
-	ac := New()
+	ac := azure.New()
 	ac.DownloadURL = testDownloadURL
 	gock.InterceptClient(ac.Client.HTTPClient)
 
@@ -84,7 +86,7 @@ func TestFetchRawNoDownloadURL(t *testing.T) {
 
 	require.NoError(t, err)
 
-	ac := New()
+	ac := azure.New()
 	ac.InitialURL = testInitialURL
 	gock.InterceptClient(ac.Client.HTTPClient)
 
@@ -104,14 +106,14 @@ func TestFetchRawFailure(t *testing.T) {
 		Reply(404).
 		File(testDataFilePath)
 
-	ac := New()
+	ac := azure.New()
 	ac.DownloadURL = testDownloadURL
 	gock.InterceptClient(ac.Client.HTTPClient)
 
 	data, _, status, err := ac.FetchData()
 	require.Error(t, err)
 	require.Equal(t, 404, status)
-	require.Len(t, data, 0)
+	require.Empty(t, data)
 }
 
 // func TestGetDownloadURLFailure(t *testing.T) {
@@ -161,7 +163,7 @@ func TestFetch(t *testing.T) {
 		AddHeader("ETag", exEtag).
 		File(testDataFilePath)
 
-	ac := New()
+	ac := azure.New()
 	ac.DownloadURL = testDownloadURL
 	gock.InterceptClient(ac.Client.HTTPClient)
 
@@ -172,5 +174,5 @@ func TestFetch(t *testing.T) {
 
 	require.Equal(t, "Public", prefixes.Cloud)
 	require.Equal(t, 232, prefixes.ChangeNumber)
-	require.Equal(t, 2643, len(prefixes.Values))
+	require.Len(t, prefixes.Values, 2643)
 }

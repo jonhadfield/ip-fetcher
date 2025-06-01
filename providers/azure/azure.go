@@ -90,7 +90,7 @@ func (a *Azure) GetDownloadURL() (string, error) {
 
 	reATags := regexp.MustCompile("<a [^>]+>")
 
-	aTags := reATags.FindAllString(string(body), -1)
+	aTags := reATags.FindAllString(body, -1)
 
 	reHRefs := regexp.MustCompile("href=\"[^\"]+\"")
 

@@ -2,6 +2,7 @@ package main_test
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"os"
 	"os/exec"
@@ -10,12 +11,13 @@ import (
 
 	_ "github.com/agiledragon/gomonkey/v2"
 	_ "github.com/agiledragon/gomonkey/v2/test/fake"
+	mainpkg "github.com/jonhadfield/ip-fetcher/cmd/ip-fetcher"
 	"github.com/stretchr/testify/require"
 )
 
 func LinodeCmdNoStdOutNoPath() {
-	app := getApp()
-	_ = app.Run([]string{"ip-fetcher", sLinode})
+	app := mainpkg.GetApp()
+	_ = app.Run([]string{"ip-fetcher", mainpkg.SLinode})
 }
 
 func TestLinodeCmdNoStdOutNoPath(t *testing.T) {
@@ -29,7 +31,8 @@ func TestLinodeCmdNoStdOutNoPath(t *testing.T) {
 	cmd := exec.Command(os.Args[0], "-test.run=TestLinodeCmdNoStdOutNoPath")
 	cmd.Env = append(os.Environ(), "TEST_EXIT=1")
 	err := cmd.Run()
-	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
+	var e *exec.ExitError
+	if errors.As(err, &e) && !e.Success() {
 		return
 	}
 	t.Fatalf("process ran with err %v, want exit status 1", err)
@@ -38,8 +41,8 @@ func TestLinodeCmdNoStdOutNoPath(t *testing.T) {
 func LinodeCmdEmptyPath() {
 	defer testCleanUp(os.Args)
 
-	app := getApp()
-	_ = app.Run([]string{"ip-fetcher", sLinode})
+	app := mainpkg.GetApp()
+	_ = app.Run([]string{"ip-fetcher", mainpkg.SLinode})
 }
 
 func TestLinodeCmdEmptyPath(t *testing.T) {
@@ -69,15 +72,15 @@ func TestLinodeCmdSavetoPath(t *testing.T) {
 	t.Setenv("IP_FETCHER_MOCK_LINODE", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_LINODE")
 
-	app := getApp()
+	app := mainpkg.GetApp()
 
 	// with filename only
-	os.Args = []string{"ip-fetcher", sLinode, "--path", filepath.Join(tDir, testFile)}
+	os.Args = []string{"ip-fetcher", mainpkg.SLinode, "--Path", filepath.Join(tDir, testFile)}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, testFile))
 
 	// with directory only
-	os.Args = []string{"ip-fetcher", sLinode, "--path", tDir}
+	os.Args = []string{"ip-fetcher", mainpkg.SLinode, "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, "prefixes.csv"))
 }
@@ -101,8 +104,8 @@ func TestLinodeCmdStdOut(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
-	os.Args = []string{"ip-fetcher", sLinode, "--stdout"}
+	app := mainpkg.GetApp()
+	os.Args = []string{"ip-fetcher", mainpkg.SLinode, "--stdout"}
 	require.NoError(t, app.Run(os.Args))
 
 	_ = w.Close()
@@ -132,8 +135,8 @@ func TestLinodeCmdStdOutAndFile(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
-	os.Args = []string{"ip-fetcher", sLinode, "--stdout", "--path", tDir}
+	app := mainpkg.GetApp()
+	os.Args = []string{"ip-fetcher", mainpkg.SLinode, "--stdout", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 
 	_ = w.Close()

@@ -17,10 +17,8 @@ var (
 	NativeTransport = http.DefaultTransport
 )
 
-var (
-	// ErrCannotMatch store the error returned in case of no matches.
-	ErrCannotMatch = errors.New("gock: cannot match any request")
-)
+// ErrCannotMatch store the error returned in case of no matches.
+var ErrCannotMatch = errors.New("gock: cannot match any request")
 
 // Transport implements http.RoundTripper, which fulfills single http requests issued by
 // an http.Client.

@@ -2,6 +2,7 @@ package main_test
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"os"
 	"os/exec"
@@ -10,11 +11,12 @@ import (
 
 	_ "github.com/agiledragon/gomonkey/v2"
 	_ "github.com/agiledragon/gomonkey/v2/test/fake"
+	mainpkg "github.com/jonhadfield/ip-fetcher/cmd/ip-fetcher"
 	"github.com/stretchr/testify/require"
 )
 
 func GoogleCmdNoStdOutNoPath() {
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "google"})
 }
 
@@ -38,7 +40,7 @@ func TestGoogleCmdNoStdOutNoPath(t *testing.T) {
 func GoogleCmdEmptyPath() {
 	defer testCleanUp(os.Args)
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "google"})
 }
 
@@ -53,7 +55,8 @@ func TestGoogleCmdEmptyPath(t *testing.T) {
 	cmd := exec.Command(os.Args[0], "-test.run=TestGoogleCmdEmptyPath")
 	cmd.Env = append(os.Environ(), "TEST_EXIT=1")
 	err := cmd.Run()
-	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
+	var e *exec.ExitError
+	if errors.As(err, &e) && !e.Success() {
 		return
 	}
 	t.Fatalf("process ran with err %v, want exit status 1", err)
@@ -69,15 +72,15 @@ func TestGoogleCmdSavetoPath(t *testing.T) {
 	t.Setenv("IP_FETCHER_MOCK_GOOGLE", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GOOGLE")
 
-	app := getApp()
+	app := mainpkg.GetApp()
 
 	// with filename only
-	os.Args = []string{"ip-fetcher", "google", "--path", filepath.Join(tDir, testFile)}
+	os.Args = []string{"ip-fetcher", "google", "--Path", filepath.Join(tDir, testFile)}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, testFile))
 
 	// with directory only
-	os.Args = []string{"ip-fetcher", "google", "--path", tDir}
+	os.Args = []string{"ip-fetcher", "google", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, "goog.json"))
 }
@@ -101,7 +104,7 @@ func TestGoogleCmdStdOut(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	os.Args = []string{"ip-fetcher", "google", "--stdout"}
 	require.NoError(t, app.Run(os.Args))
 
@@ -132,8 +135,8 @@ func TestGoogleCmdStdOutAndFile(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
-	os.Args = []string{"ip-fetcher", "google", "--stdout", "--path", tDir}
+	app := mainpkg.GetApp()
+	os.Args = []string{"ip-fetcher", "google", "--stdout", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 
 	_ = w.Close()

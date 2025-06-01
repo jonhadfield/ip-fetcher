@@ -11,26 +11,28 @@ import (
 	"testing"
 	"time"
 
+	"github.com/jonhadfield/ip-fetcher/internal/web"
+
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 )
 
 func TestRequestMethodNotSpecified(t *testing.T) {
-	testUrl := "https://www.example.com/mytextfile.txt?cred=secret-value&hello=world"
+	testURL := "https://www.example.com/mytextfile.txt?cred=secret-value&hello=world"
 
-	rc := NewHTTPClient()
+	rc := web.NewHTTPClient()
 
-	body, headers, status, err := Request(rc, testUrl, "", nil, []string{}, 1*time.Second)
+	body, headers, status, err := web.Request(rc, testURL, "", nil, []string{}, 1*time.Second)
 	require.Error(t, err)
 	require.Empty(t, headers)
-	require.Len(t, body, 0)
+	require.Empty(t, body)
 	require.Equal(t, 0, status)
 	require.ErrorContains(t, err, "method not specified")
 }
 
 func TestRequestFailure(t *testing.T) {
-	testUrl := "https://www.example.com/mytextfile.txt?cred=secret-value&hello=world"
-	u, err := url.Parse(testUrl)
+	testURL := "https://www.example.com/mytextfile.txt?cred=secret-value&hello=world"
+	u, err := url.Parse(testURL)
 	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s%s?%s", u.Scheme, u.Host, u.Path, u.RawQuery)
@@ -42,23 +44,23 @@ func TestRequestFailure(t *testing.T) {
 		MatchParam("hello", "world").
 		ReplyError(errors.New("no worky"))
 
-	c := NewHTTPClient()
+	c := web.NewHTTPClient()
 	c.RetryMax = 1
 
 	gock.InterceptClient(c.HTTPClient)
-	body, headers, status, err := Request(c, testUrl, http.MethodGet, nil, []string{}, 10*time.Second)
+	body, headers, status, err := web.Request(c, testURL, http.MethodGet, nil, []string{}, 10*time.Second)
 	require.Error(t, err)
 	require.ErrorContains(t, err, "no worky")
 	require.Empty(t, headers)
-	require.Len(t, body, 0)
+	require.Empty(t, body)
 	require.Equal(t, 0, status)
 	// require.Empty(t, downloadedFilePath)
 }
 
 func TestRequestContentDispositionFileName(t *testing.T) {
-	testUrl := "https://www.example.com/sample-url?qsparam=qsvalue"
+	testURL := "https://www.example.com/sample-url?qsparam=qsvalue"
 	fileName := "example-filename.zip"
-	u, err := url.Parse(testUrl)
+	u, err := url.Parse(testURL)
 	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -79,52 +81,52 @@ func TestRequestContentDispositionFileName(t *testing.T) {
 		Reply(http.StatusOK).
 		SetHeader("content-disposition", "")
 
-	c := NewHTTPClient()
+	c := web.NewHTTPClient()
 	c.RetryMax = 0
 
 	gock.InterceptClient(c.HTTPClient)
 
-	fn, err := RequestContentDispositionFileName(c, testUrl, nil)
+	fn, err := web.RequestContentDispositionFileName(c, testURL, nil)
 	require.NoError(t, err)
 	require.Equal(t, fileName, fn)
 
-	_, err = RequestContentDispositionFileName(c, testUrl, nil)
+	_, err = web.RequestContentDispositionFileName(c, testURL, nil)
 	require.Error(t, err)
 	require.ErrorContains(t, err, "failed to get Content-Disposition header")
 	require.ErrorContains(t, err, "mime: no media type")
 
 	// second attempt fails as gock only matching one time
-	_, err = RequestContentDispositionFileName(c, testUrl, nil)
+	_, err = web.RequestContentDispositionFileName(c, testURL, nil)
 	require.Error(t, err)
 }
 
 func TestPathDetails(t *testing.T) {
-	// Test a missing file with an missing 'would-be' parent
-	output, err := getPathInfo(filepath.Join("a", "missing", "directory"))
+	// Test a missing file with an missing 'would-be' Parent
+	output, err := web.GetPathInfo(filepath.Join("a", "missing", "directory"))
 	require.NoError(t, err)
-	require.Equal(t, pathInfo{
-		exists:       false,
-		parentExists: false,
-		isDir:        false,
-		parent:       "",
-		mode:         0,
+	require.Equal(t, web.PathInfo{
+		Exists:       false,
+		ParentExists: false,
+		IsDir:        false,
+		Parent:       "",
+		Mode:         0,
 	}, output)
 
-	// Test a missing file with a valid parent
+	// Test a missing file with a valid Parent
 	tmpDir := t.TempDir()
 	f, err := os.Stat(tmpDir)
 	require.NoError(t, err)
 
 	parentMode := f.Mode()
 
-	output, err = getPathInfo(filepath.Join(tmpDir, "testfile.txt"))
+	output, err = web.GetPathInfo(filepath.Join(tmpDir, "testfile.txt"))
 	require.NoError(t, err)
-	require.Equal(t, pathInfo{
-		exists:       false,
-		parentExists: true,
-		isDir:        false,
-		parent:       filepath.Clean(tmpDir),
-		mode:         parentMode,
+	require.Equal(t, web.PathInfo{
+		Exists:       false,
+		ParentExists: true,
+		IsDir:        false,
+		Parent:       filepath.Clean(tmpDir),
+		Mode:         parentMode,
 	}, output)
 
 	// Test a valid directory
@@ -134,14 +136,14 @@ func TestPathDetails(t *testing.T) {
 
 	parentMode = f.Mode()
 
-	output, err = getPathInfo(tmpDir)
+	output, err = web.GetPathInfo(tmpDir)
 	require.NoError(t, err)
-	require.Equal(t, pathInfo{
-		exists:       true,
-		parentExists: true,
-		isDir:        true,
-		parent:       filepath.Clean(tmpDir),
-		mode:         parentMode,
+	require.Equal(t, web.PathInfo{
+		Exists:       true,
+		ParentExists: true,
+		IsDir:        true,
+		Parent:       filepath.Clean(tmpDir),
+		Mode:         parentMode,
 	}, output)
 
 	// Test a valid file
@@ -160,20 +162,20 @@ func TestPathDetails(t *testing.T) {
 
 	fileMode := f.Mode()
 
-	output, err = getPathInfo(filePath)
+	output, err = web.GetPathInfo(filePath)
 	require.NoError(t, err)
-	require.Equal(t, pathInfo{
-		exists:       true,
-		parentExists: true,
-		isDir:        false,
-		parent:       filepath.Clean(tmpDir),
-		mode:         fileMode,
+	require.Equal(t, web.PathInfo{
+		Exists:       true,
+		ParentExists: true,
+		IsDir:        false,
+		Parent:       filepath.Clean(tmpDir),
+		Mode:         fileMode,
 	}, output)
 }
 
 func TestDownloadFileWithMissingDir(t *testing.T) {
-	testUrl := "https://www.example.com/mytextfile.txt"
-	u, err := url.Parse(testUrl)
+	testURL := "https://www.example.com/mytextfile.txt"
+	u, err := url.Parse(testURL)
 	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -184,19 +186,19 @@ func TestDownloadFileWithMissingDir(t *testing.T) {
 		File("testdata/mytextfile.txt").
 		SetHeader("hello", "World")
 
-	c := NewHTTPClient()
+	c := web.NewHTTPClient()
 	gock.InterceptClient(c.HTTPClient)
 	c.RetryMax = 0
 
 	missingDir := "/a/non-existant-dir"
-	downloadedFilePath, err := DownloadFile(c, "https://www.example.com/mytextfile.txt", missingDir)
+	downloadedFilePath, err := web.DownloadFile(c, "https://www.example.com/mytextfile.txt", missingDir)
 	require.Error(t, err)
 	require.Empty(t, downloadedFilePath)
 }
 
 func TestDownloadFileWithDirSpecified(t *testing.T) {
-	testUrl := "https://www.example.com/mytextfile.txt"
-	u, err := url.Parse(testUrl)
+	testURL := "https://www.example.com/mytextfile.txt"
+	u, err := url.Parse(testURL)
 	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -207,19 +209,19 @@ func TestDownloadFileWithDirSpecified(t *testing.T) {
 		File("testdata/mytextfile.txt").
 		SetHeader("hello", "World")
 
-	rc := NewHTTPClient()
+	rc := web.NewHTTPClient()
 
 	gock.InterceptClient(rc.HTTPClient)
 
 	tmpDir := t.TempDir()
-	df, err := DownloadFile(rc, "https://www.example.com/mytextfile.txt", tmpDir)
+	df, err := web.DownloadFile(rc, "https://www.example.com/mytextfile.txt", tmpDir)
 	require.NoError(t, err)
 	require.Equal(t, filepath.Join(tmpDir, "mytextfile.txt"), df)
 }
 
 func TestDownloadFileWithFilePathSpecified(t *testing.T) {
-	testUrl := "https://www.example.com/mytextfile.txt"
-	u, err := url.Parse(testUrl)
+	testURL := "https://www.example.com/mytextfile.txt"
+	u, err := url.Parse(testURL)
 	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -230,19 +232,19 @@ func TestDownloadFileWithFilePathSpecified(t *testing.T) {
 		File("testdata/mytextfile.txt").
 		SetHeader("hello", "World")
 
-	c := NewHTTPClient()
+	c := web.NewHTTPClient()
 
 	gock.InterceptClient(c.HTTPClient)
 
 	tmpDir := t.TempDir()
-	df, err := DownloadFile(c, "https://www.example.com/mytextfile.txt", path.Join(tmpDir, "mytextfile.txt"))
+	df, err := web.DownloadFile(c, "https://www.example.com/mytextfile.txt", path.Join(tmpDir, "mytextfile.txt"))
 	require.NoError(t, err)
 	require.Equal(t, filepath.Join(tmpDir, "mytextfile.txt"), df)
 }
 
 func TestHTTPGet(t *testing.T) {
-	testUrl := "https://www.example.com/mytextfile.txt"
-	u, err := url.Parse(testUrl)
+	testURL := "https://www.example.com/mytextfile.txt"
+	u, err := url.Parse(testURL)
 	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -253,11 +255,11 @@ func TestHTTPGet(t *testing.T) {
 		File("testdata/mytextfile.txt").
 		SetHeader("hello", "World")
 
-	c := NewHTTPClient()
+	c := web.NewHTTPClient()
 
 	gock.InterceptClient(c.HTTPClient)
 
-	b, headers, status, err := Request(c, testUrl, http.MethodGet, nil, nil, 2*time.Second)
+	b, headers, status, err := web.Request(c, testURL, http.MethodGet, nil, nil, 2*time.Second)
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, status)
 	require.Equal(t, "hello world", string(b))

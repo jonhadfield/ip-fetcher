@@ -2,10 +2,11 @@ package github_test
 
 import (
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/providers/github"
 	"net/netip"
 	"net/url"
 	"testing"
+
+	"github.com/jonhadfield/ip-fetcher/providers/github"
 
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"

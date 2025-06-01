@@ -270,7 +270,7 @@ func (s *Scratch) decompress() error {
 	s2.init(br, s.decTable, s.actualTableLog)
 
 	// Use temp table to avoid bound checks/append penalty.
-	var tmp = s.ct.tableSymbol[:256]
+	tmp := s.ct.tableSymbol[:256]
 	var off uint8
 
 	// Main part

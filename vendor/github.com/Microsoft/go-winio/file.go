@@ -34,8 +34,10 @@ func (*timeoutError) Temporary() bool { return true }
 
 type timeoutChan chan struct{}
 
-var ioInitOnce sync.Once
-var ioCompletionPort windows.Handle
+var (
+	ioInitOnce       sync.Once
+	ioCompletionPort windows.Handle
+)
 
 // ioResult contains the result of an asynchronous IO operation.
 type ioResult struct {

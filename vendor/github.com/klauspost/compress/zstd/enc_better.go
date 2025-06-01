@@ -216,7 +216,6 @@ encodeLoop:
 					if s >= sLimit {
 						if debugEncoder {
 							println("repeat ended", s, length)
-
 						}
 						break encodeLoop
 					}
@@ -275,7 +274,6 @@ encodeLoop:
 					if s >= sLimit {
 						if debugEncoder {
 							println("repeat ended", s, length)
-
 						}
 						break encodeLoop
 					}
@@ -744,7 +742,6 @@ encodeLoop:
 					if s >= sLimit {
 						if debugEncoder {
 							println("repeat ended", s, length)
-
 						}
 						break encodeLoop
 					}
@@ -806,7 +803,6 @@ encodeLoop:
 					if s >= sLimit {
 						if debugEncoder {
 							println("repeat ended", s, length)
-
 						}
 						break encodeLoop
 					}

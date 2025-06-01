@@ -15,8 +15,8 @@ import (
 
 const (
 	providerName  = "cloudflare"
-	ipsv4Filename = "ips-v4"
-	ipsv6Filename = "ips-v6"
+	IPsV4Filename = "ips-v4"
+	IPsV6Filename = "ips-v6"
 )
 
 func cloudflareCmd() *cli.Command {
@@ -24,7 +24,7 @@ func cloudflareCmd() *cli.Command {
 		Name:      providerName,
 		HelpName:  "- fetch Cloudflare ip ranges",
 		Usage:     "Cloudflare",
-		UsageText: "ip-fetcher cloudflare [-4 ipv4] [-6 ipv6] {--stdout | --path FILE}",
+		UsageText: "ip-fetcher cloudflare [-4 ipv4] [-6 ipv6] {--stdout | --Path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			// nolint:errcheck
 			_ = cli.ShowSubcommandHelp(cCtx)
@@ -33,7 +33,7 @@ func cloudflareCmd() *cli.Command {
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "path",
+				Name:  "Path",
 				Usage: "where to save the file(s)", TakesFile: true,
 			},
 			&cli.BoolFlag{
@@ -50,7 +50,7 @@ func cloudflareCmd() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("path"))
+			path := strings.TrimSpace(c.String("Path"))
 
 			four := c.Bool("4")
 			six := c.Bool("6")
@@ -61,7 +61,7 @@ func cloudflareCmd() *cli.Command {
 				// nolint:errcheck
 				_ = cli.ShowSubcommandHelp(c)
 
-				fmt.Println("\nerror: must specify at least one of stdout and path")
+				fmt.Println("\nerror: must specify at least one of stdout and Path")
 				os.Exit(1)
 			}
 
@@ -99,18 +99,18 @@ func cloudflareCmd() *cli.Command {
 					fmt.Printf("%s\n", dataFour)
 				}
 				if path != "" {
-					p := filepath.Join(path, ipsv4Filename)
+					p := filepath.Join(path, IPsV4Filename)
 
 					var out string
-					if out, err = saveFile(saveFileInput{
-						provider: providerName,
-						data:     dataFour,
-						path:     p,
+					if out, err = SaveFile(SaveFileInput{
+						Provider: providerName,
+						Data:     dataFour,
+						Path:     p,
 					}); err != nil {
 						return err
 					}
 
-					msg = fmt.Sprintf("ipv4 data written to %s\n", out)
+					msg = fmt.Sprintf("ipv4 Data written to %s\n", out)
 				}
 			}
 
@@ -125,18 +125,18 @@ func cloudflareCmd() *cli.Command {
 				}
 
 				if path != "" {
-					p := filepath.Join(path, ipsv6Filename)
+					p := filepath.Join(path, IPsV6Filename)
 
 					var out string
-					if out, err = saveFile(saveFileInput{
-						provider: providerName,
-						data:     dataSix,
-						path:     p,
+					if out, err = SaveFile(SaveFileInput{
+						Provider: providerName,
+						Data:     dataSix,
+						Path:     p,
 					}); err != nil {
 						return err
 					}
 
-					msg += fmt.Sprintf("ipv6 data written to %s\n", out)
+					msg += fmt.Sprintf("ipv6 Data written to %s\n", out)
 				}
 			}
 

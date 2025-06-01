@@ -8,11 +8,12 @@ import (
 	"path/filepath"
 	"testing"
 
+	mainpkg "github.com/jonhadfield/ip-fetcher/cmd/ip-fetcher"
 	"github.com/stretchr/testify/require"
 )
 
 func GithubCmdNoStdOutNoPath() {
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "github"})
 }
 
@@ -41,9 +42,9 @@ func TestGithubCmdSaveToPath(t *testing.T) {
 	t.Setenv("IP_FETCHER_MOCK_GITHUB", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GITHUB")
 
-	app := getApp()
+	app := mainpkg.GetApp()
 
-	os.Args = []string{"ip-fetcher", "github", "--path", tDir}
+	os.Args = []string{"ip-fetcher", "github", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, "prefixes.txt"))
 }
@@ -67,7 +68,7 @@ func TestGithubCmdStdOut(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	os.Args = []string{"ip-fetcher", "github", "--stdout"}
 
 	require.NoError(t, app.Run(os.Args))

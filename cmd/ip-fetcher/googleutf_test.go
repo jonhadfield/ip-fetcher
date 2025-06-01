@@ -10,11 +10,12 @@ import (
 
 	_ "github.com/agiledragon/gomonkey/v2"
 	_ "github.com/agiledragon/gomonkey/v2/test/fake"
+	mainpkg "github.com/jonhadfield/ip-fetcher/cmd/ip-fetcher"
 	"github.com/stretchr/testify/require"
 )
 
 func GoogleutfCmdNoStdOutNoPath() {
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "googleutf"})
 }
 
@@ -38,7 +39,7 @@ func TestGoogleutfCmdNoStdOutNoPath(t *testing.T) {
 func GoogleutfCmdEmptyPath() {
 	defer testCleanUp(os.Args)
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "googleutf"})
 }
 
@@ -69,15 +70,15 @@ func TestGoogleutfCmdSavetoPath(t *testing.T) {
 	t.Setenv("IP_FETCHER_MOCK_GOOGLEUTF", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GOOGLEUTF")
 
-	app := getApp()
+	app := mainpkg.GetApp()
 
 	// with filename only
-	os.Args = []string{"ip-fetcher", "googleutf", "--path", filepath.Join(tDir, testFile)}
+	os.Args = []string{"ip-fetcher", "googleutf", "--Path", filepath.Join(tDir, testFile)}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, testFile))
 
 	// with directory only
-	os.Args = []string{"ip-fetcher", "googleutf", "--path", tDir}
+	os.Args = []string{"ip-fetcher", "googleutf", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, "user-triggered-fetchers.json"))
 }
@@ -101,7 +102,7 @@ func TestGoogleutfCmdStdOut(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	os.Args = []string{"ip-fetcher", "googleutf", "--stdout"}
 	require.NoError(t, app.Run(os.Args))
 
@@ -132,8 +133,8 @@ func TestGoogleutfCmdStdOutAndFile(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
-	os.Args = []string{"ip-fetcher", "googleutf", "--stdout", "--path", tDir}
+	app := mainpkg.GetApp()
+	os.Args = []string{"ip-fetcher", "googleutf", "--stdout", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 
 	_ = w.Close()

@@ -7,6 +7,7 @@ import (
 	"os"
 	"testing"
 
+	mUrl "github.com/jonhadfield/ip-fetcher/providers/url"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 )
@@ -15,7 +16,7 @@ func TestReadRawPrefixesFromFileData(t *testing.T) {
 	d, err := os.ReadFile("testdata/ip-file-1.txt")
 	require.NoError(t, err)
 	require.NotEmpty(t, d)
-	rp, err := ReadRawPrefixesFromFileData(d)
+	rp, err := mUrl.ReadRawPrefixesFromFileData(d)
 	require.NoError(t, err)
 	require.Len(t, rp, 4)
 	require.Equal(t, "1.1.1.1/32", rp[0].String())
@@ -33,17 +34,17 @@ func TestFetchUrlData(t *testing.T) {
 		Reply(200).
 		File("testdata/ip-file-1.txt")
 
-	hf := New()
+	hf := mUrl.New()
 	gock.InterceptClient(hf.HttpClient.HTTPClient)
 
-	response, err := fetchUrlResponse(hf.HttpClient, "https://www.example.com/files/ips.net")
+	response, err := mUrl.FetchURLResponse(hf.HttpClient, "https://www.example.com/files/ips.net")
 	require.NoError(t, err)
-	require.NotEmpty(t, response.data)
+	require.NotEmpty(t, response.Data)
 }
 
 func TestFetchUrlsWithoutUrls(t *testing.T) {
-	hf := New()
-	_, err := hf.Get([]Request{})
+	hf := mUrl.New()
+	_, err := hf.Get([]mUrl.Request{})
 	require.Error(t, err)
 	require.ErrorContains(t, err, "no URLs to fetch")
 }
@@ -58,10 +59,10 @@ func TestFetchUrls(t *testing.T) {
 		Reply(200).
 		File("testdata/ip-file-1.txt")
 
-	hf := New()
+	hf := mUrl.New()
 	gock.InterceptClient(hf.HttpClient.HTTPClient)
-	responses, err := hf.Get([]Request{
-		{Url: u},
+	responses, err := hf.Get([]mUrl.Request{
+		{URL: u},
 	})
 
 	require.NoError(t, err)
@@ -78,11 +79,11 @@ func TestFetchUrlsWithFailedRequest(t *testing.T) {
 		Reply(http.StatusNotFound).
 		File("testdata/ip-file-1.txt")
 
-	hf := New()
+	hf := mUrl.New()
 	gock.InterceptClient(hf.HttpClient.HTTPClient)
-	responses, err := hf.Get([]Request{
+	responses, err := hf.Get([]mUrl.Request{
 		{
-			Url: u,
+			URL: u,
 		},
 	})
 

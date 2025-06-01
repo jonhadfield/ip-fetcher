@@ -5,12 +5,14 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/jonhadfield/ip-fetcher/providers/aws"
+
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 )
 
 func TestGetIPListETag(t *testing.T) {
-	u, err := url.Parse(DownloadURL)
+	u, err := url.Parse(aws.DownloadURL)
 	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -23,8 +25,8 @@ func TestGetIPListETag(t *testing.T) {
 		Reply(200).
 		SetHeader("Etag", "0338bd4dc4ba7a050b9124d333376fc7")
 
-	ac := New()
-	ac.DownloadURL = DownloadURL
+	ac := aws.New()
+	ac.DownloadURL = aws.DownloadURL
 	gock.InterceptClient(ac.Client.HTTPClient)
 
 	etag, err := ac.FetchETag()
@@ -34,7 +36,7 @@ func TestGetIPListETag(t *testing.T) {
 }
 
 func TestDownloadIPList(t *testing.T) {
-	u, err := url.Parse(DownloadURL)
+	u, err := url.Parse(aws.DownloadURL)
 	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -46,8 +48,8 @@ func TestDownloadIPList(t *testing.T) {
 		SetHeader("Etag", "\"cd5e4f079775994d8e49f63ae9a84065\"").
 		File("testdata/ip-ranges.json")
 
-	ac := New()
-	ac.DownloadURL = DownloadURL
+	ac := aws.New()
+	ac.DownloadURL = aws.DownloadURL
 	gock.InterceptClient(ac.Client.HTTPClient)
 
 	doc, etag, err := ac.Fetch()
@@ -58,7 +60,7 @@ func TestDownloadIPList(t *testing.T) {
 }
 
 func TestDownloadIPListWithoutQuotedEtag(t *testing.T) {
-	u, err := url.Parse(DownloadURL)
+	u, err := url.Parse(aws.DownloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
@@ -69,8 +71,8 @@ func TestDownloadIPListWithoutQuotedEtag(t *testing.T) {
 		SetHeader("Etag", "dd5e4f079775994d8e49f63ae9a84065").
 		File("testdata/ip-ranges.json")
 
-	ac := New()
-	ac.DownloadURL = DownloadURL
+	ac := aws.New()
+	ac.DownloadURL = aws.DownloadURL
 	gock.InterceptClient(ac.Client.HTTPClient)
 
 	_, etag, err := ac.Fetch()

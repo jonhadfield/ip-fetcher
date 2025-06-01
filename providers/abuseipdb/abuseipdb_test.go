@@ -8,24 +8,26 @@ import (
 	"testing"
 	"time"
 
+	"github.com/jonhadfield/ip-fetcher/providers/abuseipdb"
+
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 )
 
 func TestParse(t *testing.T) {
 	data := []byte(`{"meta":{"generatedAt":"2022-07-06T21:18:45+00:00"},"data":[{"ipAddress":"104.255.199.22","countryCode":"US","abuseConfidenceScore":100,"lastReportedAt":"2022-07-06T21:17:02+00:00"},{"ipAddress":"59.49.78.12","countryCode":"CN","abuseConfidenceScore":100,"lastReportedAt":"2022-07-06T21:17:02+00:00"}]}`)
-	doc, err := Parse(data)
+	doc, err := abuseipdb.Parse(data)
 	require.NoError(t, err)
 	require.Len(t, doc.Records, 2)
 
 	data = []byte(`invalid`)
-	doc, err = Parse(data)
+	doc, err = abuseipdb.Parse(data)
 	require.Error(t, err)
 	require.Empty(t, doc)
 }
 
 func TestFetchBlackListFailure(t *testing.T) {
-	ac := New()
+	ac := abuseipdb.New()
 	ac.APIKey = "test-key"
 	ac.APIURL = "https://example.com"
 	u, err := url.Parse(ac.APIURL)
@@ -46,7 +48,7 @@ func TestFetchBlackListFailure(t *testing.T) {
 }
 
 func TestFetchBlackListData(t *testing.T) {
-	ac := New()
+	ac := abuseipdb.New()
 	ac.APIKey = "test-key"
 	ac.APIURL = "https://example.com"
 	u, err := url.Parse(ac.APIURL)
@@ -69,7 +71,7 @@ func TestFetchBlackListData(t *testing.T) {
 }
 
 func TestFetchBlackList(t *testing.T) {
-	ac := New()
+	ac := abuseipdb.New()
 	ac.APIKey = "test-key"
 	ac.APIURL = "https://example.com"
 	u, err := url.Parse(ac.APIURL)
@@ -87,7 +89,7 @@ func TestFetchBlackList(t *testing.T) {
 
 	doc, err := ac.Fetch()
 	require.NoError(t, err)
-	expectedGeneratedAt, err := time.Parse(TimeFormat, "2022-07-06T21:18:45+00:00")
+	expectedGeneratedAt, err := time.Parse(abuseipdb.TimeFormat, "2022-07-06T21:18:45+00:00")
 	require.NoError(t, err)
 	require.Equal(t, expectedGeneratedAt, doc.GeneratedAt)
 	require.NotEmpty(t, doc.Records)
@@ -98,7 +100,7 @@ func TestFetchBlackList(t *testing.T) {
 		if r.IPAddress == expectedAddr {
 			if r.CountryCode == "US" {
 				if r.AbuseConfidenceScore == 100 {
-					expectedReportedAt, _ := time.Parse(TimeFormat, expectedReportedAt)
+					expectedReportedAt, _ := time.Parse(abuseipdb.TimeFormat, expectedReportedAt)
 					if r.LastReportedAt.String() == expectedReportedAt.String() {
 						found = true
 
@@ -112,7 +114,7 @@ func TestFetchBlackList(t *testing.T) {
 }
 
 func TestFetchBlackListDataIncorrectKey(t *testing.T) {
-	ac := New()
+	ac := abuseipdb.New()
 	ac.APIKey = "incorrect-key"
 	ac.APIURL = "https://example.com"
 	u, err := url.Parse(ac.APIURL)

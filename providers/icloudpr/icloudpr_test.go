@@ -2,17 +2,19 @@ package icloudpr_test
 
 import (
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/internal/web"
 	"net/netip"
 	"net/url"
 	"testing"
+
+	"github.com/jonhadfield/ip-fetcher/internal/web"
+	"github.com/jonhadfield/ip-fetcher/providers/icloudpr"
 
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 )
 
 func TestFetchData(t *testing.T) {
-	u, err := url.Parse(DownloadURL)
+	u, err := url.Parse(icloudpr.DownloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
@@ -26,7 +28,7 @@ func TestFetchData(t *testing.T) {
 		SetHeader(web.LastModifiedHeader, lastModified).
 		File("testdata/egress-ip-ranges.csv")
 
-	ld := New()
+	ld := icloudpr.New()
 	defer gock.Off()
 
 	gock.InterceptClient(ld.Client.HTTPClient)
@@ -42,7 +44,7 @@ func TestFetchData(t *testing.T) {
 }
 
 func TestFetch(t *testing.T) {
-	u, err := url.Parse(DownloadURL)
+	u, err := url.Parse(icloudpr.DownloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
@@ -59,7 +61,7 @@ func TestFetch(t *testing.T) {
 
 	defer gock.Off()
 
-	ld := New()
+	ld := icloudpr.New()
 	gock.InterceptClient(ld.Client.HTTPClient)
 
 	data, headers, status, err := ld.FetchData()

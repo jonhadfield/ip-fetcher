@@ -6,12 +6,14 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/jonhadfield/ip-fetcher/providers/fastly"
+
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 )
 
 func TestFetch(t *testing.T) {
-	u, err := url.Parse(DownloadURL)
+	u, err := url.Parse(fastly.DownloadURL)
 	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -21,7 +23,7 @@ func TestFetch(t *testing.T) {
 		Reply(200).
 		File("testdata/fastly.json")
 
-	cf := New()
+	cf := fastly.New()
 	gock.InterceptClient(cf.Client.HTTPClient)
 
 	ips, err := cf.Fetch()

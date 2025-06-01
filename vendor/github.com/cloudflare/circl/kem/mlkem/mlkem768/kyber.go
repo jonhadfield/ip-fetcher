@@ -357,7 +357,8 @@ func (*scheme) Encapsulate(pk kem.PublicKey) (ct, ss []byte, err error) {
 }
 
 func (*scheme) EncapsulateDeterministically(pk kem.PublicKey, seed []byte) (
-	ct, ss []byte, err error) {
+	ct, ss []byte, err error,
+) {
 	if len(seed) != EncapsulationSeedSize {
 		return nil, nil, kem.ErrSeedSize
 	}

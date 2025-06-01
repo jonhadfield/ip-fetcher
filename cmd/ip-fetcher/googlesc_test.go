@@ -10,11 +10,12 @@ import (
 
 	_ "github.com/agiledragon/gomonkey/v2"
 	_ "github.com/agiledragon/gomonkey/v2/test/fake"
+	mainpkg "github.com/jonhadfield/ip-fetcher/cmd/ip-fetcher"
 	"github.com/stretchr/testify/require"
 )
 
 func GooglescCmdNoStdOutNoPath() {
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "googlesc"})
 }
 
@@ -38,7 +39,7 @@ func TestGooglescCmdNoStdOutNoPath(t *testing.T) {
 func GooglescCmdEmptyPath() {
 	defer testCleanUp(os.Args)
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "googlesc"})
 }
 
@@ -69,15 +70,15 @@ func TestGooglescCmdSavetoPath(t *testing.T) {
 	t.Setenv("IP_FETCHER_MOCK_GOOGLESC", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GOOGLESC")
 
-	app := getApp()
+	app := mainpkg.GetApp()
 
 	// with filename only
-	os.Args = []string{"ip-fetcher", "googlesc", "--path", filepath.Join(tDir, testFile)}
+	os.Args = []string{"ip-fetcher", "googlesc", "--Path", filepath.Join(tDir, testFile)}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, testFile))
 
 	// with directory only
-	os.Args = []string{"ip-fetcher", "googlesc", "--path", tDir}
+	os.Args = []string{"ip-fetcher", "googlesc", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, "special-crawlers.json"))
 }
@@ -101,7 +102,7 @@ func TestGooglescCmdStdOut(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	os.Args = []string{"ip-fetcher", "googlesc", "--stdout"}
 	require.NoError(t, app.Run(os.Args))
 
@@ -132,8 +133,8 @@ func TestGooglescCmdStdOutAndFile(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
-	os.Args = []string{"ip-fetcher", "googlesc", "--stdout", "--path", tDir}
+	app := mainpkg.GetApp()
+	os.Args = []string{"ip-fetcher", "googlesc", "--stdout", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 
 	_ = w.Close()

@@ -74,10 +74,10 @@ func (s *fseDecoder) readNCount(b *byteReader, maxSymbol uint16) error {
 
 	for remaining > 1 && charnum <= maxSymbol {
 		if previous0 {
-			//println("prev0")
+			// println("prev0")
 			n0 := charnum
 			for (bitStream & 0xFFFF) == 0xFFFF {
-				//println("24 x 0")
+				// println("24 x 0")
 				n0 += 24
 				if r := b.remain(); r > 5 {
 					b.advance(2)
@@ -89,7 +89,7 @@ func (s *fseDecoder) readNCount(b *byteReader, maxSymbol uint16) error {
 					bitCount += 16
 				}
 			}
-			//printf("bitstream: %d, 0b%b", bitStream&3, bitStream)
+			// printf("bitstream: %d, 0b%b", bitStream&3, bitStream)
 			for (bitStream & 3) == 3 {
 				n0 += 3
 				bitStream >>= 2
@@ -101,7 +101,7 @@ func (s *fseDecoder) readNCount(b *byteReader, maxSymbol uint16) error {
 			if n0 > maxSymbolValue {
 				return errors.New("maxSymbolValue too small")
 			}
-			//println("inserting ", n0-charnum, "zeroes from idx", charnum, "ending before", n0)
+			// println("inserting ", n0-charnum, "zeroes from idx", charnum, "ending before", n0)
 			for charnum < n0 {
 				s.norm[uint8(charnum)] = 0
 				charnum++

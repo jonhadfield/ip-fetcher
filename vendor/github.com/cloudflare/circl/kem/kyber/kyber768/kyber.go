@@ -258,7 +258,6 @@ func (pk *PublicKey) Unpack(buf []byte) {
 	h := sha3.New256()
 	h.Write(buf)
 	h.Read(pk.hpk[:])
-
 }
 
 // Boilerplate down below for the KEM scheme API.
@@ -356,7 +355,8 @@ func (*scheme) Encapsulate(pk kem.PublicKey) (ct, ss []byte, err error) {
 }
 
 func (*scheme) EncapsulateDeterministically(pk kem.PublicKey, seed []byte) (
-	ct, ss []byte, err error) {
+	ct, ss []byte, err error,
+) {
 	if len(seed) != EncapsulationSeedSize {
 		return nil, nil, kem.ErrSeedSize
 	}

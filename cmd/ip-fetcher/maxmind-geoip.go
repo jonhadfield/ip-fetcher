@@ -12,7 +12,7 @@ func geoipCmd() *cli.Command {
 		Name:      "geoip",
 		HelpName:  "- fetch MaxMind GeoIP prefixes",
 		Usage:     "MaxMind GeoIP",
-		UsageText: "ip-fetcher geoip --key=mykey --path=mypath [ --format=(csv | mmdb) ] [ --edition=(GeoLite2 | GeoIP) ] [ --extract ]",
+		UsageText: "ip-fetcher geoip --key=mykey --Path=mypath [ --format=(csv | mmdb) ] [ --edition=(GeoLite2 | GeoIP) ] [ --extract ]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 
@@ -24,7 +24,7 @@ func geoipCmd() *cli.Command {
 				Usage: "license key", Aliases: []string{"k"}, Required: true,
 			},
 			&cli.StringFlag{
-				Name:  "path",
+				Name:  "Path",
 				Usage: "where to save the files", Aliases: []string{"p"}, Required: true,
 			},
 			&cli.StringFlag{
@@ -45,7 +45,7 @@ func geoipCmd() *cli.Command {
 			a.LicenseKey = c.String("key")
 			a.Edition = c.String("edition")
 			a.DBFormat = c.String("format")
-			a.Root = strings.TrimSpace(c.String("path"))
+			a.Root = strings.TrimSpace(c.String("Path"))
 			a.Extract = c.Bool("extract")
 			_, err := a.FetchFiles(geoip.FetchFilesInput{
 				ASN:     true,

@@ -10,11 +10,24 @@ import (
 
 	_ "github.com/agiledragon/gomonkey/v2"
 	_ "github.com/agiledragon/gomonkey/v2/test/fake"
+	mainpkg "github.com/jonhadfield/ip-fetcher/cmd/ip-fetcher"
 	"github.com/stretchr/testify/require"
 )
 
+// func GetApp() *App {
+// 	// Mock implementation of GetApp for testing purposes.
+// 	return &App{}
+// }
+
+// type App struct{}
+//
+// func (a *App) Run(args []string) error {
+// 	// Mock implementation of Run for testing purposes.
+// 	return nil
+// }
+
 func AWSCmdNoStdOutNoPath() {
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "aws"})
 }
 
@@ -38,7 +51,7 @@ func TestAWSCmdNoStdOutNoPath(t *testing.T) {
 func AWSCmdEmptyPath() {
 	defer testCleanUp(os.Args)
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "aws"})
 }
 
@@ -69,15 +82,15 @@ func TestAWSCmdSavetoPath(t *testing.T) {
 	t.Setenv("IP_FETCHER_MOCK_AWS", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_AWS")
 
-	app := getApp()
+	app := mainpkg.GetApp()
 
 	// with filename only
-	os.Args = []string{"ip-fetcher", "aws", "--path", filepath.Join(tDir, testFile)}
+	os.Args = []string{"ip-fetcher", "aws", "--Path", filepath.Join(tDir, testFile)}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, testFile))
 
 	// with directory only
-	os.Args = []string{"ip-fetcher", "aws", "--path", tDir}
+	os.Args = []string{"ip-fetcher", "aws", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, "ip-ranges.json"))
 }
@@ -101,7 +114,7 @@ func TestAWSCmdStdOut(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	os.Args = []string{"ip-fetcher", "aws", "--stdout"}
 	require.NoError(t, app.Run(os.Args))
 
@@ -132,8 +145,8 @@ func TestAWSCmdStdOutAndFile(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
-	os.Args = []string{"ip-fetcher", "aws", "--stdout", "--path", tDir}
+	app := mainpkg.GetApp()
+	os.Args = []string{"ip-fetcher", "aws", "--stdout", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 
 	_ = w.Close()

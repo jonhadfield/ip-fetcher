@@ -10,13 +10,14 @@ import (
 
 	_ "github.com/agiledragon/gomonkey/v2"
 	_ "github.com/agiledragon/gomonkey/v2/test/fake"
+	mainpkg "github.com/jonhadfield/ip-fetcher/cmd/ip-fetcher"
 	"github.com/stretchr/testify/require"
 )
 
 const TestUrlAddr = "https://www.example.com/files/ips.txt"
 
 func UrlCmdNoStdOutNoPath() {
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "url"})
 }
 
@@ -40,7 +41,7 @@ func TestUrlCmdNoStdOutNoPath(t *testing.T) {
 func UrlCmdEmptyPath() {
 	defer testCleanUp(os.Args)
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "url"})
 }
 
@@ -70,15 +71,15 @@ func TestUrlCmdSavetoPath(t *testing.T) {
 
 	t.Setenv("IP_FETCHER_MOCK_URL", "true")
 
-	app := getApp()
+	app := mainpkg.GetApp()
 
 	// with filename only
-	os.Args = []string{"ip-fetcher", "url", "--path", filepath.Join(tDir, testFile), TestUrlAddr}
+	os.Args = []string{"ip-fetcher", "url", "--Path", filepath.Join(tDir, testFile), TestUrlAddr}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, testFile))
 
 	// with directory only
-	os.Args = []string{"ip-fetcher", "url", "--path", tDir, TestUrlAddr}
+	os.Args = []string{"ip-fetcher", "url", "--Path", tDir, TestUrlAddr}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, "ips.txt"))
 }
@@ -101,7 +102,7 @@ func TestUrlCmdStdOut(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	os.Args = []string{"ip-fetcher", "url", "--stdout", TestUrlAddr}
 	require.NoError(t, app.Run(os.Args))
 
@@ -131,8 +132,8 @@ func TestUrlCmdStdOutAndFile(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
-	os.Args = []string{"ip-fetcher", "url", "--stdout", "--path", tDir, TestUrlAddr}
+	app := mainpkg.GetApp()
+	os.Args = []string{"ip-fetcher", "url", "--stdout", "--Path", tDir, TestUrlAddr}
 	require.NoError(t, app.Run(os.Args))
 
 	_ = w.Close()

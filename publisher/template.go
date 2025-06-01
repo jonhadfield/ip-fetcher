@@ -2,12 +2,12 @@ package publisher
 
 import (
 	_ "embed"
-	"github.com/jonhadfield/ip-fetcher/providers/hetzner"
-	"github.com/jonhadfield/ip-fetcher/providers/zscaler"
-
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/jonhadfield/ip-fetcher/providers/hetzner"
+	"github.com/jonhadfield/ip-fetcher/providers/zscaler"
 
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-git/v5"
@@ -53,7 +53,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{syncZscaler, zscaler.ShortName, zscalerFile, zscaler.FullName, zscaler.HostType, zscaler.SourceURL},
 }
 
-func generateReadMeContent(included []string) (string, error) {
+func GenerateReadMeContent(included []string) (string, error) {
 	rows := strings.Builder{}
 
 	for _, inc := range included {
@@ -71,7 +71,7 @@ func generateReadMeContent(included []string) (string, error) {
 }
 
 func syncReadMe(included []string, wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
-	readMeContent, err := generateReadMeContent(included)
+	readMeContent, err := GenerateReadMeContent(included)
 	if err != nil {
 		return plumbing.Hash{}, err
 	}

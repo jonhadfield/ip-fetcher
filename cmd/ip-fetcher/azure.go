@@ -26,7 +26,7 @@ func azureCmd() *cli.Command {
 		Name:      providerName,
 		HelpName:  "- fetch Azure prefixes",
 		Usage:     "Microsoft Azure",
-		UsageText: "ip-fetcher azure {--stdout | --path FILE}",
+		UsageText: "ip-fetcher azure {--stdout | --Path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 
@@ -34,7 +34,7 @@ func azureCmd() *cli.Command {
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "path",
+				Name:  "Path",
 				Usage: "where to save the file", Aliases: []string{"p"}, TakesFile: true,
 			},
 			&cli.BoolFlag{
@@ -43,11 +43,11 @@ func azureCmd() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("path"))
+			path := strings.TrimSpace(c.String("Path"))
 			if path == "" && !c.Bool("stdout") {
 				_ = cli.ShowSubcommandHelp(c)
 
-				fmt.Println("\nerror: must specify at least one of stdout and path") //nolint:forbidigo
+				fmt.Println("\nerror: must specify at least one of stdout and Path") //nolint:forbidigo
 
 				os.Exit(1)
 			}
@@ -79,16 +79,16 @@ func azureCmd() *cli.Command {
 			if path != "" {
 				var out string
 
-				if out, err = saveFile(saveFileInput{
-					provider:        providerName,
-					data:            data,
-					path:            path,
-					defaultFileName: fileName,
+				if out, err = SaveFile(SaveFileInput{
+					Provider:        providerName,
+					Data:            data,
+					Path:            path,
+					DefaultFileName: fileName,
 				}); err != nil {
 					return err
 				}
 
-				_, _ = os.Stderr.WriteString(fmt.Sprintf("data written to %s\n", out)) //nolint:forbidigo
+				_, _ = os.Stderr.WriteString(fmt.Sprintf("Data written to %s\n", out)) //nolint:forbidigo
 			}
 
 			if c.Bool("stdout") {

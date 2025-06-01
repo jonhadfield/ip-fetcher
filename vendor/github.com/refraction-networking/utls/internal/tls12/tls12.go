@@ -41,8 +41,10 @@ func pHash(hash func() hash.Hash, result, secret, seed []byte) {
 	}
 }
 
-const masterSecretLength = 48
-const extendedMasterSecretLabel = "extended master secret"
+const (
+	masterSecretLength        = 48
+	extendedMasterSecretLabel = "extended master secret"
+)
 
 // MasterSecret implements the TLS 1.2 extended master secret derivation, as
 // defined in RFC 7627 and allowed by SP 800-135, Revision 1, Section 4.2.2.

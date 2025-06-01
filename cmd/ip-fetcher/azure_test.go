@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	mainpkg "github.com/jonhadfield/ip-fetcher/cmd/ip-fetcher"
 	"github.com/jonhadfield/ip-fetcher/providers/azure"
 	"github.com/stretchr/testify/require"
 )
@@ -19,7 +20,7 @@ const testMockAzureDownloadUrl = "https://raw.githubusercontent.com/tobilg/publi
 // const testMockAzureDownloadUrl = azure.WorkaroundDownloadURL
 
 func AzureCmdNoStdOutNoPath() {
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "azure"})
 }
 
@@ -54,15 +55,15 @@ func TestAzureCmdSavetoPath(t *testing.T) {
 	ac := azure.New()
 	ac.DownloadURL = testMockAzureDownloadUrl
 
-	app := getApp()
+	app := mainpkg.GetApp()
 
 	// with filename only
-	os.Args = []string{"ip-fetcher", "azure", "--path", filepath.Join(tDir, testFile)}
+	os.Args = []string{"ip-fetcher", "azure", "--Path", filepath.Join(tDir, testFile)}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, testFile))
 
 	// with directory only
-	os.Args = []string{"ip-fetcher", "azure", "--path", tDir}
+	os.Args = []string{"ip-fetcher", "azure", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, "ServiceTags_Public.json"))
 }
@@ -87,7 +88,7 @@ func TestAzureCmdStdOut(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	os.Args = []string{"ip-fetcher", "azure", "--stdout"}
 
 	require.NoError(t, app.Run(os.Args))
@@ -121,8 +122,8 @@ func TestAzureCmdStdOutAndFile(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
-	os.Args = []string{"ip-fetcher", "azure", "--stdout", "--path", tDir}
+	app := mainpkg.GetApp()
+	os.Args = []string{"ip-fetcher", "azure", "--stdout", "--Path", tDir}
 
 	require.NoError(t, app.Run(os.Args))
 

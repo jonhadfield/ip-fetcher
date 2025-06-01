@@ -48,7 +48,7 @@ func compress(in []byte, s *Scratch, compressor func(src []byte) ([]byte, error)
 
 	// Create histogram, if none was provided.
 	maxCount := s.maxCount
-	var canReuse = false
+	canReuse := false
 	if maxCount == 0 {
 		maxCount, canReuse = s.countSimple(in)
 	} else {
@@ -172,7 +172,7 @@ func EstimateSizes(in []byte, s *Scratch) (tableSz, dataSz, reuseSz int, err err
 	// Create histogram, if none was provided.
 	tableSz, dataSz, reuseSz = -1, -1, -1
 	maxCount := s.maxCount
-	var canReuse = false
+	canReuse := false
 	if maxCount == 0 {
 		maxCount, canReuse = s.countSimple(in)
 	} else {
@@ -231,7 +231,7 @@ func (s *Scratch) compress1X(src []byte) ([]byte, error) {
 }
 
 func (s *Scratch) compress1xDo(dst, src []byte) []byte {
-	var bw = bitWriter{out: dst}
+	bw := bitWriter{out: dst}
 
 	// N is length divisible by 4.
 	n := len(src)
@@ -466,7 +466,7 @@ func (s *Scratch) buildCTable() error {
 		}
 	}
 
-	var startNode = int16(s.symbolLen)
+	startNode := int16(s.symbolLen)
 	nonNullRank := s.symbolLen - 1
 
 	nodeNb := startNode
@@ -609,7 +609,7 @@ func (s *Scratch) huffSort() {
 func (s *Scratch) setMaxHeight(lastNonNull int) uint8 {
 	maxNbBits := s.actualTableLog
 	huffNode := s.nodes[1 : huffNodesLen+1]
-	//huffNode = huffNode[: huffNodesLen]
+	// huffNode = huffNode[: huffNodesLen]
 
 	largestBits := huffNode[lastNonNull].nbBits()
 

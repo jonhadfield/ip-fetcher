@@ -2,9 +2,10 @@ package gcp_test
 
 import (
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/providers/gcp"
 	"net/url"
 	"testing"
+
+	"github.com/jonhadfield/ip-fetcher/providers/gcp"
 
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"

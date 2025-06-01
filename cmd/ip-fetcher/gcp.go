@@ -25,7 +25,7 @@ func gcpCmd() *cli.Command {
 		Name:      providerNameGCP,
 		HelpName:  "- fetch GCP prefixes",
 		Usage:     "Google Cloud Platform",
-		UsageText: "ip-fetcher gcp {--stdout | --path FILE}",
+		UsageText: "ip-fetcher gcp {--stdout | --Path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 
@@ -33,7 +33,7 @@ func gcpCmd() *cli.Command {
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "path",
+				Name:  "Path",
 				Usage: "where to save the file", Aliases: []string{"p"},
 			},
 			&cli.BoolFlag{
@@ -46,10 +46,10 @@ func gcpCmd() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("path"))
+			path := strings.TrimSpace(c.String("Path"))
 			if path == "" && !c.Bool("stdout") {
 				_ = cli.ShowSubcommandHelp(c)
-				fmt.Println("\nerror: must specify at least one of stdout and path")
+				fmt.Println("\nerror: must specify at least one of stdout and Path")
 				os.Exit(1)
 			}
 
@@ -68,12 +68,12 @@ func gcpCmd() *cli.Command {
 
 			var doc gcp.Doc
 			var err error
-			// get data if json output is requested
+			// get Data if json output is requested
 			if doc, err = a.Fetch(); err != nil {
 				return err
 			}
 
-			return output(doc, c.String("format"), c.Bool("stdout"), c.String("path"))
+			return output(doc, c.String("format"), c.Bool("stdout"), c.String("Path"))
 		},
 	}
 }
@@ -86,7 +86,7 @@ func output(doc gcp.Doc, format string, stdout bool, path string) error {
 
 	switch format {
 	case "csv":
-		if data, err = csv(doc); err != nil {
+		if data = csv(doc); err != nil {
 			return err
 		}
 	case "lines":
@@ -109,16 +109,16 @@ func output(doc gcp.Doc, format string, stdout bool, path string) error {
 
 	if path != "" {
 		var out string
-		if out, err = saveFile(saveFileInput{
-			provider:        providerNameGCP,
-			data:            data,
-			path:            path,
-			defaultFileName: fileNameOutputGCP,
+		if out, err = SaveFile(SaveFileInput{
+			Provider:        providerNameGCP,
+			Data:            data,
+			Path:            path,
+			DefaultFileName: fileNameOutputGCP,
 		}); err != nil {
 			return err
 		}
 
-		if _, err = os.Stderr.WriteString(fmt.Sprintf("data written to %s\n", out)); err != nil {
+		if _, err = os.Stderr.WriteString(fmt.Sprintf("Data written to %s\n", out)); err != nil {
 			return err
 		}
 	}
@@ -131,6 +131,7 @@ func lines(in gcp.Doc) ([]byte, error) {
 	for x := range in.IPv4Prefixes {
 		sl.WriteString(fmt.Sprintf("%s\n", in.IPv4Prefixes[x].IPv4Prefix.String()))
 	}
+
 	for x := range in.IPv6Prefixes {
 		sl.WriteString(fmt.Sprintf("%s\n", in.IPv6Prefixes[x].IPv6Prefix.String()))
 	}
@@ -138,7 +139,7 @@ func lines(in gcp.Doc) ([]byte, error) {
 	return []byte(sl.String()), nil
 }
 
-func csv(in gcp.Doc) ([]byte, error) {
+func csv(in gcp.Doc) []byte {
 	sl := strings.Builder{}
 	for x := range in.IPv4Prefixes {
 		sl.WriteString(fmt.Sprintf("\"%s\"", in.IPv4Prefixes[x].IPv4Prefix.String()))
@@ -155,5 +156,5 @@ func csv(in gcp.Doc) ([]byte, error) {
 		}
 	}
 
-	return []byte(sl.String()), nil
+	return []byte(sl.String())
 }

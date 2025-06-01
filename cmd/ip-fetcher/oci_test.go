@@ -2,6 +2,7 @@ package main_test
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -10,11 +11,12 @@ import (
 
 	_ "github.com/agiledragon/gomonkey/v2"
 	_ "github.com/agiledragon/gomonkey/v2/test/fake"
+	mainpkg "github.com/jonhadfield/ip-fetcher/cmd/ip-fetcher"
 	"github.com/stretchr/testify/require"
 )
 
 func OCICmdNoStdOutNoPath() {
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "oci"})
 }
 
@@ -38,7 +40,7 @@ func TestOCICmdNoStdOutNoPath(t *testing.T) {
 func OCICmdEmptyPath() {
 	defer testCleanUp(os.Args)
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "oci"})
 }
 
@@ -69,10 +71,10 @@ func TestOCICmdSavetoPathFileNameOnly(t *testing.T) {
 	t.Setenv("IP_FETCHER_MOCK_OCI", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_OCI")
 
-	app := getApp()
+	app := mainpkg.GetApp()
 
 	// with filename only
-	os.Args = []string{"ip-fetcher", "oci", "--path", filepath.Join(tDir, testFile)}
+	os.Args = []string{"ip-fetcher", "oci", "--Path", filepath.Join(tDir, testFile)}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, testFile))
 }
@@ -85,10 +87,10 @@ func TestOCICmdSavetoPathDirectoryOnly(t *testing.T) {
 	t.Setenv("IP_FETCHER_MOCK_OCI", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_OCI")
 
-	app := getApp()
+	app := mainpkg.GetApp()
 
 	// with directory only
-	os.Args = []string{"ip-fetcher", "oci", "--path", tDir}
+	os.Args = []string{"ip-fetcher", "oci", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, "public_ip_ranges.json"))
 }
@@ -112,7 +114,7 @@ func TestOCICmdStdOut(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	os.Args = []string{"ip-fetcher", "oci", "--stdout"}
 	require.NoError(t, app.Run(os.Args))
 
@@ -143,13 +145,14 @@ func TestOCICmdStdOutAndFile(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
-	os.Args = []string{"ip-fetcher", "oci", "--stdout", "--path", tDir}
+	app := mainpkg.GetApp()
+	os.Args = []string{"ip-fetcher", "oci", "--stdout", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 
 	_ = w.Close()
 	os.Stdout = old
 	out := <-outC
 	require.Contains(t, out, "192.29.160.1/21")
+	fmt.Printf("WOOFOO: %s\n", out)
 	require.FileExists(t, filepath.Join(tDir, "public_ip_ranges.json"))
 }

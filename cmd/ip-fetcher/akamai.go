@@ -22,14 +22,14 @@ func akamaiCmd() *cli.Command {
 		Name:      providerName,
 		HelpName:  "- fetch Akamai prefixes",
 		Usage:     "Akamai",
-		UsageText: "ip-fetcher akamai {--stdout | --path FILE}",
+		UsageText: "ip-fetcher akamai {--stdout | --Path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 			return err
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "path",
+				Name:  "Path",
 				Usage: "where to save the file", Aliases: []string{"p"}, TakesFile: true,
 			},
 			&cli.BoolFlag{
@@ -38,10 +38,10 @@ func akamaiCmd() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("path"))
+			path := strings.TrimSpace(c.String("Path"))
 			if path == "" && !c.Bool("stdout") {
 				_ = cli.ShowSubcommandHelp(c)
-				fmt.Println("\nerror: must specify at least one of stdout and path")
+				fmt.Println("\nerror: must specify at least one of stdout and Path")
 				os.Exit(1)
 			}
 
@@ -64,16 +64,16 @@ func akamaiCmd() *cli.Command {
 			}
 
 			if path != "" {
-				out, err := saveFile(saveFileInput{
-					provider:        providerName,
-					data:            data,
-					path:            path,
-					defaultFileName: fileName,
+				out, err := SaveFile(SaveFileInput{
+					Provider:        providerName,
+					Data:            data,
+					Path:            path,
+					DefaultFileName: fileName,
 				})
 				if err != nil {
 					return err
 				}
-				_, _ = os.Stderr.WriteString(fmt.Sprintf("data written to %s\n", out))
+				_, _ = os.Stderr.WriteString(fmt.Sprintf("Data written to %s\n", out))
 			}
 
 			if c.Bool("stdout") {

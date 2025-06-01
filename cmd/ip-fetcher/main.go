@@ -20,14 +20,14 @@ func main() {
 		versionOutput = version
 	}
 
-	app := getApp()
+	app := GetApp()
 
 	if err := app.Run(os.Args); err != nil {
 		fmt.Printf("\nerror: %s\n", err.Error())
 	}
 }
 
-func getApp() *cli.App {
+func GetApp() *cli.App {
 	app := cli.NewApp()
 
 	app.EnableBashCompletion = true

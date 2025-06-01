@@ -27,7 +27,7 @@ func fastlyCmd() *cli.Command {
 		Name:      providerNameFastly,
 		HelpName:  "- fetch Fastly prefixes",
 		Usage:     "Fastly",
-		UsageText: "ip-fetcher fastly {--stdout | --path FILE}",
+		UsageText: "ip-fetcher fastly {--stdout | --Path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 
@@ -35,7 +35,7 @@ func fastlyCmd() *cli.Command {
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "path",
+				Name:  "Path",
 				Usage: "where to save the file", Aliases: []string{"p"},
 			},
 			&cli.BoolFlag{
@@ -48,10 +48,10 @@ func fastlyCmd() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("path"))
+			path := strings.TrimSpace(c.String("Path"))
 			if path == "" && !c.Bool("stdout") {
 				_ = cli.ShowSubcommandHelp(c)
-				fmt.Println("\nerror: must specify at least one of stdout and path")
+				fmt.Println("\nerror: must specify at least one of stdout and Path")
 				os.Exit(1)
 			}
 
@@ -70,12 +70,12 @@ func fastlyCmd() *cli.Command {
 
 			var doc fastly.Doc
 			var err error
-			// get data if json output is requested
+			// get Data if json output is requested
 			if doc, err = a.Fetch(); err != nil {
 				return err
 			}
 
-			return fastlyOutput(doc, c.String("format"), c.Bool("stdout"), c.String("path"))
+			return fastlyOutput(doc, c.String("format"), c.Bool("stdout"), c.String("Path"))
 		},
 	}
 }
@@ -97,7 +97,7 @@ func fastlyOutput(doc fastly.Doc, format string, stdout bool, path string) error
 			return err
 		}
 	case "lines":
-		if data, err = fastlyLines(doc); err != nil {
+		if data = fastlyLines(doc); err != nil {
 			return err
 		}
 	case "yaml":
@@ -117,16 +117,16 @@ func fastlyOutput(doc fastly.Doc, format string, stdout bool, path string) error
 	if path != "" {
 		var out string
 
-		if out, err = saveFile(saveFileInput{
-			provider:        providerNameFastly,
-			data:            data,
-			path:            path,
-			defaultFileName: fileNameOutputFastly,
+		if out, err = SaveFile(SaveFileInput{
+			Provider:        providerNameFastly,
+			Data:            data,
+			Path:            path,
+			DefaultFileName: fileNameOutputFastly,
 		}); err != nil {
 			return err
 		}
 
-		if _, err = os.Stderr.WriteString(fmt.Sprintf("data written to %s\n", out)); err != nil {
+		if _, err = os.Stderr.WriteString(fmt.Sprintf("Data written to %s\n", out)); err != nil {
 			return err
 		}
 	}
@@ -134,7 +134,7 @@ func fastlyOutput(doc fastly.Doc, format string, stdout bool, path string) error
 	return err
 }
 
-func fastlyLines(in fastly.Doc) ([]byte, error) {
+func fastlyLines(in fastly.Doc) []byte {
 	sl := strings.Builder{}
 	for x := range in.IPv4Prefixes {
 		sl.WriteString(fmt.Sprintf("%s\n", in.IPv4Prefixes[x].String()))
@@ -144,7 +144,7 @@ func fastlyLines(in fastly.Doc) ([]byte, error) {
 		sl.WriteString(fmt.Sprintf("%s\n", in.IPv6Prefixes[x].String()))
 	}
 
-	return []byte(sl.String()), nil
+	return []byte(sl.String())
 }
 
 func fastlyCsv(in fastly.Doc) ([]byte, error) {

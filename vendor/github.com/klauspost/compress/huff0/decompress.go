@@ -553,7 +553,7 @@ func (d *Decoder) decompress1X8BitExactly(dst, src []byte) ([]byte, error) {
 
 	const shift = 56
 
-	//fmt.Printf("mask: %b, tl:%d\n", mask, d.actualTableLog)
+	// fmt.Printf("mask: %b, tl:%d\n", mask, d.actualTableLog)
 	for br.off >= 4 {
 		br.fillFast()
 		v := dt[uint8(br.value>>shift)]
@@ -768,9 +768,9 @@ func (d *Decoder) decompress4X8bit(dst, src []byte) ([]byte, error) {
 				d.bufs.Put(buf)
 				return nil, errors.New("corruption detected: stream overrun 2")
 			}
-			//copy(out, buf[0][:])
-			//copy(out[dstEvery:], buf[1][:])
-			//copy(out[dstEvery*2:], buf[2][:])
+			// copy(out, buf[0][:])
+			// copy(out[dstEvery:], buf[1][:])
+			// copy(out[dstEvery*2:], buf[2][:])
 			*(*[bufoff]byte)(out) = buf[0]
 			*(*[bufoff]byte)(out[dstEvery:]) = buf[1]
 			*(*[bufoff]byte)(out[dstEvery*2:]) = buf[2]
@@ -1006,9 +1006,9 @@ func (d *Decoder) decompress4X8bitExactly(dst, src []byte) ([]byte, error) {
 				return nil, errors.New("corruption detected: stream overrun 2")
 			}
 
-			//copy(out, buf[0][:])
-			//copy(out[dstEvery:], buf[1][:])
-			//copy(out[dstEvery*2:], buf[2][:])
+			// copy(out, buf[0][:])
+			// copy(out[dstEvery:], buf[1][:])
+			// copy(out[dstEvery*2:], buf[2][:])
 			// copy(out[dstEvery*3:], buf[3][:])
 			*(*[bufoff]byte)(out) = buf[0]
 			*(*[bufoff]byte)(out[dstEvery:]) = buf[1]

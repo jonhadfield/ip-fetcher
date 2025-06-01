@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 )
 
-func saveFile(i saveFileInput) (string, error) {
-	pf, err := os.Stat(i.path)
+func SaveFile(i SaveFileInput) (string, error) {
+	pf, err := os.Stat(i.Path)
 	if err != nil {
 		if !os.IsNotExist(err) {
 			return "", err
@@ -14,26 +14,26 @@ func saveFile(i saveFileInput) (string, error) {
 	}
 
 	if pf != nil && pf.IsDir() {
-		i.path = filepath.Join(i.path, i.defaultFileName)
+		i.Path = filepath.Join(i.Path, i.DefaultFileName)
 	}
 
-	f, err := os.Create(i.path)
+	f, err := os.Create(i.Path)
 	if err != nil {
 		return "", err
 	}
 
 	defer f.Close()
 
-	if _, err = f.Write(i.data); err != nil {
+	if _, err = f.Write(i.Data); err != nil {
 		return "", err
 	}
 
-	return filepath.Abs(i.path)
+	return filepath.Abs(i.Path)
 }
 
-type saveFileInput struct {
-	provider        string
-	data            []byte
-	path            string
-	defaultFileName string
+type SaveFileInput struct {
+	Provider        string
+	Data            []byte
+	Path            string
+	DefaultFileName string
 }

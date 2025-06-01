@@ -10,11 +10,12 @@ import (
 
 	_ "github.com/agiledragon/gomonkey/v2"
 	_ "github.com/agiledragon/gomonkey/v2/test/fake"
+	mainpkg "github.com/jonhadfield/ip-fetcher/cmd/ip-fetcher"
 	"github.com/stretchr/testify/require"
 )
 
 func GooglebotCmdNoStdOutNoPath() {
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "googlebot"})
 }
 
@@ -38,7 +39,7 @@ func TestGooglebotCmdNoStdOutNoPath(t *testing.T) {
 func GooglebotCmdEmptyPath() {
 	defer testCleanUp(os.Args)
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "googlebot"})
 }
 
@@ -69,15 +70,15 @@ func TestGooglebotCmdSavetoPath(t *testing.T) {
 	t.Setenv("IP_FETCHER_MOCK_GOOGLEBOT", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_GOOGLEBOT")
 
-	app := getApp()
+	app := mainpkg.GetApp()
 
 	// with filename only
-	os.Args = []string{"ip-fetcher", "googlebot", "--path", filepath.Join(tDir, testFile)}
+	os.Args = []string{"ip-fetcher", "googlebot", "--Path", filepath.Join(tDir, testFile)}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, testFile))
 
 	// with directory only
-	os.Args = []string{"ip-fetcher", "googlebot", "--path", tDir}
+	os.Args = []string{"ip-fetcher", "googlebot", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, "googlebot.json"))
 }
@@ -101,7 +102,7 @@ func TestGooglebotCmdStdOut(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
+	app := mainpkg.GetApp()
 	os.Args = []string{"ip-fetcher", "googlebot", "--stdout"}
 	require.NoError(t, app.Run(os.Args))
 
@@ -132,8 +133,8 @@ func TestGooglebotCmdStdOutAndFile(t *testing.T) {
 		outC <- buf.String()
 	}()
 
-	app := getApp()
-	os.Args = []string{"ip-fetcher", "googlebot", "--stdout", "--path", tDir}
+	app := mainpkg.GetApp()
+	os.Args = []string{"ip-fetcher", "googlebot", "--stdout", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
 
 	_ = w.Close()

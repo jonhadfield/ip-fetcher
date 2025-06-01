@@ -2,11 +2,12 @@ package linode_test
 
 import (
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/internal/web"
-	"github.com/jonhadfield/ip-fetcher/providers/linode"
 	"net/netip"
 	"net/url"
 	"testing"
+
+	"github.com/jonhadfield/ip-fetcher/internal/web"
+	"github.com/jonhadfield/ip-fetcher/providers/linode"
 
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"

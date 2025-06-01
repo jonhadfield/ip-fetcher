@@ -6,12 +6,13 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/jonhadfield/ip-fetcher/providers/cloudflare"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 )
 
 func TestFetch4(t *testing.T) {
-	u, err := url.Parse(DefaultIPv4URL)
+	u, err := url.Parse(cloudflare.DefaultIPv4URL)
 	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -21,7 +22,7 @@ func TestFetch4(t *testing.T) {
 		Reply(200).
 		File("testdata/ips-v4")
 
-	cf := New()
+	cf := cloudflare.New()
 	gock.InterceptClient(cf.Client.HTTPClient)
 
 	p4, err := cf.Fetch4()
@@ -31,7 +32,7 @@ func TestFetch4(t *testing.T) {
 }
 
 func TestFetch6(t *testing.T) {
-	u, err := url.Parse(DefaultIPv6URL)
+	u, err := url.Parse(cloudflare.DefaultIPv6URL)
 	require.NoError(t, err)
 
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -41,7 +42,7 @@ func TestFetch6(t *testing.T) {
 		Reply(200).
 		File("testdata/ips-v6")
 
-	cf := New()
+	cf := cloudflare.New()
 	gock.InterceptClient(cf.Client.HTTPClient)
 
 	p6, err := cf.Fetch6()
@@ -51,7 +52,7 @@ func TestFetch6(t *testing.T) {
 }
 
 func TestFetch(t *testing.T) {
-	u6, err := url.Parse(DefaultIPv6URL)
+	u6, err := url.Parse(cloudflare.DefaultIPv6URL)
 	require.NoError(t, err)
 
 	urlBase6 := fmt.Sprintf("%s://%s", u6.Scheme, u6.Host)
@@ -61,7 +62,7 @@ func TestFetch(t *testing.T) {
 		Reply(200).
 		File("testdata/ips-v6")
 
-	u4, err := url.Parse(DefaultIPv4URL)
+	u4, err := url.Parse(cloudflare.DefaultIPv4URL)
 	require.NoError(t, err)
 
 	urlBase4 := fmt.Sprintf("%s://%s", u4.Scheme, u4.Host)
@@ -70,7 +71,7 @@ func TestFetch(t *testing.T) {
 		Reply(200).
 		File("testdata/ips-v4")
 
-	cf := New()
+	cf := cloudflare.New()
 	gock.InterceptClient(cf.Client.HTTPClient)
 
 	ips, err := cf.Fetch()

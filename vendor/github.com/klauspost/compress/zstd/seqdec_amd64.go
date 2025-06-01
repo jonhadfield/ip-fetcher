@@ -354,7 +354,7 @@ func (s *sequenceDecs) executeSimple(seqs []seqVals, hist []byte) error {
 		printf("Execute %d seqs with literals: %d into %d bytes\n", len(seqs), len(s.literals), s.seqSize)
 	}
 
-	var t = len(s.out)
+	t := len(s.out)
 	out := s.out[:t+s.seqSize]
 
 	ctx := executeAsmContext{

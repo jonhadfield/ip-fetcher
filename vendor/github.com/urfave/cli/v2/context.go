@@ -56,7 +56,6 @@ func (cCtx *Context) Set(name, value string) error {
 
 // IsSet determines if the flag was actually set
 func (cCtx *Context) IsSet(name string) bool {
-
 	if fs := cCtx.lookupFlagSet(name); fs != nil {
 		isSet := false
 		fs.Visit(func(f *flag.Flag) {

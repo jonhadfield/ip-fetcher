@@ -19,7 +19,7 @@ func abuseipdbCmd() *cli.Command {
 		Name:      "abuseipdb",
 		HelpName:  "- fetch AbuseIPDB prefixes",
 		Usage:     "AbuseIPDB",
-		UsageText: "ip-fetcher abuseipdb --key {--stdout | --path FILE} [--confidence] [--limit]",
+		UsageText: "ip-fetcher abuseipdb --key {--stdout | --Path FILE} [--confidence] [--limit]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 
@@ -43,7 +43,7 @@ func abuseipdbCmd() *cli.Command {
 				Aliases: []string{"l"},
 			},
 			&cli.StringFlag{
-				Name:  "path",
+				Name:  "Path",
 				Usage: "where to save the file", Aliases: []string{"p"},
 			},
 			&cli.BoolFlag{
@@ -52,10 +52,10 @@ func abuseipdbCmd() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("path"))
+			path := strings.TrimSpace(c.String("Path"))
 			if path == "" && !c.Bool("stdout") {
 				_ = cli.ShowSubcommandHelp(c)
-				fmt.Println("\nerror: must specify at least one of stdout and path")
+				fmt.Println("\nerror: must specify at least one of stdout and Path")
 				os.Exit(1)
 			}
 
@@ -70,20 +70,20 @@ func abuseipdbCmd() *cli.Command {
 
 			if path != "" {
 				var out string
-				if out, err = saveFile(saveFileInput{
-					provider:        "abuseipdb",
-					data:            data,
-					path:            path,
-					defaultFileName: "blacklist",
+				if out, err = SaveFile(SaveFileInput{
+					Provider:        "abuseipdb",
+					Data:            data,
+					Path:            path,
+					DefaultFileName: "blacklist",
 				}); err != nil {
 					return err
 				}
 
-				_, _ = os.Stderr.WriteString(fmt.Sprintf("data written to %s\n", out))
+				_, _ = os.Stderr.WriteString(fmt.Sprintf("Data written to %s\n", out))
 			}
 
 			if c.Bool("stdout") {
-				fmt.Printf("%s\n", data)
+				fmt.Println(string(data))
 			}
 
 			return nil

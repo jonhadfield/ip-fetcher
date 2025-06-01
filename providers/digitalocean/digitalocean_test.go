@@ -2,17 +2,19 @@ package digitalocean_test
 
 import (
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/internal/web"
 	"net/url"
 	"testing"
 	"time"
+
+	"github.com/jonhadfield/ip-fetcher/internal/web"
+	"github.com/jonhadfield/ip-fetcher/providers/digitalocean"
 
 	"github.com/stretchr/testify/require"
 	"gopkg.in/h2non/gock.v1"
 )
 
 func TestFetchData(t *testing.T) {
-	u, err := url.Parse(DigitaloceanDownloadURL)
+	u, err := url.Parse(digitalocean.DigitaloceanDownloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
@@ -26,7 +28,7 @@ func TestFetchData(t *testing.T) {
 		SetHeader(web.LastModifiedHeader, lastModified).
 		File("testdata/google.csv")
 
-	ac := New()
+	ac := digitalocean.New()
 	gock.InterceptClient(ac.Client.HTTPClient)
 
 	data, headers, status, err := ac.FetchData()
@@ -40,7 +42,7 @@ func TestFetchData(t *testing.T) {
 }
 
 func TestFetch(t *testing.T) {
-	u, err := url.Parse(DigitaloceanDownloadURL)
+	u, err := url.Parse(digitalocean.DigitaloceanDownloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
@@ -54,7 +56,7 @@ func TestFetch(t *testing.T) {
 		SetHeader(web.LastModifiedHeader, lastModified).
 		File("testdata/google.csv")
 
-	ac := New()
+	ac := digitalocean.New()
 	gock.InterceptClient(ac.Client.HTTPClient)
 
 	doc, err := ac.Fetch()

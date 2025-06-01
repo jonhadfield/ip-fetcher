@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/jonhadfield/ip-fetcher/providers/maxmind/geoip"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/h2non/gock.v1"
 
@@ -33,17 +34,17 @@ func TestConstructDownloadURL(t *testing.T) {
 	mmdbDBFormat := "mmdB"
 	require.Equal(t, "https://download.maxmind.com/app/geoip_download?"+
 		"edition_id=GeoLite2-ASN-CSV&license_key=license-key&suffix=zip",
-		constructDownloadURL(licenseKey, editionID, dbType, csvDBFormat))
+		geoip.ConstructDownloadURL(licenseKey, editionID, dbType, csvDBFormat))
 	require.Equal(t, "https://download.maxmind.com/app/geoip_download?"+
 		"edition_id=GeoLite2-ASN&license_key=license-key&suffix=tar.gz",
-		constructDownloadURL(licenseKey, editionID, dbType, mmdbDBFormat))
+		geoip.ConstructDownloadURL(licenseKey, editionID, dbType, mmdbDBFormat))
 }
 
 func TestGetVersionFromZipFileName(t *testing.T) {
-	v, err := getVersionFromZipFilePath("GeoLite2-Country-CSV_20220617.zip")
+	v, err := geoip.GetVersionFromZipFilePath("GeoLite2-Country-CSV_20220617.zip")
 	require.NoError(t, err)
 	require.Equal(t, "20220617", v)
-	v, err = getVersionFromZipFilePath("/tmp/some/other/dir/GeoLite2-Country-CSV_20220617.zip")
+	v, err = geoip.GetVersionFromZipFilePath("/tmp/some/other/dir/GeoLite2-Country-CSV_20220617.zip")
 	require.NoError(t, err)
 	require.Equal(t, "20220617", v)
 }
@@ -52,14 +53,14 @@ func TestDownloadDBFile(t *testing.T) {
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
-	ac := New()
+	ac := geoip.New()
 	ac.LicenseKey = licenseKey
 	ac.Edition = "GeoLite2"
 	ac.DBFormat = "CSv"
 	ac.Root = tempDir
 	ac.Client.RetryMax = 0
 
-	downloadURL := constructDownloadURL(licenseKey, "GeoLite2", "ASN", "CSV")
+	downloadURL := geoip.ConstructDownloadURL(licenseKey, "GeoLite2", "ASN", "CSV")
 	require.Equal(t, "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=test-key&suffix=zip", downloadURL)
 	u, err := url.Parse(downloadURL)
 	require.NoError(t, err)
@@ -97,14 +98,14 @@ func TestDownloadDBFileMissingTargetDirectory(t *testing.T) {
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
-	ac := New()
+	ac := geoip.New()
 	ac.LicenseKey = licenseKey
 	ac.Edition = "GeoLite2"
 	ac.DBFormat = "CSv"
 	ac.Root = filepath.Join(tempDir, "invalid")
 	ac.Client.RetryMax = 0
 
-	downloadURL := constructDownloadURL(licenseKey, "GeoLite2", "ASN", "CSV")
+	downloadURL := geoip.ConstructDownloadURL(licenseKey, "GeoLite2", "ASN", "CSV")
 	require.Equal(t, "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=test-key&suffix=zip", downloadURL)
 	u, err := url.Parse(downloadURL)
 	require.NoError(t, err)
@@ -143,7 +144,7 @@ func TestFetchCityFiles(t *testing.T) {
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
-	ac := New()
+	ac := geoip.New()
 	ac.LicenseKey = licenseKey
 	ac.Edition = "GeoLite2"
 	ac.DBFormat = "cSv"
@@ -151,7 +152,7 @@ func TestFetchCityFiles(t *testing.T) {
 	ac.Root = tempDir
 	ac.Client.RetryMax = 0
 
-	downloadURL := constructDownloadURL(licenseKey, "GeoLite2", "ciTy", "CSV")
+	downloadURL := geoip.ConstructDownloadURL(licenseKey, "GeoLite2", "ciTy", "CSV")
 	require.Equal(t, "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=test-key&suffix=zip", downloadURL)
 	u, err := url.Parse(downloadURL)
 	require.NoError(t, err)
@@ -199,7 +200,7 @@ func TestFetchCityFilesWithoutExtract(t *testing.T) {
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
-	ac := New()
+	ac := geoip.New()
 	ac.LicenseKey = licenseKey
 	ac.Edition = "GeoLite2"
 	ac.DBFormat = "cSv"
@@ -207,7 +208,7 @@ func TestFetchCityFilesWithoutExtract(t *testing.T) {
 	ac.Root = tempDir
 	ac.Client.RetryMax = 0
 
-	downloadURL := constructDownloadURL(licenseKey, "GeoLite2", "ciTy", "CSV")
+	downloadURL := geoip.ConstructDownloadURL(licenseKey, "GeoLite2", "ciTy", "CSV")
 	require.Equal(t, "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=test-key&suffix=zip", downloadURL)
 	u, err := url.Parse(downloadURL)
 	require.NoError(t, err)
@@ -255,7 +256,7 @@ func TestFetchFiles(t *testing.T) {
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
-	ac := New()
+	ac := geoip.New()
 	ac.LicenseKey = licenseKey
 	ac.Edition = "GeoLite2"
 	ac.DBFormat = "csV"
@@ -338,7 +339,7 @@ func TestFetchFiles(t *testing.T) {
 
 	gock.InterceptClient(ac.Client.HTTPClient)
 
-	paths, err := ac.FetchFiles(FetchFilesInput{
+	paths, err := ac.FetchFiles(geoip.FetchFilesInput{
 		ASN:     true,
 		Country: true,
 		City:    true,
@@ -346,25 +347,25 @@ func TestFetchFiles(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-ASN-CSV_20220617.zip"), paths.ASNCompressedFilePath)
 	require.FileExists(t, paths.ASNCompressedFilePath)
-	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-ASN-CSV_20220617", GeoLite2ASNBlocksIPv4CSVFileName), paths.ASNIPv4FilePath)
+	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-ASN-CSV_20220617", geoip.GeoLite2ASNBlocksIPv4CSVFileName), paths.ASNIPv4FilePath)
 	require.FileExists(t, paths.ASNIPv4FilePath)
-	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-ASN-CSV_20220617", GeoLite2ASNBlocksIPv6CSVFileName), paths.ASNIPv6FilePath)
+	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-ASN-CSV_20220617", geoip.GeoLite2ASNBlocksIPv6CSVFileName), paths.ASNIPv6FilePath)
 	require.FileExists(t, paths.ASNIPv6FilePath)
 	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-City-CSV_20220617.zip"), paths.CityCompressedFilePath)
 	require.FileExists(t, paths.CityCompressedFilePath)
-	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-City-CSV_20220617", GeoLite2CityBlocksIPv4CSVFileName), paths.CityIPv4FilePath)
+	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-City-CSV_20220617", geoip.GeoLite2CityBlocksIPv4CSVFileName), paths.CityIPv4FilePath)
 	require.FileExists(t, paths.CityIPv4FilePath)
-	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-City-CSV_20220617", GeoLite2CityBlocksIPv6CSVFileName), paths.CityIPv6FilePath)
+	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-City-CSV_20220617", geoip.GeoLite2CityBlocksIPv6CSVFileName), paths.CityIPv6FilePath)
 	require.FileExists(t, paths.CityIPv6FilePath)
-	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-City-CSV_20220617", GeoLite2CityLocationsEnCSVFileName), paths.CityLocationsFilePath)
+	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-City-CSV_20220617", geoip.GeoLite2CityLocationsEnCSVFileName), paths.CityLocationsFilePath)
 	require.FileExists(t, paths.CityLocationsFilePath)
 	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-Country-CSV_20220617.zip"), paths.CountryCompressedFilePath)
 	require.FileExists(t, paths.CountryCompressedFilePath)
-	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-Country-CSV_20220617", GeoLite2CountryBlocksIPv4CSVFileName), paths.CountryIPv4FilePath)
+	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-Country-CSV_20220617", geoip.GeoLite2CountryBlocksIPv4CSVFileName), paths.CountryIPv4FilePath)
 	require.FileExists(t, paths.CountryIPv4FilePath)
-	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-Country-CSV_20220617", GeoLite2CountryBlocksIPv6CSVFileName), paths.CountryIPv6FilePath)
+	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-Country-CSV_20220617", geoip.GeoLite2CountryBlocksIPv6CSVFileName), paths.CountryIPv6FilePath)
 	require.FileExists(t, paths.CountryIPv6FilePath)
-	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-Country-CSV_20220617", GeoLite2CountryLocationsEnCSVFileName), paths.CountryLocationsFilePath)
+	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-Country-CSV_20220617", geoip.GeoLite2CountryLocationsEnCSVFileName), paths.CountryLocationsFilePath)
 	require.FileExists(t, paths.CountryLocationsFilePath)
 }
 
@@ -372,7 +373,7 @@ func TestDownloadExtract(t *testing.T) {
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
-	ac := New()
+	ac := geoip.New()
 	ac.LicenseKey = licenseKey
 	ac.Edition = "GeoLite2"
 	ac.DBFormat = "csv"
@@ -453,7 +454,7 @@ func TestDownloadExtract(t *testing.T) {
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-Country-CSV_20220617.zip")
 
 	gock.InterceptClient(ac.Client.HTTPClient)
-	out, err := ac.FetchFiles(FetchFilesInput{
+	out, err := ac.FetchFiles(geoip.FetchFilesInput{
 		ASN:     true,
 		Country: true,
 		City:    true,
@@ -469,7 +470,7 @@ func TestFetchCityFilesEmptyRoot(t *testing.T) {
 	licenseKey := "test-key"
 	// tempDir := t.TempDir()
 
-	ac := New()
+	ac := geoip.New()
 	ac.LicenseKey = licenseKey
 	ac.Edition = "GeoLite2"
 	ac.DBFormat = "cSv"
@@ -484,7 +485,7 @@ func TestDownloadExtractCityWithoutRoot(t *testing.T) {
 	licenseKey := "test-key"
 	// tempDir := t.TempDir()
 
-	ac := New()
+	ac := geoip.New()
 	ac.LicenseKey = licenseKey
 	ac.Edition = "GeoLite2"
 	ac.DBFormat = "csv"
@@ -521,7 +522,7 @@ func TestDownloadExtractCityWithoutRoot(t *testing.T) {
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
 
 	gock.InterceptClient(ac.Client.HTTPClient)
-	out, err := ac.FetchFiles(FetchFilesInput{
+	out, err := ac.FetchFiles(geoip.FetchFilesInput{
 		ASN:     false,
 		Country: false,
 		City:    true,
