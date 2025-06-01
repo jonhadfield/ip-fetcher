@@ -39,7 +39,7 @@ func New() Zscaler {
 	}
 }
 
-func (z *Zscaler) FetchData() (data []byte, headers http.Header, status int, err error) {
+func (z *Zscaler) FetchData() ([]byte, http.Header, int, error) {
 	if z.DownloadURL == "" {
 		z.DownloadURL = DownloadURL
 	}
@@ -47,25 +47,32 @@ func (z *Zscaler) FetchData() (data []byte, headers http.Header, status int, err
 	return web.Request(z.Client, z.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
 }
 
-func (z *Zscaler) Fetch() (prefixes []netip.Prefix, err error) {
+func (z *Zscaler) Fetch() ([]netip.Prefix, error) {
 	data, _, _, err := z.FetchData()
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	return ProcessData(data)
 }
 
-func ProcessData(data []byte) (prefixes []netip.Prefix, err error) {
+func ProcessData(data []byte) ([]netip.Prefix, error) {
 	r := bytes.NewReader(data)
 	scanner := bufio.NewScanner(r)
+	var (
+		prefixes []netip.Prefix
+		lastErr  error
+	)
 	for scanner.Scan() {
-		var prefix netip.Prefix
-		prefix, err = netip.ParsePrefix(scanner.Text())
+		prefix, err := netip.ParsePrefix(scanner.Text())
 		if err != nil {
+			lastErr = err
 			continue
 		}
 		prefixes = append(prefixes, prefix)
 	}
-	return
+	if scanErr := scanner.Err(); scanErr != nil {
+		lastErr = scanErr
+	}
+	return prefixes, lastErr
 }

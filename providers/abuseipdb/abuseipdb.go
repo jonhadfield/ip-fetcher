@@ -101,7 +101,7 @@ var (
 	notTrustedErrorRe = regexp.MustCompile(`certificate is not trusted`)
 )
 
-func (a *AbuseIPDB) FetchData() (data []byte, headers http.Header, status int, err error) {
+func (a *AbuseIPDB) FetchData() ([]byte, http.Header, int, error) {
 	// get download url if not specified
 	if a.APIURL == "" {
 		a.APIURL = APIURL
@@ -111,10 +111,9 @@ func (a *AbuseIPDB) FetchData() (data []byte, headers http.Header, status int, e
 	inHeaders.Add("Key", a.APIKey)
 	inHeaders.Add("Accept", "application/json")
 
-	var reqUrl *url.URL
-
-	if reqUrl, err = url.Parse(a.APIURL); err != nil {
-		return
+	reqUrl, err := url.Parse(a.APIURL)
+	if err != nil {
+		return nil, nil, 0, err
 	}
 
 	if a.ConfidenceMinimum != 0 {
@@ -131,19 +130,16 @@ func (a *AbuseIPDB) FetchData() (data []byte, headers http.Header, status int, e
 
 	blackList, headers, statusCode, err := web.Request(a.Client, reqUrl.String(), http.MethodGet, inHeaders, []string{a.APIKey}, web.DefaultRequestTimeout)
 	if statusCode == 0 && err != nil {
-		return
+		return nil, nil, 0, err
 	}
 
 	if len(blackList) == 0 {
-		err = fmt.Errorf("empty response from %s api with http status code %d", ModuleName, statusCode)
-
-		return
+		return nil, nil, 0, fmt.Errorf("empty response from %s api with http status code %d", ModuleName, statusCode)
 	}
 
 	if statusCode >= http.StatusBadRequest && statusCode < http.StatusInternalServerError {
 		err = parseAPIErrorResponse(blackList)
 	}
-
 	return blackList, headers, statusCode, err
 }
 
@@ -152,36 +148,33 @@ type Doc struct {
 	Records     []Record
 }
 
-func (a *AbuseIPDB) Fetch() (doc Doc, err error) {
+func (a *AbuseIPDB) Fetch() (Doc, error) {
 	data, _, status, err := a.FetchData()
 	logrus.Debugf("abuseipdb | data len: %d FetchData status: %d", len(data), status)
 	if err != nil {
-		return
+		return Doc{}, err
 	}
 
 	return Parse(data)
 }
 
-func Parse(in []byte) (doc Doc, err error) {
+func Parse(in []byte) (Doc, error) {
 	var rawBlackListDoc RawBlacklistDoc
-
-	err = json.Unmarshal(in, &rawBlackListDoc)
+	err := json.Unmarshal(in, &rawBlackListDoc)
 	if err != nil {
-		err = fmt.Errorf("%w", err)
-
-		return
+		return Doc{}, fmt.Errorf("%w", err)
 	}
 
+	doc := Doc{}
 	doc.GeneratedAt, err = time.Parse(TimeFormat, rawBlackListDoc.Meta.GeneratedAt)
 	if err != nil {
-		return
+		return Doc{}, err
 	}
 
 	for _, e := range rawBlackListDoc.Data {
-		var lastReported time.Time
-
-		if lastReported, err = time.Parse(TimeFormat, e.LastReportedAt); err != nil {
-			return
+		lastReported, err := time.Parse(TimeFormat, e.LastReportedAt)
+		if err != nil {
+			return Doc{}, err
 		}
 
 		doc.Records = append(doc.Records, Record{
@@ -192,7 +185,7 @@ func Parse(in []byte) (doc Doc, err error) {
 		})
 	}
 
-	return
+	return doc, nil
 }
 
 type APIError struct {
@@ -204,9 +197,9 @@ type APIErrorResponse struct {
 	Errors []APIError `json:"errors"`
 }
 
-func parseAPIErrorResponse(in []byte) (err error) {
+func parseAPIErrorResponse(in []byte) error {
 	var apiErrorResponse APIErrorResponse
-	if err = json.Unmarshal(in, &apiErrorResponse); err != nil {
+	if err := json.Unmarshal(in, &apiErrorResponse); err != nil {
 		return err
 	}
 

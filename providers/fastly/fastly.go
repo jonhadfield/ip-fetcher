@@ -40,7 +40,7 @@ type Fastly struct {
 	DownloadURL string
 }
 
-func (f *Fastly) FetchData() (data []byte, headers http.Header, status int, err error) {
+func (f *Fastly) FetchData() ([]byte, http.Header, int, error) {
 	if f.DownloadURL == "" {
 		f.DownloadURL = DownloadURL
 	}
@@ -48,10 +48,10 @@ func (f *Fastly) FetchData() (data []byte, headers http.Header, status int, err 
 	return web.Request(f.Client, f.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
 }
 
-func (f *Fastly) Fetch() (doc Doc, err error) {
+func (f *Fastly) Fetch() (Doc, error) {
 	data, _, _, err := f.FetchData()
 	if err != nil {
-		return
+		return Doc{}, err
 	}
 
 	return ProcessData(data)
@@ -93,17 +93,14 @@ func castEntries(rd RawDoc) (ipv4 []netip.Prefix, ipv6 []netip.Prefix) {
 	return ipv4, ipv6
 }
 
-func ProcessData(data []byte) (doc Doc, err error) {
+func ProcessData(data []byte) (Doc, error) {
 	var rawDoc RawDoc
-	err = json.Unmarshal(data, &rawDoc)
-	if err != nil {
-		return
+	if err := json.Unmarshal(data, &rawDoc); err != nil {
+		return Doc{}, err
 	}
 
+	doc := Doc{}
 	doc.IPv4Prefixes, doc.IPv6Prefixes = castEntries(rawDoc)
-	if err != nil {
-		return
-	}
 
-	return
+	return doc, nil
 }

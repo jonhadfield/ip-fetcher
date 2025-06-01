@@ -78,8 +78,11 @@ func gcpCmd() *cli.Command {
 	}
 }
 
-func output(doc gcp.Doc, format string, stdout bool, path string) (err error) {
-	var data []byte
+func output(doc gcp.Doc, format string, stdout bool, path string) error {
+	var (
+		data []byte
+		err  error
+	)
 
 	switch format {
 	case "csv":
