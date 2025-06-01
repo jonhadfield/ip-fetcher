@@ -114,7 +114,7 @@ func (ora *OCI) FetchData() (data []byte, headers http.Header, status int, err e
 		ora.DownloadURL = DownloadURL
 	}
 
-	return web.Request(ora.Client, ora.DownloadURL, http.MethodGet, nil, nil, 10*time.Second)
+	return web.Request(ora.Client, ora.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
 }
 
 func (ora *OCI) Fetch() (doc Doc, err error) {

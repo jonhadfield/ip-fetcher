@@ -2,6 +2,7 @@ package url
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/netip"
@@ -304,7 +305,7 @@ func (c *Client) get(url *url.URL, header http.Header) (result UrlResponse, err 
 	var data []byte
 	var status int
 
-	data, _, status, err = web.Request(c.HttpClient, url.String(), http.MethodGet, header, nil, 10*time.Second)
+	data, _, status, err = web.Request(c.HttpClient, url.String(), http.MethodGet, header, nil, web.DefaultRequestTimeout)
 	if err != nil {
 		logrus.Debug(err.Error())
 	}
@@ -324,7 +325,7 @@ func fetchUrlResponse(client *retryablehttp.Client, url string) (result UrlRespo
 	var data []byte
 	var status int
 
-	data, _, status, err = web.Request(client, url, http.MethodGet, nil, nil, 10*time.Second)
+	data, _, status, err = web.Request(client, url, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
 	if err != nil {
 		logrus.Debug(err.Error())
 	}
@@ -356,7 +357,7 @@ func (c *Client) Get(requests []Request) (*[]UrlResponse, error) {
 	}
 
 	if len(requests) == 0 {
-		return nil, fmt.Errorf("no URLs to fetch")
+		return nil, errors.New("no URLs to fetch")
 	}
 
 	var err error
@@ -384,9 +385,7 @@ func (hf *HttpFiles) FetchUrls() (results []UrlResponse, err error) {
 	}
 
 	if len(hf.Urls) == 0 {
-		err = fmt.Errorf("no URLs to fetch")
-
-		return
+		return nil, errors.New("no URLs to fetch")
 	}
 
 	for _, hfUrl := range hf.Urls {

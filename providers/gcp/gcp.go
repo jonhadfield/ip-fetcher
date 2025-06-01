@@ -49,54 +49,57 @@ type RawDoc struct {
 	Entries       []json.RawMessage `json:"prefixes"`
 }
 
-func (gc *GCP) FetchData() (data []byte, headers http.Header, status int, err error) {
+func (gc *GCP) FetchData() ([]byte, http.Header, int, error) {
 	if gc.DownloadURL == "" {
 		gc.DownloadURL = DownloadURL
 	}
 
-	return web.Request(gc.Client, gc.DownloadURL, http.MethodGet, nil, nil, 10*time.Second)
+	return web.Request(gc.Client, gc.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
 }
 
-func (gc *GCP) Fetch() (doc Doc, err error) {
+func (gc *GCP) Fetch() (Doc, error) {
 	data, _, _, err := gc.FetchData()
 	if err != nil {
-		return
+		return Doc{}, err
 	}
 
 	return ProcessData(data)
 }
 
-func ProcessData(data []byte) (doc Doc, err error) {
+func ProcessData(data []byte) (Doc, error) {
 	var rawDoc RawDoc
-	err = json.Unmarshal(data, &rawDoc)
-	if err != nil {
-		return
+	if err := json.Unmarshal(data, &rawDoc); err != nil {
+		return Doc{}, err
 	}
 
-	doc.IPv4Prefixes, doc.IPv6Prefixes, err = castEntries(rawDoc.Entries)
+	ipv4, ipv6, err := castEntries(rawDoc.Entries)
 	if err != nil {
-		return
+		return Doc{}, err
 	}
 
 	ct, err := time.Parse(downloadedFileTimeFormat, rawDoc.CreationTime)
 	if err != nil {
-		return
+		return Doc{}, err
 	}
 
-	doc.CreationTime = ct
-	doc.SyncToken = rawDoc.SyncToken
-
-	return
+	return Doc{
+		CreationTime: ct,
+		SyncToken:    rawDoc.SyncToken,
+		IPv4Prefixes: ipv4,
+		IPv6Prefixes: ipv6,
+	}, nil
 }
 
-func castEntries(prefixes []json.RawMessage) (ipv4 []IPv4Entry, ipv6 []IPv6Entry, err error) {
+func castEntries(prefixes []json.RawMessage) ([]IPv4Entry, []IPv6Entry, error) {
+	var ipv4 []IPv4Entry
+	var ipv6 []IPv6Entry
 	for _, pr := range prefixes {
 		var ipv4entry RawIPv4Entry
 
 		var ipv6entry RawIPv6Entry
 
 		// try 4
-		err = json.Unmarshal(pr, &ipv4entry)
+		err := json.Unmarshal(pr, &ipv4entry)
 		if err == nil {
 			ipv4Prefix, parseError := netip.ParsePrefix(ipv4entry.IPv4Prefix)
 			if parseError == nil {
@@ -128,11 +131,11 @@ func castEntries(prefixes []json.RawMessage) (ipv4 []IPv4Entry, ipv6 []IPv6Entry
 		}
 
 		if err != nil {
-			return
+			return ipv4, ipv6, err
 		}
 	}
 
-	return
+	return ipv4, ipv6, nil
 }
 
 type RawIPv4Entry struct {

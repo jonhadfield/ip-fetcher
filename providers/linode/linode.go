@@ -89,7 +89,7 @@ func (a *Linode) FetchData() (data []byte, headers http.Header, status int, err 
 		a.DownloadURL = DownloadURL
 	}
 
-	data, headers, status, err = web.Request(a.Client, a.DownloadURL, http.MethodGet, nil, nil, 5*time.Second)
+	data, headers, status, err = web.Request(a.Client, a.DownloadURL, http.MethodGet, nil, nil, web.ShortRequestTimeout)
 	if status >= http.StatusBadRequest {
 		return nil, nil, status, fmt.Errorf("failed to download prefixes. http status code: %d", status)
 	}

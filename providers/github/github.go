@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/netip"
-	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
@@ -40,29 +39,31 @@ func New() GitHub {
 	}
 }
 
-func (gh *GitHub) FetchData() (data []byte, headers http.Header, status int, err error) {
+func (gh *GitHub) FetchData() ([]byte, http.Header, int, error) {
 	if gh.DownloadURL == "" {
 		gh.DownloadURL = DownloadURL
 	}
 
-	return web.Request(gh.Client, gh.DownloadURL, http.MethodGet, nil, nil, 10*time.Second)
+	return web.Request(gh.Client, gh.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
 }
 
-func (gh *GitHub) Fetch() (prefixes []netip.Prefix, err error) {
+func (gh *GitHub) Fetch() ([]netip.Prefix, error) {
 	data, _, _, err := gh.FetchData()
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	return ProcessData(data)
 }
 
-func ProcessData(data []byte) (prefixes []netip.Prefix, err error) {
+func ProcessData(data []byte) ([]netip.Prefix, error) {
 	var raw map[string]json.RawMessage
 
-	if err = json.Unmarshal(data, &raw); err != nil {
-		return
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return nil, err
 	}
+
+	var prefixes []netip.Prefix
 
 	for _, v := range raw {
 		var entries []string
@@ -80,5 +81,5 @@ func ProcessData(data []byte) (prefixes []netip.Prefix, err error) {
 		}
 	}
 
-	return
+	return prefixes, nil
 }

@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"net/http"
 	"net/netip"
-	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
@@ -45,7 +44,7 @@ func (z *Zscaler) FetchData() (data []byte, headers http.Header, status int, err
 		z.DownloadURL = DownloadURL
 	}
 
-	return web.Request(z.Client, z.DownloadURL, http.MethodGet, nil, nil, 10*time.Second)
+	return web.Request(z.Client, z.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
 }
 
 func (z *Zscaler) Fetch() (prefixes []netip.Prefix, err error) {
