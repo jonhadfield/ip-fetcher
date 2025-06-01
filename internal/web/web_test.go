@@ -68,7 +68,7 @@ func TestRequestContentDispositionFileName(t *testing.T) {
 		MatchParams(map[string]string{
 			"qsparam": "qsvalue",
 		}).
-		Reply(200).
+		Reply(http.StatusOK).
 		SetHeader("content-disposition", fmt.Sprintf("attachment; filename=%s", fileName))
 
 	gock.New(urlBase).
@@ -76,7 +76,7 @@ func TestRequestContentDispositionFileName(t *testing.T) {
 		MatchParams(map[string]string{
 			"qsparam": "qsvalue",
 		}).
-		Reply(200).
+		Reply(http.StatusOK).
 		SetHeader("content-disposition", "")
 
 	c := NewHTTPClient()
@@ -180,7 +180,7 @@ func TestDownloadFileWithMissingDir(t *testing.T) {
 
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/mytextfile.txt").
 		SetHeader("hello", "World")
 
@@ -203,7 +203,7 @@ func TestDownloadFileWithDirSpecified(t *testing.T) {
 
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/mytextfile.txt").
 		SetHeader("hello", "World")
 
@@ -226,7 +226,7 @@ func TestDownloadFileWithFilePathSpecified(t *testing.T) {
 
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/mytextfile.txt").
 		SetHeader("hello", "World")
 
@@ -249,7 +249,7 @@ func TestHTTPGet(t *testing.T) {
 
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/mytextfile.txt").
 		SetHeader("hello", "World")
 
@@ -259,7 +259,7 @@ func TestHTTPGet(t *testing.T) {
 
 	b, headers, status, err := Request(c, testUrl, http.MethodGet, nil, nil, 2*time.Second)
 	require.NoError(t, err)
-	require.Equal(t, 200, status)
+	require.Equal(t, http.StatusOK, status)
 	require.Equal(t, "hello world", string(b))
 	require.Equal(t, "World", headers.Get("hello"))
 }

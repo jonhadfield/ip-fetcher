@@ -9,6 +9,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+const (
+	defaultConfidence = 75
+	defaultLimit      = 1000
+)
+
 func abuseipdbCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "abuseipdb",
@@ -26,12 +31,16 @@ func abuseipdbCmd() *cli.Command {
 				Usage: "api key", Aliases: []string{"k"}, Required: true,
 			},
 			&cli.IntFlag{
-				Name:  "confidence",
-				Usage: "minimum confidence percentage score to return", Value: 75, Aliases: []string{"c"},
+				Name:    "confidence",
+				Usage:   "minimum confidence percentage score to return",
+				Value:   defaultConfidence,
+				Aliases: []string{"c"},
 			},
 			&cli.Int64Flag{
-				Name:  "limit",
-				Usage: "maximum number of results to return", Value: 1000, Aliases: []string{"l"},
+				Name:    "limit",
+				Usage:   "maximum number of results to return",
+				Value:   defaultLimit,
+				Aliases: []string{"l"},
 			},
 			&cli.StringFlag{
 				Name:  "path",

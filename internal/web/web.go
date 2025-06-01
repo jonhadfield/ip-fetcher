@@ -33,13 +33,19 @@ func Resolve(name string) (ip netip.Addr, err error) {
 	return netip.ParseAddr(i.String())
 }
 
+const (
+	defaultRetryMax     = 2
+	defaultRetryWaitMin = 2 * time.Second
+	defaultRetryWaitMax = 5 * time.Second
+)
+
 func NewHTTPClient() *retryablehttp.Client {
 	rc := &http.Client{Transport: &http.Transport{}}
 	c := retryablehttp.NewClient()
 	c.HTTPClient = rc
-	c.RetryMax = 2
-	c.RetryWaitMin = 2 * time.Second
-	c.RetryWaitMax = 5 * time.Second
+	c.RetryMax = defaultRetryMax
+	c.RetryWaitMin = defaultRetryWaitMin
+	c.RetryWaitMax = defaultRetryWaitMax
 
 	return c
 }

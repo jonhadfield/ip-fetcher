@@ -59,7 +59,7 @@ func azureCmd() *cli.Command {
 				// u, _ := url.Parse(azure.InitialURL)
 				// gock.New(azure.InitialURL).
 				// 	Get(u.Path).
-				// 	Reply(200).
+				// 	Reply(http.StatusOK).
 				// 	File(testAzureInitialFilePath)
 
 				uDownload, _ := url.Parse(testMockAzureDownloadURL)

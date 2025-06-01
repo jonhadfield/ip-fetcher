@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -76,13 +77,13 @@ func cloudflareCmd() *cli.Command {
 				exTimeStamp := "Tue, 13 Dec 2022 06:50:50 GMT"
 				gock.New(url4Base).
 					Get(u4.Path).
-					Reply(200).
+					Reply(http.StatusOK).
 					AddHeader("Last-Modified", exTimeStamp).
 					File("../../providers/cloudflare/testdata/ips-v4")
 				url6Base := fmt.Sprintf("%s://%s", u6.Scheme, u6.Host)
 				gock.New(url6Base).
 					Get(u6.Path).
-					Reply(200).
+					Reply(http.StatusOK).
 					AddHeader("Last-Modified", exTimeStamp).
 					File("../../providers/cloudflare/testdata/ips-v6")
 

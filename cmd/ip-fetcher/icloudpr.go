@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/jonhadfield/ip-fetcher/providers/icloudpr"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
@@ -56,7 +57,7 @@ func iCloudPRCmd() *cli.Command {
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).
-					Reply(200).
+					Reply(http.StatusOK).
 					File("../../providers/icloudpr/testdata/egress-ip-ranges.csv")
 				gock.InterceptClient(a.Client.HTTPClient)
 			}

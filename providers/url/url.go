@@ -309,7 +309,7 @@ func (c *Client) get(url *url.URL, header http.Header) (result UrlResponse, err 
 		logrus.Debug(err.Error())
 	}
 
-	if !(status >= 200 && status <= 299) {
+	if status < http.StatusOK || status >= http.StatusMultipleChoices {
 		return result, fmt.Errorf("failed to get: %s status: %d", url.String(), status)
 	}
 
@@ -328,7 +328,7 @@ func fetchUrlResponse(client *retryablehttp.Client, url string) (result UrlRespo
 	if err != nil {
 		logrus.Debug(err.Error())
 	}
-	if !(status >= 200 && status <= 299) {
+	if status < http.StatusOK || status >= http.StatusMultipleChoices {
 		return result, fmt.Errorf("failed to fetch: %s status: %d", url, status)
 	}
 

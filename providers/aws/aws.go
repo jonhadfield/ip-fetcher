@@ -86,7 +86,7 @@ func (a *AWS) FetchETag() (etag string, err error) {
 		return
 	}
 
-	if statusCode != 200 {
+	if statusCode != http.StatusOK {
 		// err = fmt.Errorf("%s - request for aws etag resulted in status code: %d", funcName, statusCode)
 		return
 	}

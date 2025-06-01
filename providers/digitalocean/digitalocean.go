@@ -49,7 +49,7 @@ func (a *DigitalOcean) FetchData() (data []byte, headers http.Header, status int
 	}
 
 	data, headers, status, err = web.Request(a.Client, a.DownloadURL, http.MethodGet, nil, nil, 5*time.Second)
-	if status >= 400 {
+	if status >= http.StatusBadRequest {
 		return nil, nil, status, fmt.Errorf("failed to download prefixes. http status code: %d", status)
 	}
 

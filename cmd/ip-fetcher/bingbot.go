@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/jonhadfield/ip-fetcher/providers/bingbot"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
@@ -53,7 +54,7 @@ func bingbotCmd() *cli.Command {
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).
-					Reply(200).
+					Reply(http.StatusOK).
 					File("../../providers/bingbot/testdata/bingbot.json")
 				gock.InterceptClient(a.Client.HTTPClient)
 			}
