@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/netip"
-	"time"
 
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
@@ -46,7 +45,7 @@ func (f *Fastly) FetchData() (data []byte, headers http.Header, status int, err 
 		f.DownloadURL = DownloadURL
 	}
 
-	return web.Request(f.Client, f.DownloadURL, http.MethodGet, nil, nil, 10*time.Second)
+	return web.Request(f.Client, f.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
 }
 
 func (f *Fastly) Fetch() (doc Doc, err error) {

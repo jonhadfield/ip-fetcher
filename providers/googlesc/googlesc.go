@@ -52,7 +52,7 @@ func (gs *Googlesc) FetchData() (data []byte, headers http.Header, status int, e
 	if gs.DownloadURL == "" {
 		gs.DownloadURL = DownloadURL
 	}
-	return web.Request(gs.Client, gs.DownloadURL, http.MethodGet, nil, nil, 10*time.Second)
+	return web.Request(gs.Client, gs.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
 }
 
 func (gs *Googlesc) Fetch() (doc Doc, err error) {

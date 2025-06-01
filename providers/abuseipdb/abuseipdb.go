@@ -68,7 +68,7 @@ func retryPolicy(ctx context.Context, resp *http.Response, err error) (bool, err
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		return false, fmt.Errorf("exceeded number of allowed blacklist downloads in last 24 hours")
+		return false, errors.New("exceeded number of allowed blacklist downloads in last 24 hours")
 	}
 
 	if resp.StatusCode == 0 || (resp.StatusCode >= http.StatusInternalServerError && resp.StatusCode != http.StatusNotImplemented) {
@@ -129,7 +129,7 @@ func (a *AbuseIPDB) FetchData() (data []byte, headers http.Header, status int, e
 		reqUrl.RawQuery = q.Encode()
 	}
 
-	blackList, headers, statusCode, err := web.Request(a.Client, reqUrl.String(), http.MethodGet, inHeaders, []string{a.APIKey}, 10*time.Second)
+	blackList, headers, statusCode, err := web.Request(a.Client, reqUrl.String(), http.MethodGet, inHeaders, []string{a.APIKey}, web.DefaultRequestTimeout)
 	if statusCode == 0 && err != nil {
 		return
 	}

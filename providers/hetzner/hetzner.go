@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/netip"
 	"strings"
-	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
@@ -104,7 +103,7 @@ func (h *Hetzner) FetchData() (data []byte, headers http.Header, status int, err
 		url = fmt.Sprintf(url, asn)
 
 		var body []byte
-		body, headers, status, err = web.Request(h.Client, url, http.MethodGet, nil, nil, 10*time.Second)
+		body, headers, status, err = web.Request(h.Client, url, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
 		if err != nil {
 			return nil, nil, 0, fmt.Errorf("error fetching ASN %s: %w", asn, err)
 		}

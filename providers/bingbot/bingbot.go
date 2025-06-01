@@ -47,7 +47,7 @@ func (bb *Bingbot) FetchData() (data []byte, headers http.Header, status int, er
 	if bb.DownloadURL == "" {
 		bb.DownloadURL = DownloadURL
 	}
-	return web.Request(bb.Client, bb.DownloadURL, http.MethodGet, nil, nil, 10*time.Second)
+	return web.Request(bb.Client, bb.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
 }
 
 func (bb *Bingbot) Fetch() (doc Doc, err error) {

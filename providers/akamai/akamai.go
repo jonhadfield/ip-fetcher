@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"net/http"
 	"net/netip"
-	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
@@ -40,33 +39,33 @@ func New() Akamai {
 	}
 }
 
-func (a *Akamai) FetchData() (data []byte, headers http.Header, status int, err error) {
+func (a *Akamai) FetchData() ([]byte, http.Header, int, error) {
 	if a.DownloadURL == "" {
 		a.DownloadURL = DownloadURL
 	}
 
-	return web.Request(a.Client, a.DownloadURL, http.MethodGet, nil, nil, 10*time.Second)
+	return web.Request(a.Client, a.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
 }
 
-func (a *Akamai) Fetch() (prefixes []netip.Prefix, err error) {
+func (a *Akamai) Fetch() ([]netip.Prefix, error) {
 	data, _, _, err := a.FetchData()
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	return ProcessData(data)
 }
 
-func ProcessData(data []byte) (prefixes []netip.Prefix, err error) {
+func ProcessData(data []byte) ([]netip.Prefix, error) {
 	r := bytes.NewReader(data)
 	scanner := bufio.NewScanner(r)
+	var prefixes []netip.Prefix
 	for scanner.Scan() {
-		var prefix netip.Prefix
-		prefix, err = netip.ParsePrefix(scanner.Text())
+		prefix, err := netip.ParsePrefix(scanner.Text())
 		if err != nil {
-			return
+			return nil, err
 		}
 		prefixes = append(prefixes, prefix)
 	}
-	return
+	return prefixes, nil
 }

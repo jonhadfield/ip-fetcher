@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"net/http"
 	"net/netip"
-	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
@@ -45,7 +44,7 @@ func (o *OVH) FetchData() (data []byte, headers http.Header, status int, err err
 		o.DownloadURL = DownloadURL
 	}
 
-	return web.Request(o.Client, o.DownloadURL, http.MethodGet, nil, nil, 10*time.Second)
+	return web.Request(o.Client, o.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
 }
 
 func (o *OVH) Fetch() (prefixes []netip.Prefix, err error) {

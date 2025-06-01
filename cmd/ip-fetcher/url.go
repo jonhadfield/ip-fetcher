@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -81,7 +82,7 @@ func urlCmd() *cli.Command {
 			}
 
 			if len(prefixes) == 0 {
-				return fmt.Errorf("no prefixes found")
+				return errors.New("no prefixes found")
 			}
 
 			if path != "" {

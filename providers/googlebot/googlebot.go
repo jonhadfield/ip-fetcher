@@ -52,7 +52,7 @@ func (gc *Googlebot) FetchData() (data []byte, headers http.Header, status int, 
 	if gc.DownloadURL == "" {
 		gc.DownloadURL = DownloadURL
 	}
-	return web.Request(gc.Client, gc.DownloadURL, http.MethodGet, nil, nil, 10*time.Second)
+	return web.Request(gc.Client, gc.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
 }
 
 func (gc *Googlebot) Fetch() (doc Doc, err error) {
