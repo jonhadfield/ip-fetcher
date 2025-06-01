@@ -1,4 +1,4 @@
-package fastly
+package fastly_test
 
 import (
 	"fmt"

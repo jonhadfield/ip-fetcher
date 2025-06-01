@@ -1,4 +1,4 @@
-package abuseipdb
+package abuseipdb_test
 
 import (
 	"fmt"

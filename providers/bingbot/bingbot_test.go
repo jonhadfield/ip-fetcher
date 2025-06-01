@@ -1,4 +1,4 @@
-package bingbot
+package bingbot_test
 
 import (
 	"fmt"

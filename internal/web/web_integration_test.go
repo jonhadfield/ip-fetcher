@@ -1,3 +1,3 @@
 //go:build integration
 
-package web
+package web_test

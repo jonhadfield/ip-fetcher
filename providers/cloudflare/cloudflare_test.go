@@ -1,4 +1,4 @@
-package cloudflare
+package cloudflare_test
 
 import (
 	"fmt"

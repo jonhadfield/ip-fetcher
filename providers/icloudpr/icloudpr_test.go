@@ -1,4 +1,4 @@
-package icloudpr
+package icloudpr_test
 
 import (
 	"fmt"

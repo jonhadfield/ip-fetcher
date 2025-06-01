@@ -1,4 +1,4 @@
-package geoip
+package geoip_test
 
 import (
 	"fmt"

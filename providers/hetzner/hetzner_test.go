@@ -1,4 +1,4 @@
-package hetzner
+package hetzner_test
 
 import (
 	"fmt"
