@@ -80,13 +80,16 @@ func fastlyCmd() *cli.Command {
 	}
 }
 
-func fastlyOutput(doc fastly.Doc, format string, stdout bool, path string) (err error) {
+func fastlyOutput(doc fastly.Doc, format string, stdout bool, path string) error {
 	if !slices.Contains(fastlyFormats, format) {
 		return fmt.Errorf("invalid format: %s\n       choose from: %s",
 			format, strings.Join(fastlyFormats, ", "))
 	}
 
-	var data []byte
+	var (
+		data []byte
+		err  error
+	)
 
 	switch format {
 	case "csv":

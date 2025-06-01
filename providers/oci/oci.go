@@ -109,7 +109,7 @@ func (doc *Doc) UnmarshalJSON(p []byte) error {
 	return nil
 }
 
-func (ora *OCI) FetchData() (data []byte, headers http.Header, status int, err error) {
+func (ora *OCI) FetchData() ([]byte, http.Header, int, error) {
 	if ora.DownloadURL == "" {
 		ora.DownloadURL = DownloadURL
 	}
@@ -117,11 +117,12 @@ func (ora *OCI) FetchData() (data []byte, headers http.Header, status int, err e
 	return web.Request(ora.Client, ora.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
 }
 
-func (ora *OCI) Fetch() (doc Doc, err error) {
+func (ora *OCI) Fetch() (Doc, error) {
 	data, _, _, err := ora.FetchData()
 	if err != nil {
-		return
+		return Doc{}, err
 	}
+	var doc Doc
 	err = json.Unmarshal(data, &doc)
 
 	return doc, err
