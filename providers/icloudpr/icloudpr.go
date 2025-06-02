@@ -83,7 +83,13 @@ func New() ICloudPrivateRelay {
 	}
 }
 
-func (a *ICloudPrivateRelay) FetchData() (data []byte, headers http.Header, status int, err error) {
+func (a *ICloudPrivateRelay) FetchData() ([]byte, http.Header, int, error) {
+	var (
+		data    []byte
+		headers http.Header
+		status  int
+		err     error
+	)
 	// get download url if not specified
 	if a.DownloadURL == "" {
 		a.DownloadURL = DownloadURL
@@ -103,17 +109,18 @@ type Doc struct {
 	Records      []Record
 }
 
-func (a *ICloudPrivateRelay) Fetch() (doc Doc, err error) {
+func (a *ICloudPrivateRelay) Fetch() (Doc, error) {
 	data, headers, _, err := a.FetchData()
 	if err != nil {
-		return
+		return Doc{}, err
 	}
 
 	records, err := Parse(data)
 	if err != nil {
-		return
+		return Doc{}, err
 	}
 
+	var doc Doc
 	doc.Records = records
 
 	var etag string
@@ -130,7 +137,7 @@ func (a *ICloudPrivateRelay) Fetch() (doc Doc, err error) {
 	lastModifiedRaw := headers.Values(web.LastModifiedHeader)
 	if len(lastModifiedRaw) != 0 {
 		if lastModifiedTime, err = time.Parse(time.RFC1123, lastModifiedRaw[0]); err != nil {
-			return
+			return Doc{}, err
 		}
 	}
 
@@ -147,7 +154,12 @@ type Entry struct {
 	PostalCode string `csv:"postal_code,omitempty"`
 }
 
-func Parse(data []byte) (records []Record, err error) {
+func Parse(data []byte) ([]Record, error) {
+	var (
+		records []Record
+		err     error
+	)
+
 	reader := bytes.NewReader(data)
 
 	csvReader := csv.NewReader(reader)
@@ -186,11 +198,11 @@ Loop:
 			c.Prefix = pcn
 			records = append(records, c)
 		default:
-			return
+			return records, err
 		}
 	}
 
-	return
+	return records, nil
 }
 
 // prefix, alpha2code, region, city, postal_code
