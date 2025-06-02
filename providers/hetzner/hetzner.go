@@ -88,7 +88,12 @@ func New() Hetzner {
 	}
 }
 
-func (h *Hetzner) FetchData() (data []byte, headers http.Header, status int, err error) {
+func (h *Hetzner) FetchData() ([]byte, http.Header, int, error) {
+	var (
+		headers http.Header
+		status  int
+		err     error
+	)
 	if h.DownloadURL == "" {
 		h.DownloadURL = DownloadURL
 	}
