@@ -63,7 +63,6 @@ func GetApp() *cli.App {
 		ovhCmd(),
 		ociCmd(),
 		zscalerCmd(),
-		virustotalCmd(),
 		publishCmd(),
 		urlCmd(),
 	}

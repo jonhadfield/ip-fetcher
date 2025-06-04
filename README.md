@@ -29,7 +29,6 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://support.apple.com/en-us/HT212614" target="_blank">iCloud Private Relay</a>
 - <a href="https://www.ovhcloud.com" target="_blank">OVHcloud</a>
 - <a href="https://www.zscaler.com" target="_blank">Zscaler</a>
-- <a href="https://support.virustotal.com" target="_blank">VirusTotal</a>
 
 ## CLI
 
