@@ -113,6 +113,7 @@ func (f *BoolFlag) Apply(set *flag.FlagSet) error {
 	if val, source, found := flagFromEnvOrFile(f.EnvVars, f.FilePath); found {
 		if val != "" {
 			valBool, err := strconv.ParseBool(val)
+
 			if err != nil {
 				return fmt.Errorf("could not parse %q as bool value from %s for flag %s: %s", val, source, f.Name, err)
 			}

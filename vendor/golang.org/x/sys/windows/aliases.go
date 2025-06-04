@@ -8,7 +8,5 @@ package windows
 
 import "syscall"
 
-type (
-	Errno       = syscall.Errno
-	SysProcAttr = syscall.SysProcAttr
-)
+type Errno = syscall.Errno
+type SysProcAttr = syscall.SysProcAttr

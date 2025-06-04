@@ -207,7 +207,8 @@ func (e *SNIExtension) writeToUConn(uc *UConn) error {
 }
 
 // StatusRequestExtension implements status_request (5)
-type StatusRequestExtension struct{}
+type StatusRequestExtension struct {
+}
 
 func (e *StatusRequestExtension) Len() int {
 	return 9
@@ -470,7 +471,8 @@ func (e *SignatureAlgorithmsExtension) writeToUConn(uc *UConn) error {
 }
 
 // StatusRequestV2Extension implements status_request_v2 (17)
-type StatusRequestV2Extension struct{}
+type StatusRequestV2Extension struct {
+}
 
 func (e *StatusRequestV2Extension) writeToUConn(uc *UConn) error {
 	uc.HandshakeState.Hello.OcspStapling = true
@@ -767,7 +769,8 @@ func (e *ApplicationSettingsExtension) Write(b []byte) (int, error) {
 }
 
 // SCTExtension implements signed_certificate_timestamp (18)
-type SCTExtension struct{}
+type SCTExtension struct {
+}
 
 func (e *SCTExtension) writeToUConn(uc *UConn) error {
 	uc.HandshakeState.Hello.Scts = true
@@ -851,7 +854,8 @@ func (e *GenericExtension) UnmarshalJSON(b []byte) error {
 //
 // Was named as ExtendedMasterSecretExtension, renamed due to crypto/tls
 // implemented this extension's support.
-type ExtendedMasterSecretExtension struct{}
+type ExtendedMasterSecretExtension struct {
+}
 
 // TODO: update when this extension is implemented in crypto/tls
 // but we probably won't have to enable it in Config
@@ -1816,7 +1820,7 @@ func (e *FakeDelegatedCredentialsExtension) Read(b []byte) (int, error) {
 func (e *FakeDelegatedCredentialsExtension) Write(b []byte) (int, error) {
 	fullLen := len(b)
 	extData := cryptobyte.String(b)
-	// https://datatracker.ietf.org/doc/html/draft-ietf-tls-subcerts-15#section-4.1.1
+	//https://datatracker.ietf.org/doc/html/draft-ietf-tls-subcerts-15#section-4.1.1
 	var supportedAlgs cryptobyte.String
 	if !extData.ReadUint16LengthPrefixed(&supportedAlgs) || supportedAlgs.Empty() {
 		return 0, errors.New("unable to read signature algorithms extension data")

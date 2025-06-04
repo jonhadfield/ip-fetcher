@@ -152,7 +152,7 @@ func (r *SnappyConverter) Convert(in io.Reader, w io.Writer) (int64, error) {
 			if !r.readFull(buf, false) {
 				return written, r.err
 			}
-			// checksum := uint32(buf[0]) | uint32(buf[1])<<8 | uint32(buf[2])<<16 | uint32(buf[3])<<24
+			//checksum := uint32(buf[0]) | uint32(buf[1])<<8 | uint32(buf[2])<<16 | uint32(buf[3])<<24
 			buf = buf[snappyChecksumSize:]
 
 			n, hdr, err := snappyDecodedLen(buf)
@@ -284,7 +284,7 @@ func (r *SnappyConverter) Convert(in io.Reader, w io.Writer) (int64, error) {
 // decodeSnappy writes the decoding of src to dst. It assumes that the varint-encoded
 // length of the decompressed bytes has already been read.
 func decodeSnappy(blk *blockEnc, src []byte) error {
-	// decodeRef(make([]byte, snappyMaxBlockSize), src)
+	//decodeRef(make([]byte, snappyMaxBlockSize), src)
 	var s, length int
 	lits := blk.extraLits
 	var offset uint32
@@ -339,7 +339,7 @@ func decodeSnappy(blk *blockEnc, src []byte) error {
 			//}
 
 			blk.literals = append(blk.literals, src[s:s+length]...)
-			// println(length, "litLen")
+			//println(length, "litLen")
 			lits += length
 			s += length
 			continue

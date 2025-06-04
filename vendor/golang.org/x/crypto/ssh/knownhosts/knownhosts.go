@@ -164,10 +164,8 @@ func (db *hostKeyDB) IsRevoked(key *ssh.Certificate) bool {
 	return ok
 }
 
-const (
-	markerCert    = "@cert-authority"
-	markerRevoked = "@revoked"
-)
+const markerCert = "@cert-authority"
+const markerRevoked = "@revoked"
 
 func nextWord(line []byte) (string, []byte) {
 	i := bytes.IndexAny(line, "\t ")
@@ -486,8 +484,7 @@ func decodeHash(encoded string) (hashType string, salt, hash []byte, err error) 
 }
 
 func encodeHash(typ string, salt []byte, hash []byte) string {
-	return strings.Join([]string{
-		"",
+	return strings.Join([]string{"",
 		typ,
 		base64.StdEncoding.EncodeToString(salt),
 		base64.StdEncoding.EncodeToString(hash),

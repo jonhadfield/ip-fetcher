@@ -156,8 +156,7 @@ func InspectDictionary(b []byte) (interface {
 	Content() []byte
 	Offsets() [3]int
 	LitEncoder() *huff0.Scratch
-}, error,
-) {
+}, error) {
 	initPredefined()
 	d, err := loadDict(b)
 	return d, err

@@ -145,6 +145,7 @@ func (c *Command) setup(ctx *Context) {
 }
 
 func (c *Command) Run(cCtx *Context, arguments ...string) (err error) {
+
 	if !c.isRoot {
 		c.setup(cCtx)
 		if err := checkDuplicatedCmds(c); err != nil {

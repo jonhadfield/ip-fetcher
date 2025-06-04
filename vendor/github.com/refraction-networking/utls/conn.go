@@ -1193,7 +1193,9 @@ func (c *Conn) unmarshalHandshakeMessage(data []byte, transcript transcriptHash)
 	return m, nil
 }
 
-var errShutdown = errors.New("tls: protocol is shutdown")
+var (
+	errShutdown = errors.New("tls: protocol is shutdown")
+)
 
 // Write writes data to the connection.
 //

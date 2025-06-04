@@ -82,13 +82,11 @@ const (
 	finishedVerifyLength = 12 // Length of verify_data in a Finished message.
 )
 
-const (
-	masterSecretLabel         = "master secret"
-	extendedMasterSecretLabel = "extended master secret"
-	keyExpansionLabel         = "key expansion"
-	clientFinishedLabel       = "client finished"
-	serverFinishedLabel       = "server finished"
-)
+const masterSecretLabel = "master secret"
+const extendedMasterSecretLabel = "extended master secret"
+const keyExpansionLabel = "key expansion"
+const clientFinishedLabel = "client finished"
+const serverFinishedLabel = "server finished"
 
 func prfAndHashForVersion(version uint16, suite *cipherSuite) (prfFunc, crypto.Hash) {
 	switch version {

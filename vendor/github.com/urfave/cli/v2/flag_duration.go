@@ -52,6 +52,7 @@ func (f *DurationFlag) Apply(set *flag.FlagSet) error {
 	if val, source, found := flagFromEnvOrFile(f.EnvVars, f.FilePath); found {
 		if val != "" {
 			valDuration, err := time.ParseDuration(val)
+
 			if err != nil {
 				return fmt.Errorf("could not parse %q as duration value from %s for flag %s: %s", val, source, f.Name, err)
 			}

@@ -24,7 +24,6 @@ func (i blockType) String() string {
 	}
 	return _blockType_name[_blockType_index[i]:_blockType_index[i+1]]
 }
-
 func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
@@ -45,7 +44,6 @@ func (i literalsBlockType) String() string {
 	}
 	return _literalsBlockType_name[_literalsBlockType_index[i]:_literalsBlockType_index[i+1]]
 }
-
 func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
@@ -66,7 +64,6 @@ func (i seqCompMode) String() string {
 	}
 	return _seqCompMode_name[_seqCompMode_index[i]:_seqCompMode_index[i+1]]
 }
-
 func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.

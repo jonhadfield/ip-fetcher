@@ -30,7 +30,5 @@ func HasBMI() bool {
 	return HasBMI1() && HasBMI2()
 }
 
-var (
-	hasBMI1 bool
-	hasBMI2 bool
-)
+var hasBMI1 bool
+var hasBMI2 bool

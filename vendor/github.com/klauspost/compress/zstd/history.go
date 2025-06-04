@@ -42,7 +42,7 @@ func (h *history) reset() {
 	h.freeHuffDecoder()
 	h.huffTree = nil
 	h.dict = nil
-	// printf("history created: %+v (l: %d, c: %d)", *h, len(h.b), cap(h.b))
+	//printf("history created: %+v (l: %d, c: %d)", *h, len(h.b), cap(h.b))
 }
 
 func (h *history) freeHuffDecoder() {

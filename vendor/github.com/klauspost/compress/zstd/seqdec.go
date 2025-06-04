@@ -132,7 +132,7 @@ func (s *sequenceDecs) execute(seqs []seqVals, hist []byte) error {
 		printf("Execute %d seqs with hist %d, dict %d, literals: %d into %d bytes\n", len(seqs), len(hist), len(s.dict), len(s.literals), s.seqSize)
 	}
 
-	t := len(s.out)
+	var t = len(s.out)
 	out := s.out[:t+s.seqSize]
 
 	for _, seq := range seqs {

@@ -354,7 +354,7 @@ func (b *blockDec) decodeLiterals(in []byte, hist *history) (remain []byte, err 
 		}
 		literals = in[:litRegenSize]
 		in = in[litRegenSize:]
-		// printf("Found %d uncompressed literals\n", litRegenSize)
+		//printf("Found %d uncompressed literals\n", litRegenSize)
 	case literalsBlockRLE:
 		if len(in) < 1 {
 			println("too small: litType:", litType, " sizeFormat", sizeFormat, "remain:", len(in), "want:", 1)
@@ -538,7 +538,7 @@ func (b *blockDec) prepareSequences(in []byte, hist *history) (err error) {
 		return ErrUnexpectedBlockSize
 	}
 
-	seqs := &hist.decoders
+	var seqs = &hist.decoders
 	seqs.nSeqs = nSeqs
 	if nSeqs > 0 {
 		if len(in) < 1 {

@@ -489,10 +489,8 @@ func (e *ECHRejectionError) Error() string {
 	return "tls: server rejected ECH"
 }
 
-var (
-	errMalformedECHExt = errors.New("tls: malformed encrypted_client_hello extension")
-	errInvalidECHExt   = errors.New("tls: client sent invalid encrypted_client_hello extension")
-)
+var errMalformedECHExt = errors.New("tls: malformed encrypted_client_hello extension")
+var errInvalidECHExt = errors.New("tls: client sent invalid encrypted_client_hello extension")
 
 type echExtType uint8
 

@@ -291,6 +291,7 @@ type PubServerHelloMsg struct {
 	SelectedIdentity        uint16
 	Cookie                  []byte  // HelloRetryRequest extension
 	SelectedGroup           CurveID // HelloRetryRequest extension
+
 }
 
 func (shm *PubServerHelloMsg) getPrivatePtr() *serverHelloMsg {
@@ -632,10 +633,8 @@ type KeyShare struct {
 	Data  []byte  `json:"key_exchange,omitempty"` // optional
 }
 
-type (
-	KeyShares []KeyShare
-	keyShares []keyShare
-)
+type KeyShares []KeyShare
+type keyShares []keyShare
 
 func (kss keyShares) ToPublic() []KeyShare {
 	var KSS []KeyShare
@@ -644,7 +643,6 @@ func (kss keyShares) ToPublic() []KeyShare {
 	}
 	return KSS
 }
-
 func (KSS KeyShares) ToPrivate() []keyShare {
 	var kss []keyShare
 	for _, KS := range KSS {
@@ -660,10 +658,8 @@ type PskIdentity struct {
 	ObfuscatedTicketAge uint32 `json:"obfuscated_ticket_age"`
 }
 
-type (
-	PskIdentities []PskIdentity
-	pskIdentities []pskIdentity
-)
+type PskIdentities []PskIdentity
+type pskIdentities []pskIdentity
 
 func (pss pskIdentities) ToPublic() []PskIdentity {
 	var PSS []PskIdentity
@@ -690,8 +686,7 @@ func MakeClientSessionState(
 	CipherSuite uint16,
 	MasterSecret []byte,
 	ServerCertificates []*x509.Certificate,
-	VerifiedChains [][]*x509.Certificate,
-) *ClientSessionState {
+	VerifiedChains [][]*x509.Certificate) *ClientSessionState {
 	// TODO: Add EMS to this constructor in uTLS v2
 	css := &ClientSessionState{
 		session: &SessionState{
@@ -815,10 +810,8 @@ type TicketKey struct {
 	Created time.Time
 }
 
-type (
-	TicketKeys []TicketKey
-	ticketKeys []ticketKey
-)
+type TicketKeys []TicketKey
+type ticketKeys []ticketKey
 
 func TicketKeyFromBytes(b [32]byte) TicketKey {
 	// [uTLS]

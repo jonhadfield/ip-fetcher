@@ -165,6 +165,7 @@ encodeLoop:
 				if s >= sLimit {
 					if debugEncoder {
 						println("repeat ended", s, length)
+
 					}
 					break encodeLoop
 				}
@@ -408,6 +409,7 @@ encodeLoop:
 				if s >= sLimit {
 					if debugEncoder {
 						println("repeat ended", s, length)
+
 					}
 					break encodeLoop
 				}
@@ -675,6 +677,7 @@ encodeLoop:
 				if s >= sLimit {
 					if debugEncoder {
 						println("repeat ended", s, length)
+
 					}
 					break encodeLoop
 				}
@@ -859,7 +862,7 @@ func (e *fastEncoderDict) Reset(d *dict, singleBlock bool) {
 	const shardCnt = tableShardCnt
 	const shardSize = tableShardSize
 	if e.allDirty || dirtyShardCnt > shardCnt*4/6 {
-		// copy(e.table[:], e.dictTable)
+		//copy(e.table[:], e.dictTable)
 		e.table = *(*[tableSize]tableEntry)(e.dictTable)
 		for i := range e.tableShardDirty {
 			e.tableShardDirty[i] = false
@@ -872,7 +875,7 @@ func (e *fastEncoderDict) Reset(d *dict, singleBlock bool) {
 			continue
 		}
 
-		// copy(e.table[i*shardSize:(i+1)*shardSize], e.dictTable[i*shardSize:(i+1)*shardSize])
+		//copy(e.table[i*shardSize:(i+1)*shardSize], e.dictTable[i*shardSize:(i+1)*shardSize])
 		*(*[shardSize]tableEntry)(e.table[i*shardSize:]) = *(*[shardSize]tableEntry)(e.dictTable[i*shardSize:])
 		e.tableShardDirty[i] = false
 	}

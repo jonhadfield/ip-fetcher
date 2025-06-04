@@ -10,23 +10,19 @@ import (
 // Tracking the state of calling conn.loadSession
 type LoadSessionTrackerState int
 
-const (
-	NeverCalled          LoadSessionTrackerState = 0
-	UtlsAboutToCall      LoadSessionTrackerState = 1
-	CalledByULoadSession LoadSessionTrackerState = 2
-	CalledByGoTLS        LoadSessionTrackerState = 3
-)
+const NeverCalled LoadSessionTrackerState = 0
+const UtlsAboutToCall LoadSessionTrackerState = 1
+const CalledByULoadSession LoadSessionTrackerState = 2
+const CalledByGoTLS LoadSessionTrackerState = 3
 
 // The state of the session controller
 type sessionControllerState int
 
-const (
-	NoSession                   sessionControllerState = 0
-	SessionTicketExtInitialized sessionControllerState = 1
-	SessionTicketExtAllSet      sessionControllerState = 2
-	PskExtInitialized           sessionControllerState = 3
-	PskExtAllSet                sessionControllerState = 4
-)
+const NoSession sessionControllerState = 0
+const SessionTicketExtInitialized sessionControllerState = 1
+const SessionTicketExtAllSet sessionControllerState = 2
+const PskExtInitialized sessionControllerState = 3
+const PskExtAllSet sessionControllerState = 4
 
 // sessionController is responsible for managing and controlling all session related states. It manages the lifecycle of the session ticket extension and the psk extension, including initialization, removal if the client hello spec doesn't contain any of them, and setting the prepared state to the client hello.
 //
@@ -75,12 +71,10 @@ func (s *sessionController) isSessionLocked() bool {
 
 type shouldLoadSessionResult int
 
-const (
-	shouldReturn    shouldLoadSessionResult = 0
-	shouldSetTicket shouldLoadSessionResult = 1
-	shouldSetPsk    shouldLoadSessionResult = 2
-	shouldLoad      shouldLoadSessionResult = 3
-)
+const shouldReturn shouldLoadSessionResult = 0
+const shouldSetTicket shouldLoadSessionResult = 1
+const shouldSetPsk shouldLoadSessionResult = 2
+const shouldLoad shouldLoadSessionResult = 3
 
 // shouldLoadSession determines the appropriate action to take when it is time to load the session for the clientHello.
 // There are several possible scenarios:

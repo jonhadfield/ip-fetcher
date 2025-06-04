@@ -8,12 +8,10 @@ import (
 	"github.com/cloudflare/circl/kem"
 )
 
-type (
-	HPKERawPublicKey = []byte
-	HPKE_KEM_ID      = uint16 // RFC 9180
-	HPKE_KDF_ID      = uint16 // RFC 9180
-	HPKE_AEAD_ID     = uint16 // RFC 9180
-)
+type HPKERawPublicKey = []byte
+type HPKE_KEM_ID = uint16  // RFC 9180
+type HPKE_KDF_ID = uint16  // RFC 9180
+type HPKE_AEAD_ID = uint16 // RFC 9180
 
 type HPKESymmetricCipherSuite struct {
 	KdfId  HPKE_KDF_ID

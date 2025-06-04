@@ -482,8 +482,8 @@ func (chs *ClientHelloSpec) FromRaw(raw []byte, ctrlFlags ...bool) error {
 		return errors.New("cannot unmarshal into nil ClientHelloSpec")
 	}
 
-	bluntMimicry := false
-	realPSK := false
+	var bluntMimicry = false
+	var realPSK = false
 	if len(ctrlFlags) > 0 {
 		bluntMimicry = ctrlFlags[0]
 	}
@@ -731,14 +731,10 @@ var utlsSupportedCipherSuites []*cipherSuite
 
 func init() {
 	utlsSupportedCipherSuites = append(cipherSuites, []*cipherSuite{
-		{
-			OLD_TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256, 32, 0, 12, ecdheRSAKA,
-			suiteECDHE | suiteTLS12, nil, nil, aeadChaCha20Poly1305,
-		},
-		{
-			OLD_TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256, 32, 0, 12, ecdheECDSAKA,
-			suiteECDHE | suiteECSign | suiteTLS12, nil, nil, aeadChaCha20Poly1305,
-		},
+		{OLD_TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256, 32, 0, 12, ecdheRSAKA,
+			suiteECDHE | suiteTLS12, nil, nil, aeadChaCha20Poly1305},
+		{OLD_TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256, 32, 0, 12, ecdheECDSAKA,
+			suiteECDHE | suiteECSign | suiteTLS12, nil, nil, aeadChaCha20Poly1305},
 	}...)
 }
 
@@ -749,19 +745,13 @@ func init() {
 // Must be called before establishing any connections.
 func EnableWeakCiphers() {
 	utlsSupportedCipherSuites = append(cipherSuites, []*cipherSuite{
-		{
-			DISABLED_TLS_RSA_WITH_AES_256_CBC_SHA256, 32, 32, 16, rsaKA,
-			suiteTLS12, cipherAES, macSHA256, nil,
-		},
+		{DISABLED_TLS_RSA_WITH_AES_256_CBC_SHA256, 32, 32, 16, rsaKA,
+			suiteTLS12, cipherAES, macSHA256, nil},
 
-		{
-			DISABLED_TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384, 32, 48, 16, ecdheECDSAKA,
-			suiteECDHE | suiteECSign | suiteTLS12 | suiteSHA384, cipherAES, utlsMacSHA384, nil,
-		},
-		{
-			DISABLED_TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384, 32, 48, 16, ecdheRSAKA,
-			suiteECDHE | suiteTLS12 | suiteSHA384, cipherAES, utlsMacSHA384, nil,
-		},
+		{DISABLED_TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384, 32, 48, 16, ecdheECDSAKA,
+			suiteECDHE | suiteECSign | suiteTLS12 | suiteSHA384, cipherAES, utlsMacSHA384, nil},
+		{DISABLED_TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384, 32, 48, 16, ecdheRSAKA,
+			suiteECDHE | suiteTLS12 | suiteSHA384, cipherAES, utlsMacSHA384, nil},
 	}...)
 }
 

@@ -22,11 +22,9 @@ import (
 
 type ClientHelloBuildStatus int
 
-const (
-	NotBuilt     ClientHelloBuildStatus = 0
-	BuildByUtls  ClientHelloBuildStatus = 1
-	BuildByGoTLS ClientHelloBuildStatus = 2
-)
+const NotBuilt ClientHelloBuildStatus = 0
+const BuildByUtls ClientHelloBuildStatus = 1
+const BuildByGoTLS ClientHelloBuildStatus = 2
 
 type UConn struct {
 	*Conn
@@ -493,6 +491,7 @@ func (uconn *UConn) ApplyConfig() error {
 }
 
 func (uconn *UConn) extensionsList() []uint16 {
+
 	outerExts := []uint16{}
 	for _, ext := range uconn.Extensions {
 		buffer := cryptobyte.String(make([]byte, 2000))
@@ -562,6 +561,7 @@ func (uconn *UConn) computeAndUpdateOuterECHExtension(inner *clientHelloMsg, ech
 
 	uconn.Extensions[echExtIdx] = oldExt
 	return nil
+
 }
 
 func (uconn *UConn) MarshalClientHello() error {
@@ -590,6 +590,7 @@ func (uconn *UConn) MarshalClientHello() error {
 	}
 
 	return nil
+
 }
 
 // MarshalClientHelloNoECH marshals ClientHello as if there was no
@@ -768,8 +769,9 @@ func MakeConnWithCompleteHandshake(tcpConn net.Conn, version uint16, cipherSuite
 	cs := cipherSuiteByID(cipherSuite)
 	if cs != nil {
 		// This is mostly borrowed from establishKeys()
-		clientMAC, serverMAC, clientKey, serverKey, clientIV, serverIV := keysFromMasterSecret(version, cs, masterSecret, clientRandom, serverRandom,
-			cs.macLen, cs.keyLen, cs.ivLen)
+		clientMAC, serverMAC, clientKey, serverKey, clientIV, serverIV :=
+			keysFromMasterSecret(version, cs, masterSecret, clientRandom, serverRandom,
+				cs.macLen, cs.keyLen, cs.ivLen)
 
 		var clientCipher, serverCipher interface{}
 		var clientHash, serverHash hash.Hash

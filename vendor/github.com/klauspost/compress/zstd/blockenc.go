@@ -758,7 +758,7 @@ func (b *blockEnc) encode(org []byte, raw, rawAllLits bool) error {
 
 		ofB := ofTT[s.ofCode]
 		wr.flush32() // tablelog max is below 8 for each, so it will fill max 24 bits.
-		// of.encode(ofB)
+		//of.encode(ofB)
 		nbBitsOut := (uint32(of.state) + ofB.deltaNbBits) >> 16
 		dstState := int32(of.state>>(nbBitsOut&15)) + int32(ofB.deltaFindState)
 		wr.addBits16NC(of.state, uint8(nbBitsOut))
@@ -770,7 +770,7 @@ func (b *blockEnc) encode(org []byte, raw, rawAllLits bool) error {
 		extraBitsN := outBits
 
 		mlB := mlTT[s.mlCode]
-		// ml.encode(mlB)
+		//ml.encode(mlB)
 		nbBitsOut = (uint32(ml.state) + mlB.deltaNbBits) >> 16
 		dstState = int32(ml.state>>(nbBitsOut&15)) + int32(mlB.deltaFindState)
 		wr.addBits16NC(ml.state, uint8(nbBitsOut))
@@ -781,7 +781,7 @@ func (b *blockEnc) encode(org []byte, raw, rawAllLits bool) error {
 		extraBitsN += outBits
 
 		llB := llTT[s.llCode]
-		// ll.encode(llB)
+		//ll.encode(llB)
 		nbBitsOut = (uint32(ll.state) + llB.deltaNbBits) >> 16
 		dstState = int32(ll.state>>(nbBitsOut&15)) + int32(llB.deltaFindState)
 		wr.addBits16NC(ll.state, uint8(nbBitsOut))

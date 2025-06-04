@@ -171,6 +171,7 @@ encodeLoop:
 					if s >= sLimit {
 						if debugEncoder {
 							println("repeat ended", s, length)
+
 						}
 						break encodeLoop
 					}
@@ -449,7 +450,7 @@ encodeLoop:
 				if load3232(src, repIndex) == uint32(cv>>(repOff*8)) {
 					// Consider history as well.
 					var seq seq
-					// length := 4 + e.matchlen(s+4+repOff, repIndex+4, src)
+					//length := 4 + e.matchlen(s+4+repOff, repIndex+4, src)
 					length := 4 + int32(matchLen(src[s+4+repOff:], src[repIndex+4:]))
 
 					seq.matchLen = uint32(length - zstdMinMatch)
@@ -483,6 +484,7 @@ encodeLoop:
 					if s >= sLimit {
 						if debugEncoder {
 							println("repeat ended", s, length)
+
 						}
 						break encodeLoop
 					}
@@ -570,7 +572,7 @@ encodeLoop:
 		}
 
 		// Extend the 4-byte match as long as possible.
-		// l := e.matchlen(s+4, t+4, src) + 4
+		//l := e.matchlen(s+4, t+4, src) + 4
 		l := int32(matchLen(src[s+4:], src[t+4:])) + 4
 
 		// Extend backwards
@@ -642,7 +644,7 @@ encodeLoop:
 
 			// We have at least 4 byte match.
 			// No need to check backwards. We come straight from a match
-			// l := 4 + e.matchlen(s+4, o2+4, src)
+			//l := 4 + e.matchlen(s+4, o2+4, src)
 			l := 4 + int32(matchLen(src[s+4:], src[o2+4:]))
 
 			entry := tableEntry{offset: s + e.cur, val: uint32(cv)}
@@ -829,6 +831,7 @@ encodeLoop:
 					if s >= sLimit {
 						if debugEncoder {
 							println("repeat ended", s, length)
+
 						}
 						break encodeLoop
 					}
@@ -1096,7 +1099,7 @@ func (e *doubleFastEncoderDict) Reset(d *dict, singleBlock bool) {
 	}
 
 	if allDirty || dirtyShardCnt > dLongTableShardCnt/2 {
-		// copy(e.longTable[:], e.dictLongTable)
+		//copy(e.longTable[:], e.dictLongTable)
 		e.longTable = *(*[dFastLongTableSize]tableEntry)(e.dictLongTable)
 		for i := range e.longTableShardDirty {
 			e.longTableShardDirty[i] = false

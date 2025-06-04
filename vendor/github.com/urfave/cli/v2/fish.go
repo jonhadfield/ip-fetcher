@@ -138,6 +138,7 @@ func (a *App) prepareFishFlags(flags []Flag, previousCommands []string) []string
 				completion.WriteString(fmt.Sprintf(
 					" -s %s", strings.TrimSpace(opt),
 				))
+
 			}
 		}
 
@@ -187,6 +188,7 @@ func (a *App) fishSubcommandHelper(allCommands []string) string {
 		)
 	}
 	return fishHelper
+
 }
 
 func escapeSingleQuotes(input string) string {

@@ -40,10 +40,8 @@ func (v Version) String() string {
 	return strconv.FormatUint(uint64(v), 10)
 }
 
-var (
-	_ = (encoding.TextMarshaler)(GUID{})
-	_ = (encoding.TextUnmarshaler)(&GUID{})
-)
+var _ = (encoding.TextMarshaler)(GUID{})
+var _ = (encoding.TextUnmarshaler)(&GUID{})
 
 // NewV4 returns a new version 4 (pseudorandom) GUID, as defined by RFC 4122.
 func NewV4() (GUID, error) {
