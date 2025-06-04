@@ -24,6 +24,9 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://www.akamai.com" target="_blank">Akamai</a>
 - <a href="https://www.hetzner.com" target="_blank">Hetzner</a>
 - <a href="https://www.github.com" target="_blank">GitHub</a>
+- <a href="https://www.linode.com" target="_blank">Linode</a>
+- <a href="https://www.oracle.com/cloud/" target="_blank">Oracle Cloud Infrastructure</a>
+- <a href="https://support.apple.com/en-us/HT212614" target="_blank">iCloud Private Relay</a>
 - <a href="https://www.ovhcloud.com" target="_blank">OVHcloud</a>
 - <a href="https://www.zscaler.com" target="_blank">Zscaler</a>
 
