@@ -5,7 +5,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"log"
 	"log/slog"
 	"net"
 	"net/http"
@@ -168,12 +167,12 @@ func Parse(data []byte) ([]Record, error) {
 
 	doHeader, err := csvutil.Header(Entry{}, "csv")
 	if err != nil {
-		log.Fatal(err)
+		return records, err
 	}
 
 	dec, err := csvutil.NewDecoder(csvReader, doHeader...)
 	if err != nil {
-		log.Fatal(err)
+		return records, err
 	}
 
 Loop:
