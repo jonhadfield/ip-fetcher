@@ -3,6 +3,8 @@ package publisher
 import (
 	_ "embed"
 	"fmt"
+	"github.com/jonhadfield/ip-fetcher/providers/alibaba"
+	"github.com/jonhadfield/ip-fetcher/providers/ovh"
 	"strings"
 	"time"
 
@@ -38,6 +40,7 @@ type Provider struct {
 }
 
 var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
+	{syncAlibaba, alibaba.ShortName, alibabaFile, alibaba.FullName, alibaba.HostType, alibaba.SourceURL},
 	{syncAWS, aws.ShortName, awsFile, aws.FullName, aws.HostType, aws.SourceURL},
 	{syncAzure, azure.ShortName, azureFile, azure.FullName, azure.HostType, azure.InitialURL},
 	{syncCloudflare, cloudflare.ShortName, cloudflareFile, cloudflare.FullName, cloudflare.HostType, cloudflare.SourceURL},
@@ -50,6 +53,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{syncHetzner, hetzner.ShortName, hetznerFile, hetzner.FullName, hetzner.HostType, hetzner.SourceURL},
 	{syncLinode, linode.ShortName, linodeFile, linode.FullName, linode.HostType, linode.SourceURL},
 	{syncOCI, oci.ShortName, ociFile, oci.FullName, oci.HostType, oci.SourceURL},
+	{syncOVH, ovh.ShortName, ovhFile, ovh.FullName, ovh.HostType, ovh.SourceURL},
 	{syncZscaler, zscaler.ShortName, zscalerFile, zscaler.FullName, zscaler.HostType, zscaler.SourceURL},
 }
 
