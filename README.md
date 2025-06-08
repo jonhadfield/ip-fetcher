@@ -12,6 +12,7 @@ Please raise an issue if you have any issues or suggestions for new providers.
 
 - <a href="https://www.abuseipdb.com/" target="_blank">AbuseIPDB</a>
 - <a href="https://aws.amazon.com/" target="_blank">AWS</a> (Amazon Web Services)
+- <a href="https://www.alibabacloud.com" target="_blank">Alibaba</a>
 - <a href="https://www.bing.com/webmasters/help/which-crawlers-does-bing-use-8c184ec0" target="_blank">Bingbot</a>
 - <a href="https://www.cloudflare.com/" target="_blank">Cloudflare</a>
 - <a href="https://www.digitalocean.com/" target="_blank">DigitalOcean</a>
@@ -19,6 +20,8 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://cloud.google.com/" target="_blank">GCP</a> (Google Cloud Platform)
 - <a href="https://www.google.com/" target="_blank">Google</a>
 - <a href="https://developers.google.com/search/docs/crawling-indexing/googlebot" target="_blank">Googlebot</a>
+- <a href="https://developers.google.com/search/docs/crawling-indexing/verifying-googlebot" target="_blank">Google Special Crawlers</a>
+- <a href="https://developers.google.com/search/docs/crawling-indexing/verifying-googlebot" target="_blank">Google User-Triggered Fetchers</a>
 - <a href="https://www.maxmind.com" target="_blank">MaxMind GeoIP</a>
 - <a href="https://azure.microsoft.com" target="_blank">Microsoft Azure</a>
 - <a href="https://www.akamai.com" target="_blank">Akamai</a>
@@ -29,6 +32,7 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://support.apple.com/en-us/HT212614" target="_blank">iCloud Private Relay</a>
 - <a href="https://www.ovhcloud.com" target="_blank">OVHcloud</a>
 - <a href="https://www.zscaler.com" target="_blank">Zscaler</a>
+- <a href="https://github.com/jonhadfield/ip-fetcher" target="_blank">Custom URL</a>
 
 ## CLI
 
@@ -49,6 +53,9 @@ ip-fetcher <provider> <options>
 for example:
 - output aws prefixes to the console: `ip-fetcher aws --stdout`
 - save gcp prefixes to a file: `ip-fetcher gcp --file prefixes.json`
+- publish all ranges to a git repository: `ip-fetcher publish`
+- set the `PREFIX_FETCHER_LOG` environment variable to change log verbosity
+  e.g. `PREFIX_FETCHER_LOG=debug ip-fetcher aws --stdout`
 
 ## API
 
