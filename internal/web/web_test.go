@@ -265,3 +265,11 @@ func TestHTTPGet(t *testing.T) {
 	require.Equal(t, "hello world", string(b))
 	require.Equal(t, "World", headers.Get("hello"))
 }
+
+func TestMaskSecrets(t *testing.T) {
+	masked := web.MaskSecrets("token=secret&foo=bar", []string{"secret"})
+	require.Equal(t, "token=******&foo=bar", masked)
+
+	masked = web.MaskSecrets("a=1&b=two", nil)
+	require.Equal(t, "a=1&b=two", masked)
+}

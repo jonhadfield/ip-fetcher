@@ -94,44 +94,31 @@ func castEntries(prefixes []json.RawMessage) ([]IPv4Entry, []IPv6Entry, error) {
 	var ipv4 []IPv4Entry
 	var ipv6 []IPv6Entry
 	for _, pr := range prefixes {
-		var ipv4entry RawIPv4Entry
-
-		var ipv6entry RawIPv6Entry
-
-		// try 4
-		err := json.Unmarshal(pr, &ipv4entry)
-		if err == nil {
-			ipv4Prefix, parseError := netip.ParsePrefix(ipv4entry.IPv4Prefix)
-			if parseError == nil {
-				ipv4 = append(ipv4, IPv4Entry{
-					IPv4Prefix: ipv4Prefix,
-					Service:    ipv4entry.Service,
-					Scope:      ipv4entry.Scope,
-				})
-
-				continue
-			}
+		var e struct {
+			IPv4Prefix string `json:"ipv4Prefix"`
+			IPv6Prefix string `json:"ipv6Prefix"`
+			Service    string `json:"service"`
+			Scope      string `json:"scope"`
 		}
 
-		// try 6
-		err = json.Unmarshal(pr, &ipv6entry)
-		if err == nil {
-			ipv6Prefix, parseError := netip.ParsePrefix(ipv6entry.IPv6Prefix)
-			if parseError != nil {
-				return ipv4, ipv6, parseError
-			}
-
-			ipv6 = append(ipv6, IPv6Entry{
-				IPv6Prefix: ipv6Prefix,
-				Service:    ipv6entry.Service,
-				Scope:      ipv6entry.Scope,
-			})
-
-			continue
-		}
-
-		if err != nil {
+		if err := json.Unmarshal(pr, &e); err != nil {
 			return ipv4, ipv6, err
+		}
+
+		if e.IPv4Prefix != "" {
+			p, err := netip.ParsePrefix(e.IPv4Prefix)
+			if err != nil {
+				return ipv4, ipv6, err
+			}
+			ipv4 = append(ipv4, IPv4Entry{IPv4Prefix: p, Service: e.Service, Scope: e.Scope})
+		}
+
+		if e.IPv6Prefix != "" {
+			p, err := netip.ParsePrefix(e.IPv6Prefix)
+			if err != nil {
+				return ipv4, ipv6, err
+			}
+			ipv6 = append(ipv6, IPv6Entry{IPv6Prefix: p, Service: e.Service, Scope: e.Scope})
 		}
 	}
 
