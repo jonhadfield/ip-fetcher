@@ -31,18 +31,18 @@ func googleCmd() *cli.Command {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "Path",
-				Usage: "where to save the file", Aliases: []string{"p"},
+				Usage: usageWhereToSaveFile, Aliases: []string{"p"},
 			},
 			&cli.BoolFlag{
 				Name:  "stdout",
-				Usage: "write to stdout", Aliases: []string{"s"},
+				Usage: usageWriteToStdout, Aliases: []string{"s"},
 			},
 		},
 		Action: func(c *cli.Context) error {
 			path := strings.TrimSpace(c.String("Path"))
 			if path == "" && !c.Bool("stdout") {
 				_ = cli.ShowSubcommandHelp(c)
-				fmt.Println("\nerror: must specify at least one of stdout and Path")
+				fmt.Println("\n" + errStdoutOrPathRequired)
 				os.Exit(1)
 			}
 
@@ -75,7 +75,7 @@ func googleCmd() *cli.Command {
 					return err
 				}
 
-				_, _ = os.Stderr.WriteString(fmt.Sprintf("Data written to %s\n", out))
+				_, _ = os.Stderr.WriteString(fmt.Sprintf(fmtDataWrittenTo, out))
 			}
 
 			if c.Bool("stdout") {
