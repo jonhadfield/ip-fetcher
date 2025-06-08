@@ -29,7 +29,7 @@ func TestFetch(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, doc.Regions)
 
-	require.Equal(t, 3, len(doc.Regions))
+	require.Len(t, doc.Regions, 3)
 	require.Equal(t, "us-phoenix-1", doc.Regions[0].Region)
 	require.Equal(t, "ap-mumbai-1", doc.Regions[2].Region)
 	require.Equal(t, netip.MustParsePrefix("132.226.184.0/21"), doc.Regions[2].CIDRS[2].CIDR)

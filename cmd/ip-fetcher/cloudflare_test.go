@@ -2,6 +2,7 @@ package main_test
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -36,7 +37,8 @@ func TestCloudflareCmdNoStdOutNoPath(t *testing.T) {
 	cmd.Env = append(os.Environ(), "TEST_EXIT=1")
 
 	err := cmd.Run()
-	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
+	e := &exec.ExitError{}
+	if errors.As(err, &e) {
 		return
 	}
 

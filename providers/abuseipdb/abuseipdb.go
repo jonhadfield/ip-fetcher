@@ -47,7 +47,8 @@ type RawBlacklistDoc struct {
 
 func retryPolicy(ctx context.Context, resp *http.Response, err error) (bool, error) {
 	if err != nil {
-		if v, ok := err.(*url.Error); ok {
+		v := &url.Error{}
+		if errors.As(err, &v) {
 			if redirectsErrorRe.MatchString(v.Error()) {
 				return false, v
 			}
@@ -59,7 +60,8 @@ func retryPolicy(ctx context.Context, resp *http.Response, err error) (bool, err
 			if notTrustedErrorRe.MatchString(v.Error()) {
 				return false, v
 			}
-			if _, ok = v.Err.(x509.UnknownAuthorityError); ok {
+			var unknownAuthorityError x509.UnknownAuthorityError
+			if errors.As(v.Err, &unknownAuthorityError) {
 				return false, v
 			}
 		}
@@ -71,7 +73,8 @@ func retryPolicy(ctx context.Context, resp *http.Response, err error) (bool, err
 		return false, errors.New("exceeded number of allowed blacklist downloads in last 24 hours")
 	}
 
-	if resp.StatusCode == 0 || (resp.StatusCode >= http.StatusInternalServerError && resp.StatusCode != http.StatusNotImplemented) {
+	if resp.StatusCode == 0 ||
+		(resp.StatusCode >= http.StatusInternalServerError && resp.StatusCode != http.StatusNotImplemented) {
 		return true, fmt.Errorf("unexpected HTTP status %s", resp.Status)
 	}
 
@@ -111,24 +114,31 @@ func (a *AbuseIPDB) FetchData() ([]byte, http.Header, int, error) {
 	inHeaders.Add("Key", a.APIKey)
 	inHeaders.Add("Accept", "application/json")
 
-	reqUrl, err := url.Parse(a.APIURL)
+	reqURL, err := url.Parse(a.APIURL)
 	if err != nil {
 		return nil, nil, 0, err
 	}
 
 	if a.ConfidenceMinimum != 0 {
-		q := reqUrl.Query()
+		q := reqURL.Query()
 		q.Add("confidenceMinimum", strconv.Itoa(a.ConfidenceMinimum))
-		reqUrl.RawQuery = q.Encode()
+		reqURL.RawQuery = q.Encode()
 	}
 
 	if a.Limit != 0 {
-		q := reqUrl.Query()
+		q := reqURL.Query()
 		q.Add("limit", strconv.FormatInt(a.Limit, 10))
-		reqUrl.RawQuery = q.Encode()
+		reqURL.RawQuery = q.Encode()
 	}
 
-	blackList, headers, statusCode, err := web.Request(a.Client, reqUrl.String(), http.MethodGet, inHeaders, []string{a.APIKey}, web.DefaultRequestTimeout)
+	blackList, headers, statusCode, err := web.Request(
+		a.Client,
+		reqURL.String(),
+		http.MethodGet,
+		inHeaders,
+		[]string{a.APIKey},
+		web.DefaultRequestTimeout,
+	)
 	if statusCode == 0 && err != nil {
 		return nil, nil, 0, err
 	}

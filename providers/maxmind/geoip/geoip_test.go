@@ -69,7 +69,11 @@ func TestDownloadDBFile(t *testing.T) {
 	ac.Client.RetryMax = 0
 
 	downloadURL := geoip.ConstructDownloadURL(licenseKey, "GeoLite2", "ASN", "CSV")
-	require.Equal(t, "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=test-key&suffix=zip", downloadURL)
+	require.Equal(
+		t,
+		"https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=test-key&suffix=zip",
+		downloadURL,
+	)
 	u, err := url.Parse(downloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -115,7 +119,11 @@ func TestDownloadDBFileMissingTargetDirectory(t *testing.T) {
 	ac.Client.RetryMax = 0
 
 	downloadURL := geoip.ConstructDownloadURL(licenseKey, "GeoLite2", "ASN", "CSV")
-	require.Equal(t, "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=test-key&suffix=zip", downloadURL)
+	require.Equal(
+		t,
+		"https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-ASN-CSV&license_key=test-key&suffix=zip",
+		downloadURL,
+	)
 	u, err := url.Parse(downloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -163,7 +171,11 @@ func TestFetchCityFiles(t *testing.T) {
 	ac.Client.RetryMax = 0
 
 	downloadURL := geoip.ConstructDownloadURL(licenseKey, "GeoLite2", "ciTy", "CSV")
-	require.Equal(t, "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=test-key&suffix=zip", downloadURL)
+	require.Equal(
+		t,
+		"https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=test-key&suffix=zip",
+		downloadURL,
+	)
 	u, err := url.Parse(downloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -202,7 +214,11 @@ func TestFetchCityFiles(t *testing.T) {
 	require.FileExists(t, o.IPv4FilePath)
 	require.Equal(t, filepath.Join(tempDir, "GeoLite2-City-CSV_20220617/GeoLite2-City-Blocks-IPv6.csv"), o.IPv6FilePath)
 	require.FileExists(t, o.IPv6FilePath)
-	require.Equal(t, filepath.Join(tempDir, "GeoLite2-City-CSV_20220617/GeoLite2-City-Locations-en.csv"), o.LocationsFilePath)
+	require.Equal(
+		t,
+		filepath.Join(tempDir, "GeoLite2-City-CSV_20220617/GeoLite2-City-Locations-en.csv"),
+		o.LocationsFilePath,
+	)
 	require.FileExists(t, o.LocationsFilePath)
 }
 
@@ -220,7 +236,11 @@ func TestFetchCityFilesWithoutExtract(t *testing.T) {
 	ac.Client.RetryMax = 0
 
 	downloadURL := geoip.ConstructDownloadURL(licenseKey, "GeoLite2", "ciTy", "CSV")
-	require.Equal(t, "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=test-key&suffix=zip", downloadURL)
+	require.Equal(
+		t,
+		"https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City-CSV&license_key=test-key&suffix=zip",
+		downloadURL,
+	)
 	u, err := url.Parse(downloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
@@ -361,25 +381,57 @@ func TestFetchFiles(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-ASN-CSV_20220617.zip"), paths.ASNCompressedFilePath)
 	require.FileExists(t, paths.ASNCompressedFilePath)
-	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-ASN-CSV_20220617", geoip.GeoLite2ASNBlocksIPv4CSVFileName), paths.ASNIPv4FilePath)
+	require.Equal(
+		t,
+		filepath.Join(ac.Root, "GeoLite2-ASN-CSV_20220617", geoip.GeoLite2ASNBlocksIPv4CSVFileName),
+		paths.ASNIPv4FilePath,
+	)
 	require.FileExists(t, paths.ASNIPv4FilePath)
-	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-ASN-CSV_20220617", geoip.GeoLite2ASNBlocksIPv6CSVFileName), paths.ASNIPv6FilePath)
+	require.Equal(
+		t,
+		filepath.Join(ac.Root, "GeoLite2-ASN-CSV_20220617", geoip.GeoLite2ASNBlocksIPv6CSVFileName),
+		paths.ASNIPv6FilePath,
+	)
 	require.FileExists(t, paths.ASNIPv6FilePath)
 	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-City-CSV_20220617.zip"), paths.CityCompressedFilePath)
 	require.FileExists(t, paths.CityCompressedFilePath)
-	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-City-CSV_20220617", geoip.GeoLite2CityBlocksIPv4CSVFileName), paths.CityIPv4FilePath)
+	require.Equal(
+		t,
+		filepath.Join(ac.Root, "GeoLite2-City-CSV_20220617", geoip.GeoLite2CityBlocksIPv4CSVFileName),
+		paths.CityIPv4FilePath,
+	)
 	require.FileExists(t, paths.CityIPv4FilePath)
-	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-City-CSV_20220617", geoip.GeoLite2CityBlocksIPv6CSVFileName), paths.CityIPv6FilePath)
+	require.Equal(
+		t,
+		filepath.Join(ac.Root, "GeoLite2-City-CSV_20220617", geoip.GeoLite2CityBlocksIPv6CSVFileName),
+		paths.CityIPv6FilePath,
+	)
 	require.FileExists(t, paths.CityIPv6FilePath)
-	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-City-CSV_20220617", geoip.GeoLite2CityLocationsEnCSVFileName), paths.CityLocationsFilePath)
+	require.Equal(
+		t,
+		filepath.Join(ac.Root, "GeoLite2-City-CSV_20220617", geoip.GeoLite2CityLocationsEnCSVFileName),
+		paths.CityLocationsFilePath,
+	)
 	require.FileExists(t, paths.CityLocationsFilePath)
 	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-Country-CSV_20220617.zip"), paths.CountryCompressedFilePath)
 	require.FileExists(t, paths.CountryCompressedFilePath)
-	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-Country-CSV_20220617", geoip.GeoLite2CountryBlocksIPv4CSVFileName), paths.CountryIPv4FilePath)
+	require.Equal(
+		t,
+		filepath.Join(ac.Root, "GeoLite2-Country-CSV_20220617", geoip.GeoLite2CountryBlocksIPv4CSVFileName),
+		paths.CountryIPv4FilePath,
+	)
 	require.FileExists(t, paths.CountryIPv4FilePath)
-	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-Country-CSV_20220617", geoip.GeoLite2CountryBlocksIPv6CSVFileName), paths.CountryIPv6FilePath)
+	require.Equal(
+		t,
+		filepath.Join(ac.Root, "GeoLite2-Country-CSV_20220617", geoip.GeoLite2CountryBlocksIPv6CSVFileName),
+		paths.CountryIPv6FilePath,
+	)
 	require.FileExists(t, paths.CountryIPv6FilePath)
-	require.Equal(t, filepath.Join(ac.Root, "GeoLite2-Country-CSV_20220617", geoip.GeoLite2CountryLocationsEnCSVFileName), paths.CountryLocationsFilePath)
+	require.Equal(
+		t,
+		filepath.Join(ac.Root, "GeoLite2-Country-CSV_20220617", geoip.GeoLite2CountryLocationsEnCSVFileName),
+		paths.CountryLocationsFilePath,
+	)
 	require.FileExists(t, paths.CountryLocationsFilePath)
 }
 

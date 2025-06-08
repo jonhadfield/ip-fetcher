@@ -53,14 +53,14 @@ func urlCmd() *cli.Command {
 			h := _url.New()
 			var requests []_url.Request
 			for _, u := range urlList {
-				var pUrl *url.URL
+				var pURL *url.URL
 				var err error
-				if pUrl, err = url.Parse(u); err != nil {
+				if pURL, err = url.Parse(u); err != nil {
 					continue
 				}
 
 				requests = append(requests, _url.Request{
-					URL:    pUrl,
+					URL:    pURL,
 					Method: "GET",
 				})
 			}
@@ -73,7 +73,7 @@ func urlCmd() *cli.Command {
 					Get(u.Path).
 					Reply(http.StatusOK).
 					File("../../providers/url/testdata/ip-file-1.txt")
-				gock.InterceptClient(h.HttpClient.HTTPClient)
+				gock.InterceptClient(h.HTTPClient.HTTPClient)
 			}
 
 			prefixes, err := h.FetchPrefixesAsText(requests)
@@ -97,7 +97,7 @@ func urlCmd() *cli.Command {
 					return err
 				}
 
-				_, _ = os.Stderr.WriteString(fmt.Sprintf(fmtDataWrittenTo, out))
+				_, _ = fmt.Fprintf(os.Stderr, fmtDataWrittenTo, out)
 			}
 
 			if c.Bool("stdout") {

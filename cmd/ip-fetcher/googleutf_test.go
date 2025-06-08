@@ -2,6 +2,7 @@ package main_test
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"os"
 	"os/exec"
@@ -30,7 +31,8 @@ func TestGoogleutfCmdNoStdOutNoPath(t *testing.T) {
 	cmd := exec.Command(os.Args[0], "-test.run=TestGoogleutfCmdNoStdOutNoPath")
 	cmd.Env = append(os.Environ(), "TEST_EXIT=1")
 	err := cmd.Run()
-	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
+	e := &exec.ExitError{}
+	if errors.As(err, &e) {
 		return
 	}
 	t.Fatalf("process ran with err %v, want exit status 1", err)
@@ -54,7 +56,8 @@ func TestGoogleutfCmdEmptyPath(t *testing.T) {
 	cmd := exec.Command(os.Args[0], "-test.run=TestGoogleutfCmdEmptyPath")
 	cmd.Env = append(os.Environ(), "TEST_EXIT=1")
 	err := cmd.Run()
-	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
+	e := &exec.ExitError{}
+	if errors.As(err, &e) {
 		return
 	}
 	t.Fatalf("process ran with err %v, want exit status 1", err)
