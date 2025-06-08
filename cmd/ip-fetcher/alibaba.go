@@ -52,7 +52,7 @@ func alibabaCmd() *cli.Command {
 
 			if os.Getenv("IP_FETCHER_MOCK_ALIBABA") == "true" {
 				defer gock.Off()
-				urlBase := alibaba.DownloadURL
+				urlBase := fmt.Sprintf(alibaba.DownloadURL, "45102")
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).

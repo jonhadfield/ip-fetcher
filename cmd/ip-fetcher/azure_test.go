@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const testMockAzureDownloadUrl = "https://raw.githubusercontent.com/tobilg/public-cloud-provider-ip-ranges/main/data/providers/azure.json"
+const testMockAzureDownloadURL = "https://raw.githubusercontent.com/tobilg/public-cloud-provider-ip-ranges/main/data/providers/azure.json"
 
 // const testMockAzureDownloadUrl = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_2000000.json"
 
@@ -55,7 +55,7 @@ func TestAzureCmdSavetoPath(t *testing.T) {
 	defer os.Unsetenv("IP_FETCHER_MOCK_AZURE")
 
 	ac := azure.New()
-	ac.DownloadURL = testMockAzureDownloadUrl
+	ac.DownloadURL = testMockAzureDownloadURL
 
 	app := mainpkg.GetApp()
 

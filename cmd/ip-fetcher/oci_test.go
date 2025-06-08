@@ -156,6 +156,6 @@ func TestOCICmdStdOutAndFile(t *testing.T) {
 	os.Stdout = old
 	out := <-outC
 	require.Contains(t, out, "192.29.160.1/21")
-	fmt.Printf("WOOFOO: %s\n", out)
+	fmt.Printf("%s\n", out)
 	require.FileExists(t, filepath.Join(tDir, "public_ip_ranges.json"))
 }

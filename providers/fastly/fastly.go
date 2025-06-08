@@ -67,7 +67,10 @@ type Doc struct {
 	IPv6Prefixes []netip.Prefix `json:"ipv6_addresses" yaml:"ipv6_addresses"`
 }
 
-func castEntries(rd RawDoc) (ipv4 []netip.Prefix, ipv6 []netip.Prefix) {
+func castEntries(rd RawDoc) ([]netip.Prefix, []netip.Prefix) {
+	var ipv4 []netip.Prefix
+	var ipv6 []netip.Prefix
+
 	for _, addr := range rd.IPv4Addresses {
 		ipv4Prefix, parseError := netip.ParsePrefix(addr)
 		if parseError == nil {

@@ -86,13 +86,9 @@ func output(doc gcp.Doc, format string, stdout bool, path string) error {
 
 	switch format {
 	case "csv":
-		if data = csv(doc); err != nil {
-			return err
-		}
+		data = csv(doc)
 	case "lines":
-		if data, err = lines(doc); err != nil {
-			return err
-		}
+		data = lines(doc)
 	case "yaml":
 		if data, err = yaml.Marshal(doc); err != nil {
 			return err
@@ -126,7 +122,7 @@ func output(doc gcp.Doc, format string, stdout bool, path string) error {
 	return err
 }
 
-func lines(in gcp.Doc) ([]byte, error) {
+func lines(in gcp.Doc) []byte {
 	sl := strings.Builder{}
 	for x := range in.IPv4Prefixes {
 		sl.WriteString(fmt.Sprintf("%s\n", in.IPv4Prefixes[x].IPv4Prefix.String()))
@@ -136,7 +132,7 @@ func lines(in gcp.Doc) ([]byte, error) {
 		sl.WriteString(fmt.Sprintf("%s\n", in.IPv6Prefixes[x].IPv6Prefix.String()))
 	}
 
-	return []byte(sl.String()), nil
+	return []byte(sl.String())
 }
 
 func csv(in gcp.Doc) []byte {

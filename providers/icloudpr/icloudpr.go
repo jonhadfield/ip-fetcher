@@ -183,7 +183,6 @@ Loop:
 
 		switch {
 		case errors.Is(err, io.EOF):
-			err = nil
 			break Loop
 		case err == nil:
 			var pcn netip.Prefix

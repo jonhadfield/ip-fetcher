@@ -93,7 +93,7 @@ func fastlyOutput(doc fastly.Doc, format string, stdout bool, path string) error
 
 	switch format {
 	case "csv":
-		if data, err = fastlyCsv(doc); err != nil {
+		if data = fastlyCsv(doc); err != nil {
 			return err
 		}
 	case "lines":
@@ -147,7 +147,7 @@ func fastlyLines(in fastly.Doc) []byte {
 	return []byte(sl.String())
 }
 
-func fastlyCsv(in fastly.Doc) ([]byte, error) {
+func fastlyCsv(in fastly.Doc) []byte {
 	sl := strings.Builder{}
 	for x := range in.IPv4Prefixes {
 		sl.WriteString(fmt.Sprintf("\"%s\"", in.IPv4Prefixes[x].String()))
@@ -167,5 +167,5 @@ func fastlyCsv(in fastly.Doc) ([]byte, error) {
 
 	sl.WriteString("\n")
 
-	return []byte(sl.String()), nil
+	return []byte(sl.String())
 }

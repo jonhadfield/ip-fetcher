@@ -52,7 +52,7 @@ func hetznerCmd() *cli.Command {
 
 			if os.Getenv("IP_FETCHER_MOCK_HETZNER") == "true" {
 				defer gock.Off()
-				urlBase := hetzner.DownloadURL
+				urlBase := fmt.Sprintf(hetzner.DownloadURL, "24940")
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).
