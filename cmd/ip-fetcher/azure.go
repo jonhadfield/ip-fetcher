@@ -88,7 +88,7 @@ func azureCmd() *cli.Command {
 					return err
 				}
 
-				_, _ = os.Stderr.WriteString(fmt.Sprintf(fmtDataWrittenTo, out)) //nolint:forbidigo
+				_, _ = fmt.Fprintf(os.Stderr, fmtDataWrittenTo, out)
 			}
 
 			if c.Bool("stdout") {

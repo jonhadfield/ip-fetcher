@@ -63,7 +63,7 @@ type RawDoc struct {
 }
 
 type Doc struct {
-	IPv4Prefixes []netip.Prefix `json:"addresses" yaml:"addresses"`
+	IPv4Prefixes []netip.Prefix `json:"addresses"      yaml:"addresses"`
 	IPv6Prefixes []netip.Prefix `json:"ipv6_addresses" yaml:"ipv6_addresses"`
 }
 

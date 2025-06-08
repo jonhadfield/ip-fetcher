@@ -15,7 +15,9 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	data := []byte(`{"meta":{"generatedAt":"2022-07-06T21:18:45+00:00"},"data":[{"ipAddress":"104.255.199.22","countryCode":"US","abuseConfidenceScore":100,"lastReportedAt":"2022-07-06T21:17:02+00:00"},{"ipAddress":"59.49.78.12","countryCode":"CN","abuseConfidenceScore":100,"lastReportedAt":"2022-07-06T21:17:02+00:00"}]}`)
+	data := []byte(
+		`{"meta":{"generatedAt":"2022-07-06T21:18:45+00:00"},"data":[{"ipAddress":"104.255.199.22","countryCode":"US","abuseConfidenceScore":100,"lastReportedAt":"2022-07-06T21:17:02+00:00"},{"ipAddress":"59.49.78.12","countryCode":"CN","abuseConfidenceScore":100,"lastReportedAt":"2022-07-06T21:17:02+00:00"}]}`,
+	)
 	doc, err := abuseipdb.Parse(data)
 	require.NoError(t, err)
 	require.Len(t, doc.Records, 2)

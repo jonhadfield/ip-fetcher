@@ -80,7 +80,7 @@ func ociCmd() *cli.Command {
 					return err
 				}
 
-				_, _ = os.Stderr.WriteString(fmt.Sprintf(fmtDataWrittenTo, out))
+				_, _ = fmt.Fprintf(os.Stderr, fmtDataWrittenTo, out)
 			}
 
 			if c.Bool("stdout") {

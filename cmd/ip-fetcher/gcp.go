@@ -118,7 +118,7 @@ func output(doc gcp.Doc, format string, stdout bool, path string) error {
 			return err
 		}
 
-		if _, err = os.Stderr.WriteString(fmt.Sprintf(fmtDataWrittenTo, out)); err != nil {
+		if _, err = fmt.Fprintf(os.Stderr, fmtDataWrittenTo, out); err != nil {
 			return err
 		}
 	}

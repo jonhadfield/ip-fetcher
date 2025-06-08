@@ -2,6 +2,7 @@ package main_test
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"os"
 	"os/exec"
@@ -14,49 +15,51 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const TestUrlAddr = "https://www.example.com/files/ips.txt"
+const TestURLAddr = "https://www.example.com/files/ips.txt"
 
-func UrlCmdNoStdOutNoPath() {
+func URLCmdNoStdOutNoPath() {
 	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "url"})
 }
 
-func TestUrlCmdNoStdOutNoPath(t *testing.T) {
+func TestURLCmdNoStdOutNoPath(t *testing.T) {
 	defer testCleanUp(os.Args)
 
 	if os.Getenv("TEST_EXIT") == "1" {
-		UrlCmdNoStdOutNoPath()
+		URLCmdNoStdOutNoPath()
 		return
 	}
 
-	cmd := exec.Command(os.Args[0], "-test.run=TestUrlCmdNoStdOutNoPath")
+	cmd := exec.Command(os.Args[0], "-test.run=TestURLCmdNoStdOutNoPath")
 	cmd.Env = append(os.Environ(), "TEST_EXIT=1")
 	err := cmd.Run()
-	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
+	e := &exec.ExitError{}
+	if errors.As(err, &e) {
 		return
 	}
 	t.Fatalf("process ran with err %v, want exit status 1", err)
 }
 
-func UrlCmdEmptyPath() {
+func URLCmdEmptyPath() {
 	defer testCleanUp(os.Args)
 
 	app := mainpkg.GetApp()
 	_ = app.Run([]string{"ip-fetcher", "url"})
 }
 
-func TestUrlCmdEmptyPath(t *testing.T) {
+func TestURLCmdEmptyPath(t *testing.T) {
 	defer testCleanUp(os.Args)
 
 	defer os.Unsetenv("TEST_EXIT")
 	if os.Getenv("TEST_EXIT") == "1" {
-		UrlCmdEmptyPath()
+		URLCmdEmptyPath()
 		return
 	}
-	cmd := exec.Command(os.Args[0], "-test.run=TestUrlCmdEmptyPath")
+	cmd := exec.Command(os.Args[0], "-test.run=TestURLCmdEmptyPath")
 	cmd.Env = append(os.Environ(), "TEST_EXIT=1")
 	err := cmd.Run()
-	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
+	e := &exec.ExitError{}
+	if errors.As(err, &e) {
 		return
 	}
 	t.Fatalf("process ran with err %v, want exit status 1", err)
@@ -74,12 +77,12 @@ func TestUrlCmdSavetoPath(t *testing.T) {
 	app := mainpkg.GetApp()
 
 	// with filename only
-	os.Args = []string{"ip-fetcher", "url", "--Path", filepath.Join(tDir, testFile), TestUrlAddr}
+	os.Args = []string{"ip-fetcher", "url", "--Path", filepath.Join(tDir, testFile), TestURLAddr}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, testFile))
 
 	// with directory only
-	os.Args = []string{"ip-fetcher", "url", "--Path", tDir, TestUrlAddr}
+	os.Args = []string{"ip-fetcher", "url", "--Path", tDir, TestURLAddr}
 	require.NoError(t, app.Run(os.Args))
 	require.FileExists(t, filepath.Join(tDir, "ips.txt"))
 }
@@ -103,7 +106,7 @@ func TestUrlCmdStdOut(t *testing.T) {
 	}()
 
 	app := mainpkg.GetApp()
-	os.Args = []string{"ip-fetcher", "url", "--stdout", TestUrlAddr}
+	os.Args = []string{"ip-fetcher", "url", "--stdout", TestURLAddr}
 	require.NoError(t, app.Run(os.Args))
 
 	_ = w.Close()
@@ -133,7 +136,7 @@ func TestUrlCmdStdOutAndFile(t *testing.T) {
 	}()
 
 	app := mainpkg.GetApp()
-	os.Args = []string{"ip-fetcher", "url", "--stdout", "--Path", tDir, TestUrlAddr}
+	os.Args = []string{"ip-fetcher", "url", "--stdout", "--Path", tDir, TestURLAddr}
 	require.NoError(t, app.Run(os.Args))
 
 	_ = w.Close()

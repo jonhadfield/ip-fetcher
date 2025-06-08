@@ -30,5 +30,9 @@ func TestFetch(t *testing.T) {
 	require.NotEmpty(t, doc.IPv4Prefixes)
 	require.Contains(t, doc.IPv4Prefixes, googlesc.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("209.85.238.128/27")})
 	require.NotEmpty(t, doc.IPv6Prefixes)
-	require.Contains(t, doc.IPv6Prefixes, googlesc.IPv6Entry{IPv6Prefix: netip.MustParsePrefix("2001:4860:4801:2092::/64")})
+	require.Contains(
+		t,
+		doc.IPv6Prefixes,
+		googlesc.IPv6Entry{IPv6Prefix: netip.MustParsePrefix("2001:4860:4801:2092::/64")},
+	)
 }

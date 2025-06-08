@@ -35,9 +35,9 @@ func TestFetchUrlData(t *testing.T) {
 		File("testdata/ip-file-1.txt")
 
 	hf := mUrl.New()
-	gock.InterceptClient(hf.HttpClient.HTTPClient)
+	gock.InterceptClient(hf.HTTPClient.HTTPClient)
 
-	response, err := mUrl.FetchURLResponse(hf.HttpClient, "https://www.example.com/files/ips.net")
+	response, err := mUrl.FetchURLResponse(hf.HTTPClient, "https://www.example.com/files/ips.net")
 	require.NoError(t, err)
 	require.NotEmpty(t, response.Data)
 }
@@ -60,7 +60,7 @@ func TestFetchUrls(t *testing.T) {
 		File("testdata/ip-file-1.txt")
 
 	hf := mUrl.New()
-	gock.InterceptClient(hf.HttpClient.HTTPClient)
+	gock.InterceptClient(hf.HTTPClient.HTTPClient)
 	responses, err := hf.Get([]mUrl.Request{
 		{URL: u},
 	})
@@ -80,7 +80,7 @@ func TestFetchUrlsWithFailedRequest(t *testing.T) {
 		File("testdata/ip-file-1.txt")
 
 	hf := mUrl.New()
-	gock.InterceptClient(hf.HttpClient.HTTPClient)
+	gock.InterceptClient(hf.HTTPClient.HTTPClient)
 	responses, err := hf.Get([]mUrl.Request{
 		{
 			URL: u,
