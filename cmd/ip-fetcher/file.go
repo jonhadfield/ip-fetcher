@@ -6,25 +6,15 @@ import (
 )
 
 func SaveFile(i SaveFileInput) (string, error) {
-	pf, err := os.Stat(i.Path)
-	if err != nil {
-		if !os.IsNotExist(err) {
-			return "", err
+	if fi, err := os.Stat(i.Path); err == nil {
+		if fi.IsDir() {
+			i.Path = filepath.Join(i.Path, i.DefaultFileName)
 		}
-	}
-
-	if pf != nil && pf.IsDir() {
-		i.Path = filepath.Join(i.Path, i.DefaultFileName)
-	}
-
-	f, err := os.Create(i.Path)
-	if err != nil {
+	} else if !os.IsNotExist(err) {
 		return "", err
 	}
 
-	defer f.Close()
-
-	if _, err = f.Write(i.Data); err != nil {
+	if err := os.WriteFile(i.Path, i.Data, 0o644); err != nil {
 		return "", err
 	}
 

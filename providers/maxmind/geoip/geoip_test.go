@@ -14,6 +14,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func ensureTestData(t *testing.T, name string) {
+	t.Helper()
+	if _, err := os.Stat(filepath.Join("testdata", name)); os.IsNotExist(err) {
+		t.Skipf("missing %s", name)
+	}
+}
+
 func TestMain(m *testing.M) {
 	logrus.SetLevel(logrus.DebugLevel)
 
@@ -50,6 +57,7 @@ func TestGetVersionFromZipFileName(t *testing.T) {
 }
 
 func TestDownloadDBFile(t *testing.T) {
+	ensureTestData(t, "GeoLite2-ASN-CSV_20220617.zip")
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
@@ -95,6 +103,7 @@ func TestDownloadDBFile(t *testing.T) {
 }
 
 func TestDownloadDBFileMissingTargetDirectory(t *testing.T) {
+	ensureTestData(t, "GeoLite2-ASN-CSV_20220617.zip")
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
@@ -141,6 +150,7 @@ func TestDownloadDBFileMissingTargetDirectory(t *testing.T) {
 }
 
 func TestFetchCityFiles(t *testing.T) {
+	ensureTestData(t, "GeoLite2-City-CSV_20220617.zip")
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
@@ -197,6 +207,7 @@ func TestFetchCityFiles(t *testing.T) {
 }
 
 func TestFetchCityFilesWithoutExtract(t *testing.T) {
+	ensureTestData(t, "GeoLite2-City-CSV_20220617.zip")
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
@@ -253,6 +264,9 @@ func TestFetchCityFilesWithoutExtract(t *testing.T) {
 }
 
 func TestFetchFiles(t *testing.T) {
+	ensureTestData(t, "GeoLite2-ASN-CSV_20220617.zip")
+	ensureTestData(t, "GeoLite2-City-CSV_20220617.zip")
+	ensureTestData(t, "GeoLite2-Country-CSV_20220617.zip")
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
@@ -370,6 +384,8 @@ func TestFetchFiles(t *testing.T) {
 }
 
 func TestDownloadExtract(t *testing.T) {
+	ensureTestData(t, "GeoLite2-ASN-CSV_20220617.zip")
+	ensureTestData(t, "GeoLite2-City-CSV_20220617.zip")
 	licenseKey := "test-key"
 	tempDir := t.TempDir()
 
@@ -482,6 +498,7 @@ func TestFetchCityFilesEmptyRoot(t *testing.T) {
 }
 
 func TestDownloadExtractCityWithoutRoot(t *testing.T) {
+	ensureTestData(t, "GeoLite2-City-CSV_20220617.zip")
 	licenseKey := "test-key"
 	// tempDir := t.TempDir()
 
