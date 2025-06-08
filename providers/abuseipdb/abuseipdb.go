@@ -172,7 +172,8 @@ func Parse(in []byte) (Doc, error) {
 	}
 
 	for _, e := range rawBlackListDoc.Data {
-		lastReported, err := time.Parse(TimeFormat, e.LastReportedAt)
+		var lastReported time.Time
+		lastReported, err = time.Parse(TimeFormat, e.LastReportedAt)
 		if err != nil {
 			return Doc{}, err
 		}

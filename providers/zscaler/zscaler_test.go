@@ -2,7 +2,6 @@ package zscaler_test
 
 import (
 	"fmt"
-	"net/netip"
 	"net/url"
 	"os"
 	"testing"
@@ -13,15 +12,13 @@ import (
 )
 
 func TestProcessData(t *testing.T) {
-	data, err := os.ReadFile("testdata/prefixes.txt")
+	data, err := os.ReadFile("testdata/doc.json")
 	require.NoError(t, err)
 	require.NotEmpty(t, data)
 
-	prefixes, err := zscaler.ProcessData(data)
+	doc, err := zscaler.ProcessData(data)
 	require.NoError(t, err)
-	require.Len(t, prefixes, 2)
-	require.Contains(t, prefixes, netip.MustParsePrefix("198.51.100.0/24"))
-	require.Contains(t, prefixes, netip.MustParsePrefix("2001:db8:2::/48"))
+	require.Equal(t, "87.58.112.0/23", doc.ZscalerNet.ContinentEMEA.CityAmsterdamIII[1].Range)
 }
 
 func TestFetch(t *testing.T) {
@@ -32,14 +29,12 @@ func TestFetch(t *testing.T) {
 	gock.New(urlBase).
 		Get(u.Path).
 		Reply(200).
-		File("testdata/prefixes.txt")
+		File("testdata/doc.json")
 
 	z := zscaler.New()
 	gock.InterceptClient(z.Client.HTTPClient)
 
-	prefixes, err := z.Fetch()
+	doc, err := z.Fetch()
 	require.NoError(t, err)
-	require.Len(t, prefixes, 2)
-	require.Contains(t, prefixes, netip.MustParsePrefix("198.51.100.0/24"))
-	require.Contains(t, prefixes, netip.MustParsePrefix("2001:db8:2::/48"))
+	require.Equal(t, "87.58.112.0/23", doc.ZscalerNet.ContinentEMEA.CityAmsterdamIII[1].Range)
 }

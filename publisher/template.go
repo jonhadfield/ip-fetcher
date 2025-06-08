@@ -3,10 +3,11 @@ package publisher
 import (
 	_ "embed"
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/providers/alibaba"
-	"github.com/jonhadfield/ip-fetcher/providers/ovh"
 	"strings"
 	"time"
+
+	"github.com/jonhadfield/ip-fetcher/providers/alibaba"
+	"github.com/jonhadfield/ip-fetcher/providers/ovh"
 
 	"github.com/jonhadfield/ip-fetcher/providers/hetzner"
 	"github.com/jonhadfield/ip-fetcher/providers/zscaler"
