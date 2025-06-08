@@ -35,11 +35,11 @@ func azureCmd() *cli.Command {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "Path",
-				Usage: "where to save the file", Aliases: []string{"p"}, TakesFile: true,
+				Usage: usageWhereToSaveFile, Aliases: []string{"p"}, TakesFile: true,
 			},
 			&cli.BoolFlag{
 				Name:  "stdout",
-				Usage: "write to stdout", Aliases: []string{"s"},
+				Usage: usageWriteToStdout, Aliases: []string{"s"},
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -47,7 +47,7 @@ func azureCmd() *cli.Command {
 			if path == "" && !c.Bool("stdout") {
 				_ = cli.ShowSubcommandHelp(c)
 
-				fmt.Println("\nerror: must specify at least one of stdout and Path") //nolint:forbidigo
+				fmt.Println("\n" + errStdoutOrPathRequired) //nolint:forbidigo
 
 				os.Exit(1)
 			}
@@ -88,7 +88,7 @@ func azureCmd() *cli.Command {
 					return err
 				}
 
-				_, _ = os.Stderr.WriteString(fmt.Sprintf("Data written to %s\n", out)) //nolint:forbidigo
+				_, _ = os.Stderr.WriteString(fmt.Sprintf(fmtDataWrittenTo, out)) //nolint:forbidigo
 			}
 
 			if c.Bool("stdout") {

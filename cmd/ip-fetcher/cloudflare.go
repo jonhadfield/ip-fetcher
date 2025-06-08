@@ -38,7 +38,7 @@ func cloudflareCmd() *cli.Command {
 			},
 			&cli.BoolFlag{
 				Name:  "stdout",
-				Usage: "write to stdout", Aliases: []string{"s"},
+				Usage: usageWriteToStdout, Aliases: []string{"s"},
 			},
 			&cli.BoolFlag{
 				Name:  "4",
@@ -61,7 +61,7 @@ func cloudflareCmd() *cli.Command {
 				// nolint:errcheck
 				_ = cli.ShowSubcommandHelp(c)
 
-				fmt.Println("\nerror: must specify at least one of stdout and Path")
+				fmt.Println("\n" + errStdoutOrPathRequired)
 				os.Exit(1)
 			}
 

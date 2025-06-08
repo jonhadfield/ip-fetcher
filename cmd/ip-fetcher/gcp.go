@@ -34,11 +34,11 @@ func gcpCmd() *cli.Command {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "Path",
-				Usage: "where to save the file", Aliases: []string{"p"},
+				Usage: usageWhereToSaveFile, Aliases: []string{"p"},
 			},
 			&cli.BoolFlag{
 				Name:  "stdout",
-				Usage: "write to stdout", Aliases: []string{"s"},
+				Usage: usageWriteToStdout, Aliases: []string{"s"},
 			},
 			&cli.StringFlag{
 				Name:  "format",
@@ -49,7 +49,7 @@ func gcpCmd() *cli.Command {
 			path := strings.TrimSpace(c.String("Path"))
 			if path == "" && !c.Bool("stdout") {
 				_ = cli.ShowSubcommandHelp(c)
-				fmt.Println("\nerror: must specify at least one of stdout and Path")
+				fmt.Println("\n" + errStdoutOrPathRequired)
 				os.Exit(1)
 			}
 
@@ -118,7 +118,7 @@ func output(doc gcp.Doc, format string, stdout bool, path string) error {
 			return err
 		}
 
-		if _, err = os.Stderr.WriteString(fmt.Sprintf("Data written to %s\n", out)); err != nil {
+		if _, err = os.Stderr.WriteString(fmt.Sprintf(fmtDataWrittenTo, out)); err != nil {
 			return err
 		}
 	}

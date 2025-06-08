@@ -33,11 +33,11 @@ func ociCmd() *cli.Command {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "Path",
-				Usage: "where to save the file", Aliases: []string{"p"}, TakesFile: true,
+				Usage: usageWhereToSaveFile, Aliases: []string{"p"}, TakesFile: true,
 			},
 			&cli.BoolFlag{
 				Name:  "stdout",
-				Usage: "write to stdout", Aliases: []string{"s"},
+				Usage: usageWriteToStdout, Aliases: []string{"s"},
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -45,7 +45,7 @@ func ociCmd() *cli.Command {
 			if path == "" && !c.Bool("stdout") {
 				_ = cli.ShowSubcommandHelp(c)
 
-				fmt.Println("\nerror: must specify at least one of stdout and Path")
+				fmt.Println("\n" + errStdoutOrPathRequired)
 
 				os.Exit(1)
 			}
@@ -80,7 +80,7 @@ func ociCmd() *cli.Command {
 					return err
 				}
 
-				_, _ = os.Stderr.WriteString(fmt.Sprintf("Data written to %s\n", out))
+				_, _ = os.Stderr.WriteString(fmt.Sprintf(fmtDataWrittenTo, out))
 			}
 
 			if c.Bool("stdout") {
