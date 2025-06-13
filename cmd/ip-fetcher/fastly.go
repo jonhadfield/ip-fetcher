@@ -57,7 +57,7 @@ func fastlyCmd() *cli.Command {
 
 			a := fastly.New()
 
-			if os.Getenv("IP_FETCHER_MOCK_Fastly") == "true" {
+			if os.Getenv("IP_FETCHER_MOCK_FASTLY") == "true" {
 				defer gock.Off()
 				urlBase := fastly.DownloadURL
 				u, _ := url.Parse(urlBase)
