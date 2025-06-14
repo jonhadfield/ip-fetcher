@@ -22,7 +22,7 @@ const (
 	FullName              = "Microsoft Azure"
 	HostType              = "cloud"
 	InitialURL            = "https://www.microsoft.com/en-gb/download/details.aspx?id=56519"
-	WorkaroundDownloadURL = "https://download.microsoft.com/download/7/1/d/71d86715-5596-4529-9b13-da13a5de5b63/ServiceTags_Public_20250519.json"
+	WorkaroundDownloadURL = "https://download.microsoft.com/download/7/1/d/71d86715-5596-4529-9b13-da13a5de5b63/ServiceTags_Public_20250609.json"
 
 	errFailedToDownload = "failed to retrieve azure prefixes initial page"
 )
