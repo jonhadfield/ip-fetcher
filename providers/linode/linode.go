@@ -25,7 +25,7 @@ const (
 	ShortName           = "linode"
 	FullName            = "Linode"
 	HostType            = "hosting"
-	SourceURL           = "-"
+	SourceURL           = "https://www.linode.com/"
 	DownloadURL         = "https://geoip.linode.com/"
 	errFailedToDownload = "failed to download Linode prefixes document "
 )
