@@ -70,7 +70,7 @@ build-docker:
 	docker tag ${LATEST} ip-fetcher:latest
 
 scan-image:
-	trivy image ip-fetcher:latest
+	trivy image ghcr.io/jonhadfield/ip-fetcher:latest
 
 release-docker: build-docker scan-image docker-push
 

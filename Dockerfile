@@ -1,4 +1,4 @@
-FROM --platform=linux/x86_64 golang:1.21 AS base
+FROM --platform=linux/x86_64 golang:latest AS base
 
 WORKDIR /src
 
