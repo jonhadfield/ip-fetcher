@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -21,7 +22,7 @@ func ovhCmd() *cli.Command {
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch OVH prefixes",
-		Usage:     "OVHcloud",
+		Usage:     "OVH",
 		UsageText: "ip-fetcher ovh {--stdout | --Path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
@@ -29,52 +30,57 @@ func ovhCmd() *cli.Command {
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:    "Path",
-				Usage:   usageWhereToSaveFile,
-				Aliases: []string{"p"}, TakesFile: true,
+				Name:  "Path",
+				Usage: usageWhereToSaveFile, Aliases: []string{"p"}, TakesFile: true,
 			},
 			&cli.BoolFlag{
-				Name:    "stdout",
-				Usage:   usageWriteToStdout,
-				Aliases: []string{"s"},
+				Name:  "stdout",
+				Usage: usageWriteToStdout, Aliases: []string{"s"},
 			},
 		},
 		Action: func(c *cli.Context) error {
 			path := strings.TrimSpace(c.String("Path"))
 			if path == "" && !c.Bool("stdout") {
 				_ = cli.ShowSubcommandHelp(c)
+
 				fmt.Println("\n" + errStdoutOrPathRequired)
+
 				os.Exit(1)
 			}
 
-			o := ovh.New()
+			h := ovh.New()
 
-			if os.Getenv("IP_FETCHER_MOCK_OVH") == "true" {
+			if os.Getenv("IP_FETCHER_MOCK_HETZNER") == "true" {
 				defer gock.Off()
-				urlBase := ovh.DownloadURL
+				urlBase := fmt.Sprintf(ovh.DownloadURL, "24940")
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).
 					Reply(http.StatusOK).
-					File("../../providers/ovh/testdata/prefixes.txt")
-				gock.InterceptClient(o.Client.HTTPClient)
+					File("../../providers/ovh/testdata/prefixes.json")
+				gock.InterceptClient(h.Client.HTTPClient)
 			}
 
-			prefixes, err := o.Fetch()
+			data, _, _, err := h.FetchData()
 			if err != nil {
 				return err
 			}
 
-			var lines []string
-			for _, p := range prefixes {
-				lines = append(lines, p.String())
+			var asnIPs ovh.Doc
+			if err = json.Unmarshal(data, &asnIPs); err != nil {
+				return fmt.Errorf("failed to unmarshal OVH Data: %w", err)
 			}
-			data := []byte(strings.Join(lines, "\n"))
 
+			asnPrefixes, err := json.MarshalIndent(asnIPs, "", "  ")
+			if err != nil {
+				return fmt.Errorf("failed to marshal OVH Data: %w", err)
+			}
+
+			var out string
 			if path != "" {
-				out, err := SaveFile(SaveFileInput{
+				out, err = SaveFile(SaveFileInput{
 					Provider:        providerName,
-					Data:            data,
+					Data:            asnPrefixes,
 					Path:            path,
 					DefaultFileName: fileName,
 				})
@@ -85,7 +91,7 @@ func ovhCmd() *cli.Command {
 			}
 
 			if c.Bool("stdout") {
-				fmt.Printf("%s\n", data)
+				fmt.Printf("%s\n", asnPrefixes)
 			}
 
 			return nil
