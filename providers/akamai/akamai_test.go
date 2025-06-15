@@ -2,6 +2,7 @@ package akamai_test
 
 import (
 	"fmt"
+	"net/http"
 	"net/netip"
 	"net/url"
 	"os"
@@ -31,7 +32,7 @@ func TestFetch(t *testing.T) {
 
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/prefixes.txt")
 
 	a := akamai.New()

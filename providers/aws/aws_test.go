@@ -2,6 +2,7 @@ package aws_test
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"testing"
 
@@ -22,7 +23,7 @@ func TestGetIPListETag(t *testing.T) {
 	gock.New(urlBase).
 		Head(u.Path).
 		MatchHeaders(map[string]string{"Accept": "application/json"}).
-		Reply(200).
+		Reply(http.StatusOK).
 		SetHeader("Etag", "0338bd4dc4ba7a050b9124d333376fc7")
 
 	ac := aws.New()
@@ -44,7 +45,7 @@ func TestDownloadIPList(t *testing.T) {
 	gock.New(urlBase).
 		Get(u.Path).
 		MatchHeaders(map[string]string{"Accept": "application/json"}).
-		Reply(200).
+		Reply(http.StatusOK).
 		SetHeader("Etag", "\"cd5e4f079775994d8e49f63ae9a84065\"").
 		File("testdata/ip-ranges.json")
 
@@ -67,7 +68,7 @@ func TestDownloadIPListWithoutQuotedEtag(t *testing.T) {
 	gock.New(urlBase).
 		Get(u.Path).
 		MatchHeaders(map[string]string{"Accept": "application/json"}).
-		Reply(200).
+		Reply(http.StatusOK).
 		SetHeader("Etag", "dd5e4f079775994d8e49f63ae9a84065").
 		File("testdata/ip-ranges.json")
 

@@ -157,7 +157,7 @@ func (a *Azure) Fetch() (Doc, string, error) {
 		return Doc{}, "", err
 	}
 
-	md5 := headers.Get("Content-MD5")
+	md5 := headers.Get(web.ContentMD5Header)
 
 	return doc, md5, nil
 }

@@ -61,7 +61,7 @@ func TestFetchBlackListData(t *testing.T) {
 	gock.New(urlBase).
 		Get(u.Path).
 		MatchHeaders(map[string]string{"Key": "test-key", "Accept": "application/json"}).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/blacklist")
 
 	gock.InterceptClient(ac.Client.HTTPClient)
@@ -84,7 +84,7 @@ func TestFetchBlackList(t *testing.T) {
 	gock.New(urlBase).
 		Get(u.Path).
 		MatchHeaders(map[string]string{"Key": "test-key", "Accept": "application/json"}).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/blacklist")
 
 	gock.InterceptClient(ac.Client.HTTPClient)

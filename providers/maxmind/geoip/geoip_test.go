@@ -2,6 +2,7 @@ package geoip_test
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -85,7 +86,7 @@ func TestDownloadDBFile(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Head(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-ASN-CSV_20220617.zip")
 
 	gock.New(urlBase).
@@ -95,7 +96,7 @@ func TestDownloadDBFile(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/GeoLite2-ASN-CSV_20220617.zip").
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-ASN-CSV_20220617.zip")
 
@@ -135,7 +136,7 @@ func TestDownloadDBFileMissingTargetDirectory(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Head(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-ASN-CSV_20220617.zip")
 
 	gock.New(urlBase).
@@ -145,7 +146,7 @@ func TestDownloadDBFileMissingTargetDirectory(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/GeoLite2-ASN-CSV_20220617.zip").
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-ASN-CSV_20220617.zip")
 
@@ -187,7 +188,7 @@ func TestFetchCityFiles(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Head(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
 
 	gock.New(urlBase).
@@ -197,7 +198,7 @@ func TestFetchCityFiles(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/GeoLite2-City-CSV_20220617.zip").
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
 
@@ -252,7 +253,7 @@ func TestFetchCityFilesWithoutExtract(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Head(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
 
 	gock.New(urlBase).
@@ -262,7 +263,7 @@ func TestFetchCityFilesWithoutExtract(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/GeoLite2-City-CSV_20220617.zip").
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
 
@@ -310,7 +311,7 @@ func TestFetchFiles(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Head(uARN.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-ASN-CSV_20220617.zip")
 
 	gock.New(urlBase).
@@ -320,7 +321,7 @@ func TestFetchFiles(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Get(uARN.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/GeoLite2-ASN-CSV_20220617.zip").
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-ASN-CSV_20220617.zip")
 
@@ -334,7 +335,7 @@ func TestFetchFiles(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Head(uCity.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
 
 	gock.New(urlBase).
@@ -344,7 +345,7 @@ func TestFetchFiles(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Get(uCity.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/GeoLite2-City-CSV_20220617.zip").
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
 
@@ -357,7 +358,7 @@ func TestFetchFiles(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Head(uCountry.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-Country-CSV_20220617.zip")
 
 	gock.New(urlBase).
@@ -367,7 +368,7 @@ func TestFetchFiles(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Get(uCountry.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/GeoLite2-Country-CSV_20220617.zip").
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-Country-CSV_20220617.zip")
 
@@ -460,7 +461,7 @@ func TestDownloadExtract(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Head(uARN.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-ASN-CSV_20220617.zip")
 
 	gock.New(urlBase).
@@ -470,7 +471,7 @@ func TestDownloadExtract(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Get(uARN.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/GeoLite2-ASN-CSV_20220617.zip").
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-ASN-CSV_20220617.zip")
 
@@ -484,7 +485,7 @@ func TestDownloadExtract(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Head(uCity.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
 
 	gock.New(urlBase).
@@ -494,7 +495,7 @@ func TestDownloadExtract(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Get(uCity.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/GeoLite2-City-CSV_20220617.zip").
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
 
@@ -507,7 +508,7 @@ func TestDownloadExtract(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Head(uCountry.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-Country-CSV_20220617.zip")
 
 	gock.New(urlBase).
@@ -517,7 +518,7 @@ func TestDownloadExtract(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Get(uCountry.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/GeoLite2-Country-CSV_20220617.zip").
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-Country-CSV_20220617.zip")
 
@@ -576,7 +577,7 @@ func TestDownloadExtractCityWithoutRoot(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Head(uCity.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
 
 	gock.New(urlBase).
@@ -586,7 +587,7 @@ func TestDownloadExtractCityWithoutRoot(t *testing.T) {
 			"suffix":      "zip",
 		}).
 		Get(uCity.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/GeoLite2-City-CSV_20220617.zip").
 		SetHeader("content-disposition", "attachment; filename=GeoLite2-City-CSV_20220617.zip")
 

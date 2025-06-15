@@ -2,6 +2,7 @@ package cloudflare_test
 
 import (
 	"fmt"
+	"net/http"
 	"net/netip"
 	"net/url"
 	"testing"
@@ -19,7 +20,7 @@ func TestFetch4(t *testing.T) {
 
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/ips-v4")
 
 	cf := cloudflare.New()
@@ -39,7 +40,7 @@ func TestFetch6(t *testing.T) {
 
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/ips-v6")
 
 	cf := cloudflare.New()
@@ -59,7 +60,7 @@ func TestFetch(t *testing.T) {
 
 	gock.New(urlBase6).
 		Get(u6.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/ips-v6")
 
 	u4, err := url.Parse(cloudflare.DefaultIPv4URL)
@@ -68,7 +69,7 @@ func TestFetch(t *testing.T) {
 	urlBase4 := fmt.Sprintf("%s://%s", u4.Scheme, u4.Host)
 	gock.New(urlBase4).
 		Get(u4.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/ips-v4")
 
 	cf := cloudflare.New()

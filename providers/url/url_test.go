@@ -31,7 +31,7 @@ func TestFetchUrlData(t *testing.T) {
 
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/ip-file-1.txt")
 
 	hf := mUrl.New()
@@ -56,7 +56,7 @@ func TestFetchUrls(t *testing.T) {
 
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/ip-file-1.txt")
 
 	hf := mUrl.New()
