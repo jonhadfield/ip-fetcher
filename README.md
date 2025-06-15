@@ -33,6 +33,7 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://www.oracle.com/cloud/" target="_blank">Oracle Cloud Infrastructure</a>
 - <a href="https://support.apple.com/en-us/HT212614" target="_blank">iCloud Private Relay</a>
 - <a href="https://www.ovhcloud.com" target="_blank">OVHcloud</a>
+- <a href="https://www.vultr.com" target="_blank">Vultr</a>
 - <a href="https://www.zscaler.com" target="_blank">Zscaler</a>
 - <a href="https://github.com/jonhadfield/ip-fetcher" target="_blank">Custom URL</a>
 
