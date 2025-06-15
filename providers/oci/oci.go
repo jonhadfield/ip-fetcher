@@ -89,7 +89,9 @@ func (doc *Doc) UnmarshalJSON(p []byte) error {
 		for _, rawCIDR := range rawRegion.CIDRS {
 			var finalCIDR CIDR
 			finalCIDR.Tags = rawCIDR.Tags
+
 			var prefix netip.Prefix
+
 			prefix, err = netip.ParsePrefix(rawCIDR.CIDR)
 			if err != nil {
 				return nil

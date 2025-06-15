@@ -1,0 +1,111 @@
+{
+  "status": "ok",
+  "status_message": "Query was successful",
+  "data": {
+    "ipv4_prefixes": [
+      {
+        "prefix": "45.141.155.0\/24",
+        "ip": "45.141.155.0",
+        "cidr": 24,
+        "roa_status": "None",
+        "name": "M247-LTD-Manchester",
+        "description": "M247 LTD Manchester Infrastructure",
+        "country_code": "GB",
+        "parent": {
+          "prefix": "45.141.152.0\/22",
+          "ip": "45.141.152.0",
+          "cidr": 22,
+          "rir_name": "RIPE",
+          "allocation_status": "unknown"
+        }
+      },
+      {
+        "prefix": "51.179.190.0\/24",
+        "ip": "51.179.190.0",
+        "cidr": 24,
+        "roa_status": "None",
+        "name": "UK-M247-19930901",
+        "description": "M247 UK Ltd",
+        "country_code": "GB",
+        "parent": {
+          "prefix": "51.179.128.0\/18",
+          "ip": "51.179.128.0",
+          "cidr": 18,
+          "rir_name": "RIPE",
+          "allocation_status": "unknown"
+        }
+      },
+      {
+        "prefix": "51.179.190.0\/23",
+        "ip": "51.179.190.0",
+        "cidr": 23,
+        "roa_status": "None",
+        "name": "UK-M247-19930901",
+        "description": "M247 UK Ltd",
+        "country_code": "GB",
+        "parent": {
+          "prefix": "51.179.128.0\/18",
+          "ip": "51.179.128.0",
+          "cidr": 18,
+          "rir_name": "RIPE",
+          "allocation_status": "unknown"
+        }
+      },
+      {
+        "prefix": "51.179.191.0\/24",
+        "ip": "51.179.191.0",
+        "cidr": 24,
+        "roa_status": "None",
+        "name": "UK-M247-19930901",
+        "description": "M247 UK Ltd",
+        "country_code": "GB",
+        "parent": {
+          "prefix": "51.179.128.0\/18",
+          "ip": "51.179.128.0",
+          "cidr": 18,
+          "rir_name": "RIPE",
+          "allocation_status": "unknown"
+        }
+      },
+      {
+        "prefix": "85.199.216.0\/21",
+        "ip": "85.199.216.0",
+        "cidr": 21,
+        "roa_status": "None",
+        "name": "UK-DATASTATE-20050208",
+        "description": "VENUS BUSINESS COMMUNICATIONS LIMITED",
+        "country_code": "GB",
+        "parent": {
+          "prefix": "85.199.216.0\/21",
+          "ip": "85.199.216.0",
+          "cidr": 21,
+          "rir_name": "RIPE",
+          "allocation_status": "unknown"
+        }
+      }
+    ],
+    "ipv6_prefixes": [
+      {
+        "prefix": "2a0a:c201::\/33",
+        "ip": "2a0a:c201::",
+        "cidr": 33,
+        "roa_status": "None",
+        "name": "UK-DATASTATE-20160902",
+        "description": "VENUS BUSINESS COMMUNICATIONS LIMITED",
+        "country_code": "GB",
+        "parent": {
+          "prefix": "2a0a:c200::\/29",
+          "ip": "2a0a:c200::",
+          "cidr": 29,
+          "rir_name": "RIPE",
+          "allocation_status": "unknown"
+        }
+      }
+  ]
+  },
+  "@meta": {
+    "time_zone": "UTC",
+    "api_version": 1,
+    "execution_time": "147.12 ms"
+  }
+}

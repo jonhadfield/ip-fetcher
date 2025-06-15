@@ -50,9 +50,9 @@ func scalewayCmd() *cli.Command {
 
 			h := scaleway.New()
 
-			if os.Getenv("IP_FETCHER_MOCK_HETZNER") == "true" {
+			if os.Getenv("IP_FETCHER_MOCK_SCALEWAY") == "true" {
 				defer gock.Off()
-				urlBase := fmt.Sprintf(scaleway.DownloadURL, "24940")
+				urlBase := fmt.Sprintf(scaleway.DownloadURL, "12876")
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).

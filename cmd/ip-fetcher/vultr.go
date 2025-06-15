@@ -8,22 +8,22 @@ import (
 	"os"
 	"strings"
 
-	"github.com/jonhadfield/ip-fetcher/providers/ovh"
+	"github.com/jonhadfield/ip-fetcher/providers/vultr"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/h2non/gock.v1"
 )
 
-func ovhCmd() *cli.Command {
+func vultrCmd() *cli.Command {
 	const (
-		providerName = "ovh"
+		providerName = "vultr"
 		fileName     = "prefixes.txt"
 	)
 
 	return &cli.Command{
 		Name:      providerName,
-		HelpName:  "- fetch OVH prefixes",
-		Usage:     "OVH",
-		UsageText: "ip-fetcher ovh {--stdout | --Path FILE}",
+		HelpName:  "- fetch Vultr prefixes",
+		Usage:     "Vultr",
+		UsageText: "ip-fetcher vultr {--stdout | --Path FILE}",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 			return err
@@ -48,16 +48,16 @@ func ovhCmd() *cli.Command {
 				os.Exit(1)
 			}
 
-			h := ovh.New()
+			h := vultr.New()
 
-			if os.Getenv("IP_FETCHER_MOCK_OVH") == "true" {
+			if os.Getenv("IP_FETCHER_MOCK_HETZNER") == "true" {
 				defer gock.Off()
-				urlBase := fmt.Sprintf(ovh.DownloadURL, "16276")
+				urlBase := fmt.Sprintf(vultr.DownloadURL, "24940")
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).
 					Reply(http.StatusOK).
-					File("../../providers/ovh/testdata/prefixes.json")
+					File("../../providers/vultr/testdata/prefixes.json")
 				gock.InterceptClient(h.Client.HTTPClient)
 			}
 
@@ -66,14 +66,14 @@ func ovhCmd() *cli.Command {
 				return err
 			}
 
-			var asnIPs ovh.Doc
+			var asnIPs vultr.Doc
 			if err = json.Unmarshal(data, &asnIPs); err != nil {
-				return fmt.Errorf("failed to unmarshal OVH Data: %w", err)
+				return fmt.Errorf("failed to unmarshal Vultr Data: %w", err)
 			}
 
 			asnPrefixes, err := json.MarshalIndent(asnIPs, "", "  ")
 			if err != nil {
-				return fmt.Errorf("failed to marshal OVH Data: %w", err)
+				return fmt.Errorf("failed to marshal Vultr Data: %w", err)
 			}
 
 			var out string

@@ -67,6 +67,7 @@ func GetApp() *cli.App {
 		publishCmd(),
 		scalewayCmd(),
 		urlCmd(),
+		vultrCmd(),
 		zscalerCmd(),
 	}
 

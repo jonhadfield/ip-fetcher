@@ -12,20 +12,23 @@ import (
 )
 
 func TestFetch(t *testing.T) {
-	u, err := url.Parse(ovh.DownloadURL)
+	defer gock.Off()
+
+	cURL := fmt.Sprintf(ovh.DownloadURL, ovh.ASNs[0])
+	u, err := url.Parse(cURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
 	gock.New(urlBase).
 		Get(u.Path).
 		Reply(200).
-		File("testdata/prefixes.txt")
+		File("testdata/prefixes.json")
 
 	o := ovh.New()
 	gock.InterceptClient(o.Client.HTTPClient)
 
-	prefixes, err := o.Fetch()
+	doc, err := o.Fetch()
 	require.NoError(t, err)
-	require.Contains(t, prefixes, netip.MustParsePrefix("192.0.2.0/24"))
-	require.Contains(t, prefixes, netip.MustParsePrefix("2001:db8::/32"))
+	require.Contains(t, doc.IPv4Prefixes, netip.MustParsePrefix("192.0.2.0/24"))
+	require.Contains(t, doc.IPv6Prefixes, netip.MustParsePrefix("2001:db8::/32"))
 }

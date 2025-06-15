@@ -222,7 +222,7 @@ func UnzipFiles(src, dest string) error {
 		}
 	}()
 
-	if err = os.MkdirAll(dest, 0o755); err != nil {
+	if err = os.MkdirAll(dest, 0o750); err != nil {
 		return err
 	}
 
@@ -248,26 +248,27 @@ func UnzipFiles(src, dest string) error {
 		}
 
 		if f.FileInfo().IsDir() {
-			if err = os.MkdirAll(path, 0o755); err != nil {
+			if err = os.MkdirAll(path, 0o750); err != nil {
 				return err
 			}
 		} else {
-			if err = os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+			if err = os.MkdirAll(filepath.Dir(path), 0o750); err != nil {
 				return err
 			}
 
-			f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+			var f1 *os.File
+			f1, err = os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 			if err != nil {
 				return err
 			}
 
 			defer func() {
-				if err = f.Close(); err != nil {
+				if err = f1.Close(); err != nil {
 					panic(err)
 				}
 			}()
 
-			_, err = io.Copy(f, rc)
+			_, err = io.Copy(f1, rc)
 			if err != nil {
 				return err
 			}

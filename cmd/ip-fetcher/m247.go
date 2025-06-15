@@ -3,11 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/providers/m247"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
+
+	"github.com/jonhadfield/ip-fetcher/providers/m247"
 
 	"github.com/urfave/cli/v2"
 	"gopkg.in/h2non/gock.v1"
@@ -50,9 +51,9 @@ func m247Cmd() *cli.Command {
 
 			h := m247.New()
 
-			if os.Getenv("IP_FETCHER_MOCK_HETZNER") == "true" {
+			if os.Getenv("IP_FETCHER_MOCK_M247") == "true" {
 				defer gock.Off()
-				urlBase := fmt.Sprintf(m247.DownloadURL, "24940")
+				urlBase := fmt.Sprintf(m247.DownloadURL, "16247")
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).

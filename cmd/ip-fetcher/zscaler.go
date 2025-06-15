@@ -7,6 +7,8 @@ import (
 	"os"
 	"strings"
 
+	output2 "github.com/jonhadfield/ip-fetcher/internal/output"
+
 	"github.com/jonhadfield/ip-fetcher/providers/zscaler"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/h2non/gock.v1"
@@ -54,7 +56,7 @@ func zscalerCmd() *cli.Command {
 				gock.New(urlBase).
 					Get(u.Path).
 					Reply(http.StatusOK).
-					File("../../providers/zscaler/testdata/prefixes.txt")
+					File("../../providers/zscaler/testdata/doc.json")
 				gock.InterceptClient(z.Client.HTTPClient)
 			}
 
@@ -64,7 +66,8 @@ func zscalerCmd() *cli.Command {
 			}
 
 			if path != "" {
-				out, err := SaveFile(SaveFileInput{
+				var out string
+				out, err = SaveFile(SaveFileInput{
 					Provider:        providerName,
 					Data:            data,
 					Path:            path,
@@ -77,7 +80,9 @@ func zscalerCmd() *cli.Command {
 			}
 
 			if c.Bool("stdout") {
-				fmt.Printf("%s\n", data)
+				if err = output2.PrettyPrintJSON(data); err != nil {
+					return fmt.Errorf("error printing data to stdout: %w", err)
+				}
 			}
 
 			return nil

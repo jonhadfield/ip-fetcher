@@ -3,10 +3,12 @@ package publisher
 import (
 	_ "embed"
 	"fmt"
-	"github.com/jonhadfield/ip-fetcher/providers/m247"
-	"github.com/jonhadfield/ip-fetcher/providers/scaleway"
 	"strings"
 	"time"
+
+	"github.com/jonhadfield/ip-fetcher/providers/m247"
+	"github.com/jonhadfield/ip-fetcher/providers/scaleway"
+	"github.com/jonhadfield/ip-fetcher/providers/vultr"
 
 	"github.com/jonhadfield/ip-fetcher/providers/alibaba"
 	"github.com/jonhadfield/ip-fetcher/providers/ovh"
@@ -63,10 +65,10 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{syncHetzner, hetzner.ShortName, hetznerFile, hetzner.FullName, hetzner.HostType, hetzner.SourceURL},
 	{syncLinode, linode.ShortName, linodeFile, linode.FullName, linode.HostType, linode.SourceURL},
 	{syncM247, m247.ShortName, m247File, m247.FullName, m247.HostType, m247.SourceURL},
-
 	{syncOCI, oci.ShortName, ociFile, oci.FullName, oci.HostType, oci.SourceURL},
 	{syncOVH, ovh.ShortName, ovhFile, ovh.FullName, ovh.HostType, ovh.SourceURL},
 	{syncScaleway, scaleway.ShortName, scalewayFile, scaleway.FullName, scaleway.HostType, scaleway.SourceURL},
+	{syncVultr, vultr.ShortName, vultrFile, vultr.FullName, vultr.HostType, vultr.SourceURL},
 	{syncZscaler, zscaler.ShortName, zscalerFile, zscaler.FullName, zscaler.HostType, zscaler.SourceURL},
 }
 

@@ -3,7 +3,6 @@ package main_test
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -114,7 +113,7 @@ func TestCloudflareCmdStdOut(t *testing.T) {
 	_ = w.Close()
 	os.Stdout = old
 	out := <-outC
-	fmt.Printf("%#+v\n", out)
+
 	require.Contains(t, out, "131.0.72.1/22")
 	require.Contains(t, out, "2a06:98c0::/29")
 	require.NoFileExists(t, tDir, "ips-v4")

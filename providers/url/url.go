@@ -19,21 +19,6 @@ import (
 	"github.com/jonhadfield/ip-fetcher/internal/web"
 )
 
-func NewList() HTTPFiles {
-	pflog.SetLogLevel()
-
-	c := web.NewHTTPClient()
-
-	if logrus.GetLevel() < logrus.DebugLevel {
-		c.Logger = nil
-	}
-
-	return HTTPFiles{
-		URLs:   []string{},
-		Client: c,
-	}
-}
-
 type Option func(*Client)
 
 type Client struct {
@@ -68,6 +53,21 @@ type HTTPFiles struct {
 	Client *retryablehttp.Client
 	URLs   []string
 	Debug  bool
+}
+
+func NewList() HTTPFiles {
+	pflog.SetLogLevel()
+
+	c := web.NewHTTPClient()
+
+	if logrus.GetLevel() < logrus.DebugLevel {
+		c.Logger = nil
+	}
+
+	return HTTPFiles{
+		URLs:   []string{},
+		Client: c,
+	}
 }
 
 type HTTPFile struct {

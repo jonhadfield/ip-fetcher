@@ -1,0 +1,367 @@
+{
+  "status": "ok",
+    "status_message": "Query was successful",
+    "data": {
+      "ipv4_prefixes": [
+        {
+          "prefix": "51.15.0.0/16",
+          "ip": "51.15.0.0",
+          "cidr": 16,
+          "roa_status": "None",
+          "name": "SCALEWAY",
+          "description": "Scaleway - Paris, France",
+          "country_code": "FR",
+          "parent": {
+            "prefix": "51.15.0.0/16",
+            "ip": "51.15.0.0",
+            "cidr": 16,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "51.15.0.0/17",
+          "ip": "51.15.0.0",
+          "cidr": 17,
+          "roa_status": "None",
+          "name": "SCALEWAY-AMS",
+          "description": "Scaleway - Amsterdam, Netherlands",
+          "country_code": "NL",
+          "parent": {
+            "prefix": "51.15.0.0/16",
+            "ip": "51.15.0.0",
+            "cidr": 16,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "51.158.0.0/15",
+          "ip": "51.158.0.0",
+          "cidr": 15,
+          "roa_status": "None",
+          "name": "SCALEWAY",
+          "description": "Scaleway",
+          "country_code": "FR",
+          "parent": {
+            "prefix": "51.158.0.0/15",
+            "ip": "51.158.0.0",
+            "cidr": 15,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "51.158.128.0/17",
+          "ip": "51.158.128.0",
+          "cidr": 17,
+          "roa_status": "None",
+          "name": "SCALEWAY-AMS",
+          "description": "Scaleway - Amsterdam, Netherlands",
+          "country_code": "NL",
+          "parent": {
+            "prefix": "51.158.0.0/15",
+            "ip": "51.158.0.0",
+            "cidr": 15,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "51.159.224.0/19",
+          "ip": "51.159.224.0",
+          "cidr": 19,
+          "roa_status": "None",
+          "name": "SCALEWAY-AMS",
+          "description": "Scaleway - Amsterdam, Netherlands",
+          "country_code": "NL",
+          "parent": {
+            "prefix": "51.158.0.0/15",
+            "ip": "51.158.0.0",
+            "cidr": 15,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "62.4.0.0/19",
+          "ip": "62.4.0.0",
+          "cidr": 19,
+          "roa_status": "Valid",
+          "name": "FR-SCALEWAY-970513",
+          "description": "SCALEWAY S.A.S.",
+          "country_code": "FR",
+          "parent": {
+            "prefix": "62.4.0.0/19",
+            "ip": "62.4.0.0",
+            "cidr": 19,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "62.210.0.0/16",
+          "ip": "62.210.0.0",
+          "cidr": 16,
+          "roa_status": "Valid",
+          "name": "FR-SCALEWAY-20001026",
+          "description": "SCALEWAY S.A.S.",
+          "country_code": "FR",
+          "parent": {
+            "prefix": "62.210.0.0/16",
+            "ip": "62.210.0.0",
+            "cidr": 16,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "151.115.0.0/18",
+          "ip": "151.115.0.0",
+          "cidr": 18,
+          "roa_status": "None",
+          "name": "SCALEWAY-WAW1",
+          "description": "Scaleway - Warsaw, Poland",
+          "country_code": "PL",
+          "parent": {
+            "prefix": "151.115.0.0/16",
+            "ip": "151.115.0.0",
+            "cidr": 16,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "151.115.64.0/18",
+          "ip": "151.115.64.0",
+          "cidr": 18,
+          "roa_status": "None",
+          "name": "SCALEWAY-WAW2",
+          "description": "Scaleway - Warsaw, Poland",
+          "country_code": "PL",
+          "parent": {
+            "prefix": "151.115.0.0/16",
+            "ip": "151.115.0.0",
+            "cidr": 16,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "151.115.128.0/19",
+          "ip": "151.115.128.0",
+          "cidr": 19,
+          "roa_status": "None",
+          "name": "SCALEWAY-PAR4",
+          "description": "Scaleway - Paris, France",
+          "country_code": "FR",
+          "parent": {
+            "prefix": "151.115.0.0/16",
+            "ip": "151.115.0.0",
+            "cidr": 16,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "163.172.0.0/16",
+          "ip": "163.172.0.0",
+          "cidr": 16,
+          "roa_status": "None",
+          "name": "SCALEWAY-DEDIBOX",
+          "description": "Scaleway Dedibox - Paris, France",
+          "country_code": "FR",
+          "parent": {
+            "prefix": "163.172.0.0/16",
+            "ip": "163.172.0.0",
+            "cidr": 16,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "163.172.208.0/20",
+          "ip": "163.172.208.0",
+          "cidr": 20,
+          "roa_status": "None",
+          "name": "SCALEWAY-AMS",
+          "description": "Scaleway - Amsterdam, Netherlands",
+          "country_code": "NL",
+          "parent": {
+            "prefix": "163.172.0.0/16",
+            "ip": "163.172.0.0",
+            "cidr": 16,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "195.154.0.0/16",
+          "ip": "195.154.0.0",
+          "cidr": 16,
+          "roa_status": "Valid",
+          "name": "FR-SCALEWAY-960827",
+          "description": "SCALEWAY S.A.S.",
+          "country_code": "FR",
+          "parent": {
+            "prefix": "195.154.0.0/16",
+            "ip": "195.154.0.0",
+            "cidr": 16,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "212.47.224.0/19",
+          "ip": "212.47.224.0",
+          "cidr": 19,
+          "roa_status": "Valid",
+          "name": "FR-SCALEWAY-19991022",
+          "description": "SCALEWAY S.A.S.",
+          "country_code": "FR",
+          "parent": {
+            "prefix": "212.47.224.0/19",
+            "ip": "212.47.224.0",
+            "cidr": 19,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "212.83.128.0/19",
+          "ip": "212.83.128.0",
+          "cidr": 19,
+          "roa_status": "Valid",
+          "name": "SCALEWAY-DEDIBOX-IPFO",
+          "description": "Scaleway Dedibox IPFO",
+          "country_code": "FR",
+          "parent": {
+            "prefix": "212.83.128.0/19",
+            "ip": "212.83.128.0",
+            "cidr": 19,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "212.83.160.0/19",
+          "ip": "212.83.160.0",
+          "cidr": 19,
+          "roa_status": "Valid",
+          "name": "SCALEWAY-DEDIBOX-IPFO",
+          "description": "Scaleway Dedibox IPFO",
+          "country_code": "FR",
+          "parent": {
+            "prefix": "212.83.160.0/19",
+            "ip": "212.83.160.0",
+            "cidr": 19,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "212.129.0.0/18",
+          "ip": "212.129.0.0",
+          "cidr": 18,
+          "roa_status": "Valid",
+          "name": "FR-SCALEWAY-990315",
+          "description": "SCALEWAY S.A.S.",
+          "country_code": "FR",
+          "parent": {
+            "prefix": "212.129.0.0/18",
+            "ip": "212.129.0.0",
+            "cidr": 18,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        }
+      ],
+      "ipv6_prefixes": [
+        {
+          "prefix": "2001:bc8::/32",
+          "ip": "2001:bc8::",
+          "cidr": 32,
+          "roa_status": "Valid",
+          "name": null,
+          "description": null,
+          "country_code": "FR",
+          "parent": {
+            "prefix": "2001:bc8::/32",
+            "ip": "2001:bc8::",
+            "cidr": 32,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "2001:bc8:1400::/38",
+          "ip": "2001:bc8:1400::",
+          "cidr": 38,
+          "roa_status": "Valid",
+          "name": null,
+          "description": null,
+          "country_code": "FR",
+          "parent": {
+            "prefix": "2001:bc8::/32",
+            "ip": "2001:bc8::",
+            "cidr": 32,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "2001:bc8:1800::/38",
+          "ip": "2001:bc8:1800::",
+          "cidr": 38,
+          "roa_status": "Valid",
+          "name": "Scaleway",
+          "description": "Scaleway",
+          "country_code": "NL",
+          "parent": {
+            "prefix": "2001:bc8::/32",
+            "ip": "2001:bc8::",
+            "cidr": 32,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "2001:bc8:1c00::/38",
+          "ip": "2001:bc8:1c00::",
+          "cidr": 38,
+          "roa_status": "Valid",
+          "name": "Scaleway",
+          "description": "Scaleway",
+          "country_code": "PL",
+          "parent": {
+            "prefix": "2001:bc8::/32",
+            "ip": "2001:bc8::",
+            "cidr": 32,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        },
+        {
+          "prefix": "2001:bc8:5000::/38",
+          "ip": "2001:bc8:5000::",
+          "cidr": 38,
+          "roa_status": "Valid",
+          "name": null,
+          "description": null,
+          "country_code": "FR",
+          "parent": {
+            "prefix": "2001:bc8::/32",
+            "ip": "2001:bc8::",
+            "cidr": 32,
+            "rir_name": "RIPE",
+            "allocation_status": "unknown"
+          }
+        }
+      ]
+    },
+    "@meta": {
+      "time_zone": "UTC",
+      "api_version": 1,
+      "execution_time": "27.07 ms"
+    }
+  }

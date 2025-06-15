@@ -72,7 +72,8 @@ func githubCmd() *cli.Command {
 			data := []byte(strings.Join(lines, "\n"))
 
 			if path != "" {
-				out, err := SaveFile(SaveFileInput{
+				var out string
+				out, err = SaveFile(SaveFileInput{
 					Provider:        providerName,
 					Data:            data,
 					Path:            path,
