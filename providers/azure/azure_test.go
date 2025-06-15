@@ -8,7 +8,9 @@ import (
 
 	"github.com/jonhadfield/ip-fetcher/providers/azure"
 
+	"github.com/jonhadfield/ip-fetcher/internal/web"
 	"github.com/stretchr/testify/require"
+
 	"gopkg.in/h2non/gock.v1"
 )
 
