@@ -2,6 +2,7 @@ package icloudpr_test
 
 import (
 	"fmt"
+	"net/http"
 	"net/netip"
 	"net/url"
 	"testing"
@@ -23,8 +24,8 @@ func TestFetchData(t *testing.T) {
 
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(200).
-		SetHeader("etag", etag).
+		Reply(http.StatusOK).
+		SetHeader(web.EtagHeader, etag).
 		SetHeader(web.LastModifiedHeader, lastModified).
 		File("testdata/egress-ip-ranges.csv")
 
@@ -35,11 +36,11 @@ func TestFetchData(t *testing.T) {
 	data, headers, status, err := ld.FetchData()
 	require.NoError(t, err)
 	require.NotEmpty(t, data)
-	require.Len(t, headers.Values("etag"), 1)
-	require.Equal(t, etag, headers.Values("etag")[0])
+	require.Len(t, headers.Values(web.EtagHeader), 1)
+	require.Equal(t, etag, headers.Values(web.EtagHeader)[0])
 	require.Len(t, headers.Values(web.LastModifiedHeader), 1)
 	require.Equal(t, lastModified, headers.Values(web.LastModifiedHeader)[0])
-	require.Equal(t, 200, status)
+	require.Equal(t, http.StatusOK, status)
 	require.Len(t, data, 323)
 }
 
@@ -54,8 +55,8 @@ func TestFetch(t *testing.T) {
 	gock.New(urlBase).
 		Get(u.Path).
 		Times(2).
-		Reply(200).
-		SetHeader("etag", etag).
+		Reply(http.StatusOK).
+		SetHeader(web.EtagHeader, etag).
 		SetHeader(web.LastModifiedHeader, lastModified).
 		File("testdata/egress-ip-ranges.csv")
 
@@ -67,11 +68,11 @@ func TestFetch(t *testing.T) {
 	data, headers, status, err := ld.FetchData()
 	require.NoError(t, err)
 	require.NotEmpty(t, data)
-	require.Len(t, headers.Values("etag"), 1)
-	require.Equal(t, etag, headers.Values("etag")[0])
+	require.Len(t, headers.Values(web.EtagHeader), 1)
+	require.Equal(t, etag, headers.Values(web.EtagHeader)[0])
 	require.Len(t, headers.Values(web.LastModifiedHeader), 1)
 	require.Equal(t, lastModified, headers.Values(web.LastModifiedHeader)[0])
-	require.Equal(t, 200, status)
+	require.Equal(t, http.StatusOK, status)
 	require.Len(t, data, 323)
 
 	doc, err := ld.Fetch()

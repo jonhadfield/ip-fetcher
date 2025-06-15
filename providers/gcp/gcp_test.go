@@ -2,6 +2,7 @@ package gcp_test
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"testing"
@@ -19,7 +20,7 @@ func TestFetch(t *testing.T) {
 
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		// SetHeader("Etag", "cd5e4f079775994d8e49f63ae9a84065").
 		File("testdata/cloud.json")
 

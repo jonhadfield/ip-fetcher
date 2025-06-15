@@ -85,7 +85,7 @@ func (a *DigitalOcean) Fetch() (Doc, error) {
 
 	var etag string
 
-	etags := headers.Values("etag")
+	etags := headers.Values(web.EtagHeader)
 	if len(etags) != 0 {
 		etag = etags[0]
 	}

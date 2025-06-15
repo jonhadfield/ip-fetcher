@@ -2,6 +2,7 @@ package azure_test
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"testing"
 
@@ -29,7 +30,7 @@ const (
 // 	gock.New(urlBase).
 // 		MatchParam("id", "00000").
 // 		Get(u.Path).
-// 		Reply(200).
+// 		Reply(http.StatusOK).
 // 		File(testInitialFilePath)
 //
 // 	ac := New()
@@ -54,10 +55,10 @@ func TestFetchRaw(t *testing.T) {
 	exTimeStamp := "Tue, 13 Dec 2022 06:50:50 GMT"
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(200).
-		AddHeader("Last-Modified", exTimeStamp).
-		AddHeader("Content-MD5", exMD5).
-		AddHeader("ETag", exEtag).
+		Reply(http.StatusOK).
+		AddHeader(web.LastModifiedHeader, exTimeStamp).
+		AddHeader(web.ContentMD5Header, exMD5).
+		AddHeader(web.ETagHeader, exEtag).
 		File(testDataFilePath)
 
 	ac := azure.New()
@@ -66,8 +67,8 @@ func TestFetchRaw(t *testing.T) {
 
 	data, header, status, err := ac.FetchData()
 	require.NoError(t, err)
-	require.Equal(t, 200, status)
-	require.Equal(t, exMD5, header.Get("Content-MD5"))
+	require.Equal(t, http.StatusOK, status)
+	require.Equal(t, exMD5, header.Get(web.ContentMD5Header))
 	require.Len(t, data, 2938956)
 }
 
@@ -80,7 +81,7 @@ func TestFetchRawNoDownloadURL(t *testing.T) {
 	// intercept initial url
 	gock.New(testInitialURL).
 		Get(u.Path).
-		Reply(404)
+		Reply(http.StatusNotFound)
 
 	_, err = url.Parse(testInitialURL)
 
@@ -103,7 +104,7 @@ func TestFetchRawFailure(t *testing.T) {
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(404).
+		Reply(http.StatusNotFound).
 		File(testDataFilePath)
 
 	ac := azure.New()
@@ -112,7 +113,7 @@ func TestFetchRawFailure(t *testing.T) {
 
 	data, _, status, err := ac.FetchData()
 	require.Error(t, err)
-	require.Equal(t, 404, status)
+	require.Equal(t, http.StatusNotFound, status)
 	require.Empty(t, data)
 }
 
@@ -157,10 +158,10 @@ func TestFetch(t *testing.T) {
 	exTimeStamp := "Tue, 13 Dec 2022 06:50:50 GMT"
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(200).
-		AddHeader("Last-Modified", exTimeStamp).
-		AddHeader("Content-MD5", exMD5).
-		AddHeader("ETag", exEtag).
+		Reply(http.StatusOK).
+		AddHeader(web.LastModifiedHeader, exTimeStamp).
+		AddHeader(web.ContentMD5Header, exMD5).
+		AddHeader(web.ETagHeader, exEtag).
 		File(testDataFilePath)
 
 	ac := azure.New()

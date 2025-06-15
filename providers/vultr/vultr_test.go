@@ -2,6 +2,7 @@ package vultr_test
 
 import (
 	"fmt"
+	"net/http"
 	"net/netip"
 	"net/url"
 	"testing"
@@ -19,7 +20,7 @@ func TestFetch(t *testing.T) {
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/prefixes.json")
 
 	ac := vultr.New()

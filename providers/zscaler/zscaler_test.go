@@ -2,6 +2,7 @@ package zscaler_test
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"testing"
@@ -28,7 +29,7 @@ func TestFetch(t *testing.T) {
 
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/doc.json")
 
 	z := zscaler.New()

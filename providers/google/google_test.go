@@ -2,6 +2,7 @@ package google_test
 
 import (
 	"fmt"
+	"net/http"
 	"net/netip"
 	"net/url"
 	"testing"
@@ -22,7 +23,7 @@ func TestFetch(t *testing.T) {
 
 	gock.New(urlBase).
 		Get(u.Path).
-		Reply(200).
+		Reply(http.StatusOK).
 		File("testdata/goog.json")
 
 	ac := google.New()
