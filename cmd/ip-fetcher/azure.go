@@ -21,12 +21,13 @@ func azureCmd() *cli.Command {
 		testAzureDataFilePath    = "../../providers/azure/testdata/ServiceTags_Public_20221212.json"
 		providerName             = "azure"
 		fileName                 = "ServiceTags_Public.json"
+		fileNameLines            = "azure-prefixes.txt"
 	)
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch Azure prefixes",
 		Usage:     "Microsoft Azure",
-		UsageText: "ip-fetcher azure {--stdout | --Path FILE}",
+		UsageText: "ip-fetcher azure {--stdout | --Path FILE} [--lines]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 
@@ -40,6 +41,10 @@ func azureCmd() *cli.Command {
 			&cli.BoolFlag{
 				Name:  "stdout",
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
+			},
+			&cli.BoolFlag{
+				Name:  "lines",
+				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -71,19 +76,35 @@ func azureCmd() *cli.Command {
 				gock.InterceptClient(a.Client.HTTPClient)
 			}
 
-			data, _, _, err := a.FetchData()
-			if err != nil {
-				return err
+			var data []byte
+			var err error
+			if c.Bool("lines") {
+				var doc azure.Doc
+				if doc, _, err = a.Fetch(); err != nil {
+					return err
+				}
+				if data, err = docToLines(doc); err != nil {
+					return err
+				}
+			} else {
+				data, _, _, err = a.FetchData()
+				if err != nil {
+					return err
+				}
 			}
 
 			if path != "" {
 				var out string
 
+				df := fileName
+				if c.Bool("lines") {
+					df = fileNameLines
+				}
 				if out, err = SaveFile(SaveFileInput{
 					Provider:        providerName,
 					Data:            data,
 					Path:            path,
-					DefaultFileName: fileName,
+					DefaultFileName: df,
 				}); err != nil {
 					return err
 				}

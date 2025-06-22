@@ -18,6 +18,7 @@ import (
 const (
 	providerNameFastly   = "fastly"
 	fileNameOutputFastly = "fastly.json"
+	fileNameLines        = "fastly-prefixes.txt"
 )
 
 var fastlyFormats = []string{"json", "yaml", "lines", "csv"}
@@ -27,7 +28,7 @@ func fastlyCmd() *cli.Command {
 		Name:      providerNameFastly,
 		HelpName:  "- fetch Fastly prefixes",
 		Usage:     "Fastly",
-		UsageText: "ip-fetcher fastly {--stdout | --Path FILE}",
+		UsageText: "ip-fetcher fastly {--stdout | --Path FILE} [--lines]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 
@@ -45,6 +46,10 @@ func fastlyCmd() *cli.Command {
 			&cli.StringFlag{
 				Name:  "format",
 				Usage: strings.Join(fastlyFormats, ", "), Value: "json", Aliases: []string{"f"},
+			},
+			&cli.BoolFlag{
+				Name:  "lines",
+				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -70,12 +75,16 @@ func fastlyCmd() *cli.Command {
 
 			var doc fastly.Doc
 			var err error
-			// get Data if json output is requested
 			if doc, err = a.Fetch(); err != nil {
 				return err
 			}
 
-			return fastlyOutput(doc, c.String("format"), c.Bool("stdout"), c.String("Path"))
+			format := c.String("format")
+			if c.Bool("lines") {
+				format = "lines"
+			}
+
+			return fastlyOutput(doc, format, c.Bool("stdout"), c.String("Path"))
 		},
 	}
 }
@@ -117,11 +126,15 @@ func fastlyOutput(doc fastly.Doc, format string, stdout bool, path string) error
 	if path != "" {
 		var out string
 
+		df := fileNameOutputFastly
+		if format == "lines" {
+			df = fileNameLines
+		}
 		if out, err = SaveFile(SaveFileInput{
 			Provider:        providerNameFastly,
 			Data:            data,
 			Path:            path,
-			DefaultFileName: fileNameOutputFastly,
+			DefaultFileName: df,
 		}); err != nil {
 			return err
 		}
