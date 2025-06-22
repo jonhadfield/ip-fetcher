@@ -15,8 +15,9 @@ import (
 
 func alibabaCmd() *cli.Command {
 	const (
-		providerName = "alibaba"
-		fileName     = "prefixes.txt"
+		providerName  = "alibaba"
+		fileName      = "prefixes.txt"
+		fileNameLines = "alibaba-prefixes.txt"
 	)
 
 	return &cli.Command{

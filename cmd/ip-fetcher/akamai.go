@@ -14,8 +14,10 @@ import (
 
 func akamaiCmd() *cli.Command {
 	const (
-		providerName = "akamai"
-		fileName     = "prefixes.txt"
+		providerName  = "akamai"
+		fileName      = "prefixes.txt"
+		fileNameLines = "alibaba-prefixes.txt"
+
 	)
 
 	return &cli.Command{

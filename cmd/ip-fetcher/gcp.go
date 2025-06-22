@@ -18,7 +18,7 @@ import (
 const (
 	providerNameGCP   = "gcp"
 	fileNameOutputGCP = "cloud.json"
-	fileNameLines     = "gcp-prefixes.txt"
+	fileNameLinesGCP  = "gcp-prefixes.txt"
 )
 
 func gcpCmd() *cli.Command {
@@ -117,7 +117,7 @@ func output(doc gcp.Doc, format string, stdout bool, path string) error {
 		var out string
 		df := fileNameOutputGCP
 		if format == "lines" {
-			df = fileNameLines
+			df = fileNameLinesGCP
 		}
 		if out, err = SaveFile(SaveFileInput{
 			Provider:        providerNameGCP,
