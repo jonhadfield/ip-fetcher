@@ -13,11 +13,16 @@ import (
 )
 
 func digitaloceanCmd() *cli.Command {
+	const (
+		fileNameData  = "google.csv"
+		fileNameLines = "digitalocean-prefixes.txt"
+	)
+
 	return &cli.Command{
 		Name:      "digitalocean",
 		HelpName:  "- fetch DigitalOcean prefixes",
 		Usage:     "DigitalOcean",
-		UsageText: "ip-fetcher digitalocean {--stdout | --Path FILE}",
+		UsageText: "ip-fetcher digitalocean {--stdout | --Path FILE} [--lines]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 
@@ -31,6 +36,10 @@ func digitaloceanCmd() *cli.Command {
 			&cli.BoolFlag{
 				Name:  "stdout",
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
+			},
+			&cli.BoolFlag{
+				Name:  "lines",
+				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -54,19 +63,35 @@ func digitaloceanCmd() *cli.Command {
 				gock.InterceptClient(a.Client.HTTPClient)
 			}
 
-			data, _, _, err := a.FetchData()
-			if err != nil {
-				return err
+			var data []byte
+			var err error
+			if c.Bool("lines") {
+				var doc digitalocean.Doc
+				if doc, err = a.Fetch(); err != nil {
+					return err
+				}
+				if data, err = docToLines(doc); err != nil {
+					return err
+				}
+			} else {
+				data, _, _, err = a.FetchData()
+				if err != nil {
+					return err
+				}
 			}
 
 			if path != "" {
 				var out string
 
+				df := fileNameData
+				if c.Bool("lines") {
+					df = fileNameLines
+				}
 				if out, err = SaveFile(SaveFileInput{
 					Provider:        "digitalocean",
 					Data:            data,
 					Path:            path,
-					DefaultFileName: "google.csv",
+					DefaultFileName: df,
 				}); err != nil {
 					return err
 				}

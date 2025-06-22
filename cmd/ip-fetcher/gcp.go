@@ -18,6 +18,7 @@ import (
 const (
 	providerNameGCP   = "gcp"
 	fileNameOutputGCP = "cloud.json"
+	fileNameLines     = "gcp-prefixes.txt"
 )
 
 func gcpCmd() *cli.Command {
@@ -25,7 +26,7 @@ func gcpCmd() *cli.Command {
 		Name:      providerNameGCP,
 		HelpName:  "- fetch GCP prefixes",
 		Usage:     "Google Cloud Platform",
-		UsageText: "ip-fetcher gcp {--stdout | --Path FILE}",
+		UsageText: "ip-fetcher gcp {--stdout | --Path FILE} [--lines]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 
@@ -43,6 +44,10 @@ func gcpCmd() *cli.Command {
 			&cli.StringFlag{
 				Name:  "format",
 				Usage: "json, yaml, lines, csv", Value: "json", Aliases: []string{"f"},
+			},
+			&cli.BoolFlag{
+				Name:  "lines",
+				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -68,12 +73,17 @@ func gcpCmd() *cli.Command {
 
 			var doc gcp.Doc
 			var err error
-			// get Data if json output is requested
+			// fetch document
 			if doc, err = a.Fetch(); err != nil {
 				return err
 			}
 
-			return output(doc, c.String("format"), c.Bool("stdout"), c.String("Path"))
+			format := c.String("format")
+			if c.Bool("lines") {
+				format = "lines"
+			}
+
+			return output(doc, format, c.Bool("stdout"), c.String("Path"))
 		},
 	}
 }
@@ -105,11 +115,15 @@ func output(doc gcp.Doc, format string, stdout bool, path string) error {
 
 	if path != "" {
 		var out string
+		df := fileNameOutputGCP
+		if format == "lines" {
+			df = fileNameLines
+		}
 		if out, err = SaveFile(SaveFileInput{
 			Provider:        providerNameGCP,
 			Data:            data,
 			Path:            path,
-			DefaultFileName: fileNameOutputGCP,
+			DefaultFileName: df,
 		}); err != nil {
 			return err
 		}

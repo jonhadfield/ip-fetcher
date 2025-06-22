@@ -14,15 +14,16 @@ import (
 
 func awsCmd() *cli.Command {
 	const (
-		providerName = "aws"
-		fileName     = "ip-ranges.json"
+		providerName  = "aws"
+		fileName      = "ip-ranges.json"
+		fileNameLines = "aws-prefixes.txt"
 	)
 
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch AWS prefixes",
 		Usage:     "Amazon Web Services",
-		UsageText: "ip-fetcher aws {--stdout | --Path FILE}",
+		UsageText: "ip-fetcher aws {--stdout | --Path FILE} [--lines]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 
@@ -36,6 +37,10 @@ func awsCmd() *cli.Command {
 			&cli.BoolFlag{
 				Name:  "stdout",
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
+			},
+			&cli.BoolFlag{
+				Name:  "lines",
+				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -61,19 +66,35 @@ func awsCmd() *cli.Command {
 				gock.InterceptClient(a.Client.HTTPClient)
 			}
 
-			data, _, _, err := a.FetchData()
-			if err != nil {
-				return err
+			var data []byte
+			var err error
+			if c.Bool("lines") {
+				var doc aws.Doc
+				if doc, _, err = a.Fetch(); err != nil {
+					return err
+				}
+				if data, err = docToLines(doc); err != nil {
+					return err
+				}
+			} else {
+				data, _, _, err = a.FetchData()
+				if err != nil {
+					return err
+				}
 			}
 
 			if path != "" {
 				var out string
 
+				df := fileName
+				if c.Bool("lines") {
+					df = fileNameLines
+				}
 				if out, err = SaveFile(SaveFileInput{
 					Provider:        providerName,
 					Data:            data,
 					Path:            path,
-					DefaultFileName: fileName,
+					DefaultFileName: df,
 				}); err != nil {
 					return err
 				}
