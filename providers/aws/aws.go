@@ -192,7 +192,7 @@ func castV6Entries(entries []RawIPv6Prefix) ([]IPv6Prefix, error) {
 }
 
 func TrimQuotes(in *string) {
-	*in = strings.TrimPrefix(strings.TrimSuffix(*in, "\""), "\"")
+	*in = strings.Trim(*in, "\"")
 }
 
 type RawPrefix struct {

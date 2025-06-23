@@ -9,6 +9,10 @@ import (
 
 // docToLines converts any provider document or prefix slice to newline separated IP prefixes.
 func docToLines(doc any) ([]byte, error) {
+	if doc == nil {
+		return nil, fmt.Errorf("no prefixes found")
+	}
+
 	var prefixes []string
 	addrType := reflect.TypeOf(netip.Addr{})
 	prefixType := reflect.TypeOf(netip.Prefix{})
@@ -48,11 +52,7 @@ func docToLines(doc any) ([]byte, error) {
 		return nil, fmt.Errorf("no prefixes found")
 	}
 
-	sb := strings.Builder{}
-	for _, p := range prefixes {
-		sb.WriteString(p)
-		sb.WriteByte('\n')
-	}
+	joined := strings.Join(prefixes, "\n") + "\n"
 
-	return []byte(sb.String()), nil
+	return []byte(joined), nil
 }

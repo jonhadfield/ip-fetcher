@@ -25,7 +25,7 @@ func TestFetchData(t *testing.T) {
 	gock.New(urlBase).
 		Get(u.Path).
 		Reply(http.StatusOK).
-		SetHeader(web.EtagHeader, etag).
+		SetHeader(web.ETagHeader, etag).
 		SetHeader(web.LastModifiedHeader, lastModified).
 		File("testdata/google.csv")
 
@@ -35,8 +35,8 @@ func TestFetchData(t *testing.T) {
 	data, headers, status, err := ac.FetchData()
 	require.NoError(t, err)
 	require.NotEmpty(t, data)
-	require.Len(t, headers.Values(web.EtagHeader), 1)
-	require.Equal(t, etag, headers.Values(web.EtagHeader)[0])
+	require.Len(t, headers.Values(web.ETagHeader), 1)
+	require.Equal(t, etag, headers.Values(web.ETagHeader)[0])
 	require.Len(t, headers.Values(web.LastModifiedHeader), 1)
 	require.Equal(t, lastModified, headers.Values(web.LastModifiedHeader)[0])
 	require.Equal(t, http.StatusOK, status)
@@ -53,7 +53,7 @@ func TestFetch(t *testing.T) {
 	gock.New(urlBase).
 		Get(u.Path).
 		Reply(http.StatusOK).
-		SetHeader(web.EtagHeader, etag).
+		SetHeader(web.ETagHeader, etag).
 		SetHeader(web.LastModifiedHeader, lastModified).
 		File("testdata/google.csv")
 
