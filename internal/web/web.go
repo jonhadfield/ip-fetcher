@@ -71,6 +71,10 @@ func Request(
 	secrets []string,
 	timeout time.Duration,
 ) ([]byte, http.Header, int, error) {
+	if c == nil {
+		return nil, nil, 0, errors.New("HTTP client is nil")
+	}
+
 	if method == "" {
 		return nil, nil, 0, errors.New("HTTP method not specified")
 	}
