@@ -34,12 +34,14 @@ func New() Googleutf {
 	return Googleutf{
 		DownloadURL: DownloadURL,
 		Client:      c,
+		Timeout:     web.DefaultRequestTimeout,
 	}
 }
 
 type Googleutf struct {
 	Client      *retryablehttp.Client
 	DownloadURL string
+	Timeout     time.Duration
 }
 
 type RawDoc struct {
@@ -52,7 +54,7 @@ func (gu *Googleutf) FetchData() ([]byte, http.Header, int, error) {
 	if gu.DownloadURL == "" {
 		gu.DownloadURL = DownloadURL
 	}
-	return web.Request(gu.Client, gu.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
+	return web.Request(gu.Client, gu.DownloadURL, http.MethodGet, nil, nil, gu.Timeout)
 }
 
 func (gu *Googleutf) Fetch() (Doc, error) {

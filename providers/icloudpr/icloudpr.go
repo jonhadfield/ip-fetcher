@@ -66,6 +66,7 @@ func extractNetFromString(in string) string {
 type ICloudPrivateRelay struct {
 	Client      *retryablehttp.Client
 	DownloadURL string
+	Timeout     time.Duration
 }
 
 func New() ICloudPrivateRelay {
@@ -80,6 +81,7 @@ func New() ICloudPrivateRelay {
 	return ICloudPrivateRelay{
 		DownloadURL: DownloadURL,
 		Client:      c,
+		Timeout:     web.DefaultRequestTimeout,
 	}
 }
 
@@ -95,7 +97,7 @@ func (a *ICloudPrivateRelay) FetchData() ([]byte, http.Header, int, error) {
 		a.DownloadURL = DownloadURL
 	}
 
-	data, headers, status, err = web.Request(a.Client, a.DownloadURL, http.MethodGet, nil, nil, 5*time.Second)
+	data, headers, status, err = web.Request(a.Client, a.DownloadURL, http.MethodGet, nil, nil, a.Timeout)
 	if status >= http.StatusBadRequest {
 		return nil, nil, status, fmt.Errorf("failed to download prefixes. http status code: %d", status)
 	}

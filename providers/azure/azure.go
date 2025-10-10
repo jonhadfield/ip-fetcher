@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/Danny-Dasilva/CycleTLS/cycletls"
 
@@ -31,6 +32,7 @@ type Azure struct {
 	Client      *retryablehttp.Client
 	InitialURL  string
 	DownloadURL string
+	Timeout     time.Duration
 }
 
 func (a *Azure) ShortName() string {
@@ -61,6 +63,7 @@ func New() Azure {
 	return Azure{
 		InitialURL: InitialURL,
 		Client:     c,
+		Timeout:    web.DefaultRequestTimeout,
 	}
 }
 
@@ -137,7 +140,7 @@ func (a *Azure) FetchData() ([]byte, http.Header, int, error) {
 		http.MethodGet,
 		nil,
 		nil,
-		web.ShortRequestTimeout,
+		a.Timeout,
 	)
 	if status >= http.StatusBadRequest {
 		return nil, nil, status, fmt.Errorf("failed to download prefixes. http status code: %d", status)

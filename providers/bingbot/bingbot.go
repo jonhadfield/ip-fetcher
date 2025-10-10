@@ -30,12 +30,14 @@ func New() Bingbot {
 	return Bingbot{
 		DownloadURL: DownloadURL,
 		Client:      c,
+		Timeout:     web.DefaultRequestTimeout,
 	}
 }
 
 type Bingbot struct {
 	Client      *retryablehttp.Client
 	DownloadURL string
+	Timeout     time.Duration
 }
 
 type RawDoc struct {
@@ -47,7 +49,7 @@ func (bb *Bingbot) FetchData() ([]byte, http.Header, int, error) {
 	if bb.DownloadURL == "" {
 		bb.DownloadURL = DownloadURL
 	}
-	return web.Request(bb.Client, bb.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
+	return web.Request(bb.Client, bb.DownloadURL, http.MethodGet, nil, nil, bb.Timeout)
 }
 
 func (bb *Bingbot) Fetch() (Doc, error) {

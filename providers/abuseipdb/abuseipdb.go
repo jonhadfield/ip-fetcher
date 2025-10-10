@@ -31,6 +31,7 @@ type AbuseIPDB struct {
 	APIKey            string
 	ConfidenceMinimum int
 	Limit             int64
+	Timeout           time.Duration
 }
 
 type RawBlacklistDoc struct {
@@ -93,8 +94,9 @@ func New() AbuseIPDB {
 	c.CheckRetry = retryPolicy
 
 	return AbuseIPDB{
-		APIURL: APIURL,
-		Client: c,
+		APIURL:  APIURL,
+		Client:  c,
+		Timeout: web.DefaultRequestTimeout,
 	}
 }
 
@@ -137,7 +139,7 @@ func (a *AbuseIPDB) FetchData() ([]byte, http.Header, int, error) {
 		http.MethodGet,
 		inHeaders,
 		[]string{a.APIKey},
-		web.DefaultRequestTimeout,
+		a.Timeout,
 	)
 	if statusCode == 0 && err != nil {
 		return nil, nil, 0, err

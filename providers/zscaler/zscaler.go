@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
@@ -22,6 +23,7 @@ const (
 type Zscaler struct {
 	Client      *retryablehttp.Client
 	DownloadURL string
+	Timeout     time.Duration
 }
 
 func New() Zscaler {
@@ -35,6 +37,7 @@ func New() Zscaler {
 	return Zscaler{
 		DownloadURL: DownloadURL,
 		Client:      c,
+		Timeout:     web.DefaultRequestTimeout,
 	}
 }
 
@@ -43,7 +46,7 @@ func (z *Zscaler) FetchData() ([]byte, http.Header, int, error) {
 		z.DownloadURL = DownloadURL
 	}
 
-	return web.Request(z.Client, z.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
+	return web.Request(z.Client, z.DownloadURL, http.MethodGet, nil, nil, z.Timeout)
 }
 
 func (z *Zscaler) Fetch() (Doc, error) {

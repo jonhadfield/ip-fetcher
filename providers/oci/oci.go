@@ -34,12 +34,14 @@ func New() OCI {
 	return OCI{
 		DownloadURL: DownloadURL,
 		Client:      c,
+		Timeout:     web.DefaultRequestTimeout,
 	}
 }
 
 type OCI struct {
 	Client      *retryablehttp.Client
 	DownloadURL string
+	Timeout     time.Duration
 }
 
 type RawCIDR struct {
@@ -116,7 +118,7 @@ func (ora *OCI) FetchData() ([]byte, http.Header, int, error) {
 		ora.DownloadURL = DownloadURL
 	}
 
-	return web.Request(ora.Client, ora.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
+	return web.Request(ora.Client, ora.DownloadURL, http.MethodGet, nil, nil, ora.Timeout)
 }
 
 func (ora *OCI) Fetch() (Doc, error) {

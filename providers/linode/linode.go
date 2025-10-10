@@ -66,6 +66,7 @@ func extractNetFromString(in string) string {
 type Linode struct {
 	Client      *retryablehttp.Client
 	DownloadURL string
+	Timeout     time.Duration
 }
 
 func New() Linode {
@@ -80,6 +81,7 @@ func New() Linode {
 	return Linode{
 		DownloadURL: DownloadURL,
 		Client:      c,
+		Timeout:     web.DefaultRequestTimeout,
 	}
 }
 
@@ -95,7 +97,7 @@ func (a *Linode) FetchData() ([]byte, http.Header, int, error) {
 		a.DownloadURL = DownloadURL
 	}
 
-	data, headers, status, err = web.Request(a.Client, a.DownloadURL, http.MethodGet, nil, nil, web.ShortRequestTimeout)
+	data, headers, status, err = web.Request(a.Client, a.DownloadURL, http.MethodGet, nil, nil, a.Timeout)
 	if status >= http.StatusBadRequest {
 		return nil, nil, status, fmt.Errorf("failed to download prefixes. http status code: %d", status)
 	}

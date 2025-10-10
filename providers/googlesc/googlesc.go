@@ -34,12 +34,14 @@ func New() Googlesc {
 	return Googlesc{
 		DownloadURL: DownloadURL,
 		Client:      c,
+		Timeout:     web.DefaultRequestTimeout,
 	}
 }
 
 type Googlesc struct {
 	Client      *retryablehttp.Client
 	DownloadURL string
+	Timeout     time.Duration
 }
 
 type RawDoc struct {
@@ -64,7 +66,7 @@ func (gs *Googlesc) FetchData() ([]byte, http.Header, int, error) {
 		http.MethodGet,
 		nil,
 		nil,
-		web.DefaultRequestTimeout,
+		gs.Timeout,
 	)
 	return data, headers, status, err
 }

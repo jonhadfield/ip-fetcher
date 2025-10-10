@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/netip"
+	"time"
 
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
@@ -32,12 +33,14 @@ func New() Fastly {
 	return Fastly{
 		DownloadURL: DownloadURL,
 		Client:      c,
+		Timeout:     web.DefaultRequestTimeout,
 	}
 }
 
 type Fastly struct {
 	Client      *retryablehttp.Client
 	DownloadURL string
+	Timeout     time.Duration
 }
 
 func (f *Fastly) FetchData() ([]byte, http.Header, int, error) {
@@ -45,7 +48,7 @@ func (f *Fastly) FetchData() ([]byte, http.Header, int, error) {
 		f.DownloadURL = DownloadURL
 	}
 
-	return web.Request(f.Client, f.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
+	return web.Request(f.Client, f.DownloadURL, http.MethodGet, nil, nil, f.Timeout)
 }
 
 func (f *Fastly) Fetch() (Doc, error) {

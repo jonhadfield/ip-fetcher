@@ -6,6 +6,7 @@ import (
 	"net/netip"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"github.com/sirupsen/logrus"
@@ -26,6 +27,7 @@ type AWS struct {
 	Client      *retryablehttp.Client
 	InitialURL  string
 	DownloadURL string
+	Timeout     time.Duration
 }
 
 func (a *AWS) ShortName() string {
@@ -56,6 +58,7 @@ func New() AWS {
 	return AWS{
 		InitialURL: DownloadURL,
 		Client:     c,
+		Timeout:    web.DefaultRequestTimeout,
 	}
 }
 
@@ -84,7 +87,7 @@ func (a *AWS) FetchETag() (string, error) {
 		http.MethodHead,
 		inHeaders,
 		[]string{},
-		web.ShortRequestTimeout,
+		a.Timeout,
 	)
 	if err != nil {
 		return "", err
@@ -112,7 +115,7 @@ func (a *AWS) FetchData() ([]byte, http.Header, int, error) {
 	inHeaders := http.Header{}
 	inHeaders.Add("Accept", "application/json")
 
-	return web.Request(a.Client, a.DownloadURL, http.MethodGet, inHeaders, nil, web.ShortRequestTimeout)
+	return web.Request(a.Client, a.DownloadURL, http.MethodGet, inHeaders, nil, a.Timeout)
 }
 
 func (a *AWS) Fetch() (Doc, string, error) {

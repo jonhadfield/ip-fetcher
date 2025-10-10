@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"net/http"
 	"net/netip"
+	"time"
 
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
@@ -35,6 +36,7 @@ func New() Cloudflare {
 		IPv4DownloadURL: DefaultIPv4URL,
 		IPv6DownloadURL: DefaultIPv6URL,
 		Client:          c,
+		Timeout:         web.DefaultRequestTimeout,
 	}
 }
 
@@ -42,6 +44,7 @@ type Cloudflare struct {
 	Client          *retryablehttp.Client
 	IPv4DownloadURL string
 	IPv6DownloadURL string
+	Timeout         time.Duration
 }
 
 func (cf *Cloudflare) FetchIPv4Data() ([]byte, http.Header, int, error) {
@@ -49,7 +52,7 @@ func (cf *Cloudflare) FetchIPv4Data() ([]byte, http.Header, int, error) {
 		cf.IPv4DownloadURL = DefaultIPv4URL
 	}
 
-	return web.Request(cf.Client, cf.IPv4DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
+	return web.Request(cf.Client, cf.IPv4DownloadURL, http.MethodGet, nil, nil, cf.Timeout)
 }
 
 func (cf *Cloudflare) FetchIPv6Data() ([]byte, http.Header, int, error) {
@@ -57,7 +60,7 @@ func (cf *Cloudflare) FetchIPv6Data() ([]byte, http.Header, int, error) {
 		cf.IPv6DownloadURL = DefaultIPv6URL
 	}
 
-	return web.Request(cf.Client, cf.IPv6DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
+	return web.Request(cf.Client, cf.IPv6DownloadURL, http.MethodGet, nil, nil, cf.Timeout)
 }
 
 func (cf *Cloudflare) Fetch4() ([]netip.Prefix, error) {

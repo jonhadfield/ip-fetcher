@@ -2,6 +2,7 @@ package vultr
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
@@ -24,6 +25,7 @@ type Vultr struct {
 	Client      *retryablehttp.Client
 	DownloadURL string
 	ASNs        []string
+	Timeout     time.Duration
 }
 
 type Doc = bgpview.Doc
@@ -40,11 +42,12 @@ func New() Vultr {
 		DownloadURL: bgpview.DefaultURL,
 		ASNs:        ASNs,
 		Client:      c,
+		Timeout:     web.DefaultRequestTimeout,
 	}
 }
 
 func (h *Vultr) FetchData() ([]byte, http.Header, int, error) {
-	return bgpview.FetchData(h.Client, h.DownloadURL, h.ASNs, FullName)
+	return bgpview.FetchData(h.Client, h.DownloadURL, h.ASNs, FullName, h.Timeout)
 }
 
 func (h *Vultr) Fetch() (Doc, error) {

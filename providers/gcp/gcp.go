@@ -34,12 +34,14 @@ func New() GCP {
 	return GCP{
 		DownloadURL: DownloadURL,
 		Client:      c,
+		Timeout:     web.DefaultRequestTimeout,
 	}
 }
 
 type GCP struct {
 	Client      *retryablehttp.Client
 	DownloadURL string
+	Timeout     time.Duration
 }
 
 type RawDoc struct {
@@ -54,7 +56,7 @@ func (gc *GCP) FetchData() ([]byte, http.Header, int, error) {
 		gc.DownloadURL = DownloadURL
 	}
 
-	return web.Request(gc.Client, gc.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
+	return web.Request(gc.Client, gc.DownloadURL, http.MethodGet, nil, nil, gc.Timeout)
 }
 
 func (gc *GCP) Fetch() (Doc, error) {

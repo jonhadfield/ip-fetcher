@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"net/http"
 	"net/netip"
+	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
@@ -23,6 +24,7 @@ const (
 type Akamai struct {
 	Client      *retryablehttp.Client
 	DownloadURL string
+	Timeout     time.Duration
 }
 
 func New() Akamai {
@@ -36,6 +38,7 @@ func New() Akamai {
 	return Akamai{
 		DownloadURL: DownloadURL,
 		Client:      c,
+		Timeout:     web.DefaultRequestTimeout,
 	}
 }
 
@@ -44,7 +47,7 @@ func (a *Akamai) FetchData() ([]byte, http.Header, int, error) {
 		a.DownloadURL = DownloadURL
 	}
 
-	return web.Request(a.Client, a.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
+	return web.Request(a.Client, a.DownloadURL, http.MethodGet, nil, nil, a.Timeout)
 }
 
 func (a *Akamai) Fetch() ([]netip.Prefix, error) {

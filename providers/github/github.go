@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/netip"
+	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
@@ -22,6 +23,7 @@ const (
 type GitHub struct {
 	Client      *retryablehttp.Client
 	DownloadURL string
+	Timeout     time.Duration
 }
 
 func New() GitHub {
@@ -36,6 +38,7 @@ func New() GitHub {
 	return GitHub{
 		DownloadURL: DownloadURL,
 		Client:      c,
+		Timeout:     web.DefaultRequestTimeout,
 	}
 }
 
@@ -44,7 +47,7 @@ func (gh *GitHub) FetchData() ([]byte, http.Header, int, error) {
 		gh.DownloadURL = DownloadURL
 	}
 
-	return web.Request(gh.Client, gh.DownloadURL, http.MethodGet, nil, nil, web.DefaultRequestTimeout)
+	return web.Request(gh.Client, gh.DownloadURL, http.MethodGet, nil, nil, gh.Timeout)
 }
 
 func (gh *GitHub) Fetch() ([]netip.Prefix, error) {

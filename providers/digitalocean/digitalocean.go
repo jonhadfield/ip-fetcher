@@ -25,6 +25,7 @@ const (
 type DigitalOcean struct {
 	Client      *retryablehttp.Client
 	DownloadURL string
+	Timeout     time.Duration
 }
 
 func New() DigitalOcean {
@@ -39,6 +40,7 @@ func New() DigitalOcean {
 	return DigitalOcean{
 		DownloadURL: DigitaloceanDownloadURL,
 		Client:      c,
+		Timeout:     web.DefaultRequestTimeout,
 	}
 }
 
@@ -54,7 +56,7 @@ func (a *DigitalOcean) FetchData() ([]byte, http.Header, int, error) {
 		http.MethodGet,
 		nil,
 		nil,
-		web.ShortRequestTimeout,
+		a.Timeout,
 	)
 	if status >= http.StatusBadRequest {
 		return nil, nil, status, fmt.Errorf("failed to download prefixes. http status code: %d", status)
