@@ -10,15 +10,8 @@ import (
 	"testing"
 
 	mainpkg "github.com/jonhadfield/ip-fetcher/cmd/ip-fetcher"
-	"github.com/jonhadfield/ip-fetcher/providers/azure"
 	"github.com/stretchr/testify/require"
 )
-
-const testMockAzureDownloadURL = "https://raw.githubusercontent.com/tobilg/public-cloud-provider-ip-ranges/main/data/providers/azure.json"
-
-// const testMockAzureDownloadUrl = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_2000000.json"
-
-// const testMockAzureDownloadUrl = azure.WorkaroundDownloadURL
 
 func AzureCmdNoStdOutNoPath() {
 	app := mainpkg.GetApp()
@@ -53,9 +46,6 @@ func TestAzureCmdSavetoPath(t *testing.T) {
 
 	t.Setenv("IP_FETCHER_MOCK_AZURE", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_AZURE")
-
-	ac := azure.New()
-	ac.DownloadURL = testMockAzureDownloadURL
 
 	app := mainpkg.GetApp()
 

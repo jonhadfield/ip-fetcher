@@ -1,11 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
-	"os"
-	"strings"
 
 	"github.com/jonhadfield/ip-fetcher/providers/oci"
 	"github.com/urfave/cli/v2"
@@ -41,18 +38,14 @@ func ociCmd() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("Path"))
-			if path == "" && !c.Bool("stdout") {
-				_ = cli.ShowSubcommandHelp(c)
-
-				fmt.Println("\n" + errStdoutOrPathRequired)
-
-				os.Exit(1)
+			path, stdout, err := resolveOutputTargets(c)
+			if err != nil {
+				return err
 			}
 
 			a := oci.New()
 
-			if os.Getenv("IP_FETCHER_MOCK_OCI") == "true" {
+			if isEnvEnabled("IP_FETCHER_MOCK_OCI") {
 				defer gock.Off()
 				urlBase := oci.DownloadURL
 				u, _ := url.Parse(urlBase)
@@ -68,26 +61,11 @@ func ociCmd() *cli.Command {
 				return err
 			}
 
-			if path != "" {
-				var out string
-
-				if out, err = SaveFile(SaveFileInput{
-					Provider:        providerName,
-					Data:            data,
-					Path:            path,
-					DefaultFileName: fileName,
-				}); err != nil {
-					return err
-				}
-
-				_, _ = fmt.Fprintf(os.Stderr, fmtDataWrittenTo, out)
-			}
-
-			if c.Bool("stdout") {
-				fmt.Printf("%s\n", data)
-			}
-
-			return nil
+			return writeOutputs(path, stdout, SaveFileInput{
+				Provider:        providerName,
+				DefaultFileName: fileName,
+				Data:            data,
+			})
 		},
 	}
 }

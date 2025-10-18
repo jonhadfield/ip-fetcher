@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"os"
-	"strings"
 
 	"github.com/jonhadfield/ip-fetcher/providers/vultr"
 	"github.com/urfave/cli/v2"
@@ -39,20 +37,16 @@ func vultrCmd() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("Path"))
-			if path == "" && !c.Bool("stdout") {
-				_ = cli.ShowSubcommandHelp(c)
-
-				fmt.Println("\n" + errStdoutOrPathRequired)
-
-				os.Exit(1)
+			path, stdout, err := resolveOutputTargets(c)
+			if err != nil {
+				return err
 			}
 
 			h := vultr.New()
 
-			if os.Getenv("IP_FETCHER_MOCK_HETZNER") == "true" {
+			if isEnvEnabled("IP_FETCHER_MOCK_VULTR") {
 				defer gock.Off()
-				urlBase := fmt.Sprintf(vultr.DownloadURL, "24940")
+				urlBase := fmt.Sprintf(vultr.DownloadURL, vultr.ASNs[0])
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).
@@ -76,25 +70,11 @@ func vultrCmd() *cli.Command {
 				return fmt.Errorf("failed to marshal Vultr Data: %w", err)
 			}
 
-			var out string
-			if path != "" {
-				out, err = SaveFile(SaveFileInput{
-					Provider:        providerName,
-					Data:            asnPrefixes,
-					Path:            path,
-					DefaultFileName: fileName,
-				})
-				if err != nil {
-					return err
-				}
-				_, _ = fmt.Fprintf(os.Stderr, fmtDataWrittenTo, out)
-			}
-
-			if c.Bool("stdout") {
-				fmt.Printf("%s\n", asnPrefixes)
-			}
-
-			return nil
+			return writeOutputs(path, stdout, SaveFileInput{
+				Provider:        providerName,
+				DefaultFileName: fileName,
+				Data:            asnPrefixes,
+			})
 		},
 	}
 }

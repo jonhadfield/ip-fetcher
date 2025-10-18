@@ -1,11 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
-	"os"
-	"strings"
 
 	"github.com/jonhadfield/ip-fetcher/providers/digitalocean"
 	"github.com/urfave/cli/v2"
@@ -38,21 +35,19 @@ func digitaloceanCmd() *cli.Command {
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
 			},
 			&cli.BoolFlag{
-				Name:  "lines",
+				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("Path"))
-			if path == "" && !c.Bool("stdout") {
-				_ = cli.ShowSubcommandHelp(c)
-				fmt.Println("\n" + errStdoutOrPathRequired)
-				os.Exit(1)
+			path, stdout, err := resolveOutputTargets(c)
+			if err != nil {
+				return err
 			}
 
 			a := digitalocean.New()
 
-			if os.Getenv("IP_FETCHER_MOCK_DIGITALOCEAN") == "true" {
+			if isEnvEnabled("IP_FETCHER_MOCK_DIGITALOCEAN") {
 				defer gock.Off()
 				urlBase := digitalocean.DigitaloceanDownloadURL
 				u, _ := url.Parse(urlBase)
@@ -64,8 +59,7 @@ func digitaloceanCmd() *cli.Command {
 			}
 
 			var data []byte
-			var err error
-			if c.Bool("lines") {
+			if c.Bool(formatLines) {
 				var doc digitalocean.Doc
 				if doc, err = a.Fetch(); err != nil {
 					return err
@@ -80,30 +74,16 @@ func digitaloceanCmd() *cli.Command {
 				}
 			}
 
-			if path != "" {
-				var out string
-
-				df := fileNameData
-				if c.Bool("lines") {
-					df = fileNameLines
-				}
-				if out, err = SaveFile(SaveFileInput{
-					Provider:        "digitalocean",
-					Data:            data,
-					Path:            path,
-					DefaultFileName: df,
-				}); err != nil {
-					return err
-				}
-
-				_, _ = fmt.Fprintf(os.Stderr, fmtDataWrittenTo, out)
+			defaultName := fileNameData
+			if c.Bool(formatLines) {
+				defaultName = fileNameLines
 			}
 
-			if c.Bool("stdout") {
-				fmt.Printf("%s\n", data)
-			}
-
-			return nil
+			return writeOutputs(path, stdout, SaveFileInput{
+				Provider:        "digitalocean",
+				DefaultFileName: defaultName,
+				Data:            data,
+			})
 		},
 	}
 }

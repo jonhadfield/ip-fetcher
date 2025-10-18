@@ -1,11 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
-	"os"
-	"strings"
 
 	"github.com/jonhadfield/ip-fetcher/providers/azure"
 	"github.com/urfave/cli/v2"
@@ -43,23 +40,19 @@ func azureCmd() *cli.Command {
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
 			},
 			&cli.BoolFlag{
-				Name:  "lines",
+				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("Path"))
-			if path == "" && !c.Bool("stdout") {
-				_ = cli.ShowSubcommandHelp(c)
-
-				fmt.Println("\n" + errStdoutOrPathRequired) //nolint:forbidigo
-
-				os.Exit(1)
+			path, stdout, err := resolveOutputTargets(c)
+			if err != nil {
+				return err
 			}
 
 			a := azure.New()
 
-			if os.Getenv("IP_FETCHER_MOCK_AZURE") == "true" {
+			if isEnvEnabled("IP_FETCHER_MOCK_AZURE") {
 				defer gock.Off()
 				// u, _ := url.Parse(azure.InitialURL)
 				// gock.New(azure.InitialURL).
@@ -77,8 +70,7 @@ func azureCmd() *cli.Command {
 			}
 
 			var data []byte
-			var err error
-			if c.Bool("lines") {
+			if c.Bool(formatLines) {
 				var doc azure.Doc
 				if doc, _, err = a.Fetch(); err != nil {
 					return err
@@ -93,30 +85,16 @@ func azureCmd() *cli.Command {
 				}
 			}
 
-			if path != "" {
-				var out string
-
-				df := fileName
-				if c.Bool("lines") {
-					df = fileNameLines
-				}
-				if out, err = SaveFile(SaveFileInput{
-					Provider:        providerName,
-					Data:            data,
-					Path:            path,
-					DefaultFileName: df,
-				}); err != nil {
-					return err
-				}
-
-				_, _ = fmt.Fprintf(os.Stderr, fmtDataWrittenTo, out)
+			defaultName := fileName
+			if c.Bool(formatLines) {
+				defaultName = fileNameLines
 			}
 
-			if c.Bool("stdout") {
-				fmt.Printf("%s\n", data)
-			}
-
-			return nil
+			return writeOutputs(path, stdout, SaveFileInput{
+				Provider:        providerName,
+				DefaultFileName: defaultName,
+				Data:            data,
+			})
 		},
 	}
 }

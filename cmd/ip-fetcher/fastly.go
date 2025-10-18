@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"os"
 	"slices"
 	"strings"
 
@@ -21,7 +20,7 @@ const (
 	fileNameLines        = "fastly-prefixes.txt"
 )
 
-var fastlyFormats = []string{"json", "yaml", "lines", "csv"}
+var fastlyFormats = []string{"json", "yaml", formatLines, "csv"}
 
 func fastlyCmd() *cli.Command {
 	return &cli.Command{
@@ -48,21 +47,19 @@ func fastlyCmd() *cli.Command {
 				Usage: strings.Join(fastlyFormats, ", "), Value: "json", Aliases: []string{"f"},
 			},
 			&cli.BoolFlag{
-				Name:  "lines",
+				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("Path"))
-			if path == "" && !c.Bool("stdout") {
-				_ = cli.ShowSubcommandHelp(c)
-				fmt.Println("\n" + errStdoutOrPathRequired)
-				os.Exit(1)
+			path, stdout, err := resolveOutputTargets(c)
+			if err != nil {
+				return err
 			}
 
 			a := fastly.New()
 
-			if os.Getenv("IP_FETCHER_MOCK_FASTLY") == "true" {
+			if isEnvEnabled("IP_FETCHER_MOCK_FASTLY") {
 				defer gock.Off()
 				urlBase := fastly.DownloadURL
 				u, _ := url.Parse(urlBase)
@@ -74,17 +71,16 @@ func fastlyCmd() *cli.Command {
 			}
 
 			var doc fastly.Doc
-			var err error
 			if doc, err = a.Fetch(); err != nil {
 				return err
 			}
 
 			format := c.String("format")
-			if c.Bool("lines") {
-				format = "lines"
+			if c.Bool(formatLines) {
+				format = formatLines
 			}
 
-			return fastlyOutput(doc, format, c.Bool("stdout"), c.String("Path"))
+			return fastlyOutput(doc, format, stdout, path)
 		},
 	}
 }
@@ -102,13 +98,9 @@ func fastlyOutput(doc fastly.Doc, format string, stdout bool, path string) error
 
 	switch format {
 	case "csv":
-		if data = fastlyCsv(doc); err != nil {
-			return err
-		}
-	case "lines":
-		if data = fastlyLines(doc); err != nil {
-			return err
-		}
+		data = fastlyCsv(doc)
+	case formatLines:
+		data = fastlyLines(doc)
 	case "yaml":
 		if data, err = yaml.Marshal(doc); err != nil {
 			return err
@@ -123,28 +115,16 @@ func fastlyOutput(doc fastly.Doc, format string, stdout bool, path string) error
 		fmt.Printf("%s\n\n", data)
 	}
 
-	if path != "" {
-		var out string
-
-		df := fileNameOutputFastly
-		if format == "lines" {
-			df = fileNameLines
-		}
-		if out, err = SaveFile(SaveFileInput{
-			Provider:        providerNameFastly,
-			Data:            data,
-			Path:            path,
-			DefaultFileName: df,
-		}); err != nil {
-			return err
-		}
-
-		if _, err = fmt.Fprintf(os.Stderr, fmtDataWrittenTo, out); err != nil {
-			return err
-		}
+	defaultName := fileNameOutputFastly
+	if format == formatLines {
+		defaultName = fileNameLines
 	}
 
-	return err
+	return writeOutputs(path, false, SaveFileInput{
+		Provider:        providerNameFastly,
+		DefaultFileName: defaultName,
+		Data:            data,
+	})
 }
 
 func fastlyLines(in fastly.Doc) []byte {

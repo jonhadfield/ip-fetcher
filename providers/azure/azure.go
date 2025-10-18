@@ -85,7 +85,7 @@ func (a *Azure) GetDownloadURL() (string, error) {
 		return "", errors.New(errFailedToDownload)
 	}
 
-	if response.Status >= 400 {
+	if response.Status >= http.StatusBadRequest {
 		return url, errors.New(errFailedToDownload)
 	}
 

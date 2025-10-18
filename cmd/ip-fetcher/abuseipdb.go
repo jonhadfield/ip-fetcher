@@ -1,10 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"strings"
-
 	"github.com/jonhadfield/ip-fetcher/providers/abuseipdb"
 	"github.com/urfave/cli/v2"
 )
@@ -52,11 +48,9 @@ func abuseipdbCmd() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("Path"))
-			if path == "" && !c.Bool("stdout") {
-				_ = cli.ShowSubcommandHelp(c)
-				fmt.Println("\n" + errStdoutOrPathRequired)
-				os.Exit(1)
+			path, stdout, err := resolveOutputTargets(c)
+			if err != nil {
+				return err
 			}
 
 			a := abuseipdb.New()
@@ -68,25 +62,11 @@ func abuseipdbCmd() *cli.Command {
 				return err
 			}
 
-			if path != "" {
-				var out string
-				if out, err = SaveFile(SaveFileInput{
-					Provider:        "abuseipdb",
-					Data:            data,
-					Path:            path,
-					DefaultFileName: "blacklist",
-				}); err != nil {
-					return err
-				}
-
-				_, _ = fmt.Fprintf(os.Stderr, fmtDataWrittenTo, out)
-			}
-
-			if c.Bool("stdout") {
-				fmt.Println(string(data))
-			}
-
-			return nil
+			return writeOutputs(path, stdout, SaveFileInput{
+				Provider:        "abuseipdb",
+				DefaultFileName: "blacklist",
+				Data:            data,
+			})
 		},
 	}
 }

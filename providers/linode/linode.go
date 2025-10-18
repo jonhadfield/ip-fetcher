@@ -22,20 +22,21 @@ import (
 )
 
 const (
-	ShortName           = "linode"
-	FullName            = "Linode"
-	HostType            = "hosting"
-	SourceURL           = "https://www.linode.com/"
-	DownloadURL         = "https://geoip.linode.com/"
-	errFailedToDownload = "failed to download Linode prefixes document "
+	ShortName              = "linode"
+	FullName               = "Linode"
+	HostType               = "hosting"
+	SourceURL              = "https://www.linode.com/"
+	DownloadURL            = "https://geoip.linode.com/"
+	errFailedToDownload    = "failed to download Linode prefixes document "
+	ipv6SeparatorThreshold = 2
 )
 
 func IsIPv4(address string) bool {
-	return strings.Count(address, ":") < 2
+	return strings.Count(address, ":") < ipv6SeparatorThreshold
 }
 
 func IsIPv6(address string) bool {
-	return strings.Count(address, ":") >= 2
+	return strings.Count(address, ":") >= ipv6SeparatorThreshold
 }
 
 func extractNetFromString(in string) string {
@@ -106,9 +107,9 @@ func (a *Linode) FetchData() ([]byte, http.Header, int, error) {
 }
 
 type Doc struct {
-	LastModified time.Time
-	ETag         string
-	Records      []Record
+	LastModified time.Time `json:"lastModified" yaml:"lastModified"`
+	ETag         string    `json:"etag" yaml:"etag"`
+	Records      []Record  `json:"records" yaml:"records"`
 }
 
 func (a *Linode) Fetch() (Doc, error) {
@@ -185,7 +186,6 @@ Loop:
 
 		switch {
 		case errors.Is(err, io.EOF):
-			err = nil
 			break Loop
 		case err == nil:
 			var pcn netip.Prefix

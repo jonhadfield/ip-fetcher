@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"os"
-	"strings"
 
 	output2 "github.com/jonhadfield/ip-fetcher/internal/output"
 
@@ -40,16 +38,14 @@ func zscalerCmd() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("Path"))
-			if path == "" && !c.Bool("stdout") {
-				_ = cli.ShowSubcommandHelp(c)
-				fmt.Println("\n" + errStdoutOrPathRequired)
-				os.Exit(1)
+			path, stdout, err := resolveOutputTargets(c)
+			if err != nil {
+				return err
 			}
 
 			z := zscaler.New()
 
-			if os.Getenv("IP_FETCHER_MOCK_ZSCALER") == "true" {
+			if isEnvEnabled("IP_FETCHER_MOCK_ZSCALER") {
 				defer gock.Off()
 				urlBase := zscaler.DownloadURL
 				u, _ := url.Parse(urlBase)
@@ -65,27 +61,17 @@ func zscalerCmd() *cli.Command {
 				return err
 			}
 
-			if path != "" {
-				var out string
-				out, err = SaveFile(SaveFileInput{
-					Provider:        providerName,
-					Data:            data,
-					Path:            path,
-					DefaultFileName: fileName,
-				})
-				if err != nil {
-					return err
-				}
-				_, _ = fmt.Fprintf(os.Stderr, fmtDataWrittenTo, out)
-			}
-
-			if c.Bool("stdout") {
+			if stdout {
 				if err = output2.PrettyPrintJSON(data); err != nil {
 					return fmt.Errorf("error printing data to stdout: %w", err)
 				}
 			}
 
-			return nil
+			return writeOutputs(path, false, SaveFileInput{
+				Provider:        providerName,
+				DefaultFileName: fileName,
+				Data:            data,
+			})
 		},
 	}
 }

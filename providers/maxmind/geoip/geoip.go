@@ -5,10 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
@@ -16,22 +18,26 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func init() {
-	lvl, ok := os.LookupEnv("PF_LOG")
-	// LOG_LEVEL not set, default to info
-	if !ok {
-		lvl = "info"
-	}
+var configureLogrusOnce sync.Once
 
-	ll, err := logrus.ParseLevel(lvl)
-	if err != nil {
-		ll = logrus.InfoLevel
-	}
+func configureLogrus() {
+	configureLogrusOnce.Do(func() {
+		lvl, ok := os.LookupEnv("PF_LOG")
+		if !ok {
+			lvl = "info"
+		}
 
-	logrus.SetLevel(ll)
+		ll, err := logrus.ParseLevel(lvl)
+		if err != nil {
+			ll = logrus.InfoLevel
+		}
+
+		logrus.SetLevel(ll)
+	})
 }
 
 func New() GeoIP {
+	configureLogrus()
 	pflog.SetLogLevel()
 
 	c := web.NewHTTPClient()
@@ -73,6 +79,12 @@ const (
 	GeoLite2CountryBlocksIPv4CSVFileName  = "GeoLite2-Country-Blocks-IPv4.csv"
 	GeoLite2CountryBlocksIPv6CSVFileName  = "GeoLite2-Country-Blocks-IPv6.csv"
 	GeoLite2CountryLocationsEnCSVFileName = "GeoLite2-Country-Locations-en.csv"
+	expectedFileNameParts                 = 2
+)
+
+const (
+	maxFileUncompressedSize    uint64 = 512 << 20 // 512 MiB
+	maxArchiveUncompressedSize        = 2 << 30   // 2 GiB
 )
 
 func ConstructDownloadURL(licenseKey, edition, dbName, dbFormat string) string {
@@ -210,15 +222,15 @@ type FetchFilesOutput struct {
 	CountryDataPath           string
 }
 
-func UnzipFiles(src, dest string) error {
+func UnzipFiles(src, dest string) (err error) {
 	r, err := zip.OpenReader(src)
 	if err != nil {
 		return err
 	}
 
 	defer func() {
-		if err = r.Close(); err != nil {
-			panic(err)
+		if cerr := r.Close(); err == nil && cerr != nil {
+			err = cerr
 		}
 	}()
 
@@ -226,65 +238,76 @@ func UnzipFiles(src, dest string) error {
 		return err
 	}
 
-	// Closure to address file descriptors issue with all the deferred .Close() methods
-	extractAndWriteFile := func(f *zip.File) error {
-		var rc io.ReadCloser
+	cleanDest := filepath.Clean(dest)
+	var totalUncompressed uint64
 
-		rc, err = f.Open()
-		if err != nil {
-			return err
-		}
-
-		defer func() {
-			if err = rc.Close(); err != nil {
-				panic(err)
-			}
-		}()
-
-		path := filepath.Join(dest, f.Name)
-
-		if !strings.HasPrefix(path, filepath.Clean(dest)+string(os.PathSeparator)) {
-			return fmt.Errorf("illegal file path: %s", path)
-		}
-
-		if f.FileInfo().IsDir() {
-			if err = os.MkdirAll(path, 0o750); err != nil {
-				return err
-			}
-		} else {
-			if err = os.MkdirAll(filepath.Dir(path), 0o750); err != nil {
-				return err
-			}
-
-			var f1 *os.File
-			f1, err = os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
-			if err != nil {
-				return err
-			}
-
-			defer func() {
-				if err = f1.Close(); err != nil {
-					panic(err)
-				}
-			}()
-
-			_, err = io.Copy(f1, rc)
-			if err != nil {
-				return err
-			}
-		}
-
-		return nil
-	}
-
-	for _, f := range r.File {
-		err = extractAndWriteFile(f)
-		if err != nil {
-			return err
+	for _, file := range r.File {
+		extractErr := extractFile(file, cleanDest, &totalUncompressed)
+		if extractErr != nil {
+			return extractErr
 		}
 	}
 
-	return err
+	return nil
+}
+
+func extractFile(f *zip.File, dest string, totalUncompressed *uint64) error {
+	if f.UncompressedSize64 > maxFileUncompressedSize {
+		return fmt.Errorf("file too large: %s", f.Name)
+	}
+
+	if *totalUncompressed+f.UncompressedSize64 > maxArchiveUncompressedSize {
+		return fmt.Errorf("archive too large: %s", f.Name)
+	}
+
+	relativePath := filepath.Clean(f.Name)
+	if relativePath == ".." || strings.HasPrefix(relativePath, ".."+string(os.PathSeparator)) {
+		return fmt.Errorf("illegal file path: %s", f.Name)
+	}
+
+	targetPath := filepath.Join(dest, relativePath)
+	if !strings.HasPrefix(targetPath, dest+string(os.PathSeparator)) && targetPath != dest {
+		return fmt.Errorf("illegal file path: %s", f.Name)
+	}
+
+	rc, err := f.Open()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = rc.Close()
+	}()
+
+	if f.FileInfo().IsDir() {
+		return os.MkdirAll(targetPath, 0o750)
+	}
+
+	dirErr := os.MkdirAll(filepath.Dir(targetPath), 0o750)
+	if dirErr != nil {
+		return dirErr
+	}
+
+	file, err := os.OpenFile(targetPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = file.Close()
+	}()
+
+	size := f.UncompressedSize64
+	if size > uint64(math.MaxInt64) {
+		return fmt.Errorf("file too large: %s", f.Name)
+	}
+
+	limitedReader := io.LimitReader(rc, int64(size))
+	if _, err = io.Copy(file, limitedReader); err != nil {
+		return err
+	}
+
+	*totalUncompressed += f.UncompressedSize64
+
+	return nil
 }
 
 func CheckFileExists(filePath string) (bool, error) {
@@ -375,7 +398,7 @@ func GetVersionFromZipFilePath(in string) (string, error) {
 	fNameWithoutExt := fileNameWithoutExtension(filepath.Base(in))
 
 	fNameParts := strings.Split(fNameWithoutExt, "_")
-	if len(fNameParts) != 2 {
+	if len(fNameParts) != expectedFileNameParts {
 		return "", fmt.Errorf("filename should be in format GeoLite2-<Type>-CSV_YYMMDD.zip but presented was '%s'", in)
 	}
 
@@ -523,29 +546,29 @@ func (gc *GeoIP) FetchAllFiles() (FetchFilesOutput, error) {
 	output.ASNIPv6FilePath = asnOut.IPv6FilePath
 	output.ASNVersion = asnOut.Version
 
-	CountryOut, err := gc.FetchCountryFiles()
+	countryOut, err := gc.FetchCountryFiles()
 	if err != nil {
 		return FetchFilesOutput{}, err
 	}
 
-	output.CountryCompressedFilePath = CountryOut.CompressedPath
-	output.CountryIPv4FilePath = CountryOut.IPv4FilePath
-	output.CountryIPv6FilePath = CountryOut.IPv6FilePath
-	output.CountryLocationsFilePath = CountryOut.LocationsFilePath
-	output.CountryVersion = CountryOut.Version
+	output.CountryCompressedFilePath = countryOut.CompressedPath
+	output.CountryIPv4FilePath = countryOut.IPv4FilePath
+	output.CountryIPv6FilePath = countryOut.IPv6FilePath
+	output.CountryLocationsFilePath = countryOut.LocationsFilePath
+	output.CountryVersion = countryOut.Version
 
-	CityOut, err := gc.FetchCityFiles()
+	cityOut, err := gc.FetchCityFiles()
 	if err != nil {
 		logrus.Errorf("%s | %s", pflog.GetFunctionName(), err.Error())
 
 		return FetchFilesOutput{}, err
 	}
 
-	output.CityCompressedFilePath = CityOut.CompressedPath
-	output.CityIPv4FilePath = CityOut.IPv4FilePath
-	output.CityIPv6FilePath = CityOut.IPv6FilePath
-	output.CityLocationsFilePath = CityOut.LocationsFilePath
-	output.CityVersion = CityOut.Version
+	output.CityCompressedFilePath = cityOut.CompressedPath
+	output.CityIPv4FilePath = cityOut.IPv4FilePath
+	output.CityIPv6FilePath = cityOut.IPv6FilePath
+	output.CityLocationsFilePath = cityOut.LocationsFilePath
+	output.CityVersion = cityOut.Version
 
 	return output, nil
 }
@@ -570,31 +593,31 @@ func (gc *GeoIP) FetchFiles(input FetchFilesInput) (FetchFilesOutput, error) {
 	}
 
 	if input.Country {
-		CountryOut, err := gc.FetchCountryFiles()
+		countryOut, err := gc.FetchCountryFiles()
 		if err != nil {
 			return FetchFilesOutput{}, err
 		}
 
-		output.CountryDataPath = CountryOut.DataRoot
-		output.CountryCompressedFilePath = CountryOut.CompressedPath
-		output.CountryIPv4FilePath = CountryOut.IPv4FilePath
-		output.CountryIPv6FilePath = CountryOut.IPv6FilePath
-		output.CountryLocationsFilePath = CountryOut.LocationsFilePath
-		output.CountryVersion = CountryOut.Version
+		output.CountryDataPath = countryOut.DataRoot
+		output.CountryCompressedFilePath = countryOut.CompressedPath
+		output.CountryIPv4FilePath = countryOut.IPv4FilePath
+		output.CountryIPv6FilePath = countryOut.IPv6FilePath
+		output.CountryLocationsFilePath = countryOut.LocationsFilePath
+		output.CountryVersion = countryOut.Version
 	}
 
 	if input.City {
-		CityOut, err := gc.FetchCityFiles()
+		cityOut, err := gc.FetchCityFiles()
 		if err != nil {
 			return FetchFilesOutput{}, err
 		}
 
-		output.CityDataPath = CityOut.DataRoot
-		output.CityCompressedFilePath = CityOut.CompressedPath
-		output.CityIPv4FilePath = CityOut.IPv4FilePath
-		output.CityIPv6FilePath = CityOut.IPv6FilePath
-		output.CityLocationsFilePath = CityOut.LocationsFilePath
-		output.CityVersion = CityOut.Version
+		output.CityDataPath = cityOut.DataRoot
+		output.CityCompressedFilePath = cityOut.CompressedPath
+		output.CityIPv4FilePath = cityOut.IPv4FilePath
+		output.CityIPv6FilePath = cityOut.IPv6FilePath
+		output.CityLocationsFilePath = cityOut.LocationsFilePath
+		output.CityVersion = cityOut.Version
 	}
 
 	return output, nil

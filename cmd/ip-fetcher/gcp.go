@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -46,21 +45,19 @@ func gcpCmd() *cli.Command {
 				Usage: "json, yaml, lines, csv", Value: "json", Aliases: []string{"f"},
 			},
 			&cli.BoolFlag{
-				Name:  "lines",
+				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("Path"))
-			if path == "" && !c.Bool("stdout") {
-				_ = cli.ShowSubcommandHelp(c)
-				fmt.Println("\n" + errStdoutOrPathRequired)
-				os.Exit(1)
+			path, stdout, err := resolveOutputTargets(c)
+			if err != nil {
+				return err
 			}
 
 			a := gcp.New()
 
-			if os.Getenv("IP_FETCHER_MOCK_GCP") == "true" {
+			if isEnvEnabled("IP_FETCHER_MOCK_GCP") {
 				defer gock.Off()
 				urlBase := gcp.DownloadURL
 				u, _ := url.Parse(urlBase)
@@ -72,18 +69,17 @@ func gcpCmd() *cli.Command {
 			}
 
 			var doc gcp.Doc
-			var err error
 			// fetch document
 			if doc, err = a.Fetch(); err != nil {
 				return err
 			}
 
 			format := c.String("format")
-			if c.Bool("lines") {
-				format = "lines"
+			if c.Bool(formatLines) {
+				format = formatLines
 			}
 
-			return output(doc, format, c.Bool("stdout"), c.String("Path"))
+			return output(doc, format, stdout, path)
 		},
 	}
 }
@@ -97,10 +93,20 @@ func output(doc gcp.Doc, format string, stdout bool, path string) error {
 	switch format {
 	case "csv":
 		data = csv(doc)
-	case "lines":
+	case formatLines:
 		data = lines(doc)
 	case "yaml":
-		if data, err = yaml.Marshal(doc); err != nil {
+		jsonPayload, marshalErr := json.Marshal(doc)
+		if marshalErr != nil {
+			return marshalErr
+		}
+
+		var intermediate map[string]any
+		if err = json.Unmarshal(jsonPayload, &intermediate); err != nil {
+			return err
+		}
+
+		if data, err = yaml.Marshal(intermediate); err != nil {
 			return err
 		}
 	case "json":
@@ -109,31 +115,16 @@ func output(doc gcp.Doc, format string, stdout bool, path string) error {
 		}
 	}
 
-	if stdout {
-		fmt.Printf("%s\n", data)
+	defaultName := fileNameOutputGCP
+	if format == formatLines {
+		defaultName = fileNameLinesGCP
 	}
 
-	if path != "" {
-		var out string
-		df := fileNameOutputGCP
-		if format == "lines" {
-			df = fileNameLinesGCP
-		}
-		if out, err = SaveFile(SaveFileInput{
-			Provider:        providerNameGCP,
-			Data:            data,
-			Path:            path,
-			DefaultFileName: df,
-		}); err != nil {
-			return err
-		}
-
-		if _, err = fmt.Fprintf(os.Stderr, fmtDataWrittenTo, out); err != nil {
-			return err
-		}
-	}
-
-	return err
+	return writeOutputs(path, stdout, SaveFileInput{
+		Provider:        providerNameGCP,
+		DefaultFileName: defaultName,
+		Data:            data,
+	})
 }
 
 func lines(in gcp.Doc) []byte {

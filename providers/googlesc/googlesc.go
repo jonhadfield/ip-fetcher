@@ -45,8 +45,8 @@ type Googlesc struct {
 }
 
 type RawDoc struct {
-	CreationTime  string `json:"creationTime"`
-	LastRequested time.Time
+	CreationTime  string            `json:"creationTime"`
+	LastRequested time.Time         `json:"-" yaml:"-"`
 	Entries       []json.RawMessage `json:"prefixes"`
 }
 
@@ -109,7 +109,6 @@ func castEntries(prefixes []json.RawMessage) ([]IPv4Entry, []IPv6Entry, error) {
 	var (
 		ipv4 []IPv4Entry
 		ipv6 []IPv6Entry
-		err  error
 	)
 	for _, pr := range prefixes {
 		var ipv4entry RawIPv4Entry
@@ -117,8 +116,7 @@ func castEntries(prefixes []json.RawMessage) ([]IPv4Entry, []IPv6Entry, error) {
 		var ipv6entry RawIPv6Entry
 
 		// try 4
-		err = json.Unmarshal(pr, &ipv4entry)
-		if err == nil {
+		if err := json.Unmarshal(pr, &ipv4entry); err == nil {
 			ipv4Prefix, parseError := netip.ParsePrefix(ipv4entry.IPv4Prefix)
 			if parseError == nil {
 				ipv4 = append(ipv4, IPv4Entry{
@@ -130,8 +128,8 @@ func castEntries(prefixes []json.RawMessage) ([]IPv4Entry, []IPv6Entry, error) {
 		}
 
 		// try 6
-		err = json.Unmarshal(pr, &ipv6entry)
-		if err == nil {
+		ipv6Err := json.Unmarshal(pr, &ipv6entry)
+		if ipv6Err == nil {
 			ipv6Prefix, parseError := netip.ParsePrefix(ipv6entry.IPv6Prefix)
 			if parseError != nil {
 				return ipv4, ipv6, parseError
@@ -144,9 +142,7 @@ func castEntries(prefixes []json.RawMessage) ([]IPv4Entry, []IPv6Entry, error) {
 			continue
 		}
 
-		if err != nil {
-			return ipv4, ipv6, err
-		}
+		return ipv4, ipv6, ipv6Err
 	}
 
 	return ipv4, ipv6, nil
@@ -169,7 +165,7 @@ type IPv6Entry struct {
 }
 
 type Doc struct {
-	CreationTime time.Time
-	IPv4Prefixes []IPv4Entry
-	IPv6Prefixes []IPv6Entry
+	CreationTime time.Time   `json:"creationTime" yaml:"creationTime"`
+	IPv4Prefixes []IPv4Entry `json:"ipv4Prefixes" yaml:"ipv4Prefixes"`
+	IPv6Prefixes []IPv6Entry `json:"ipv6Prefixes" yaml:"ipv6Prefixes"`
 }

@@ -6,4 +6,5 @@ const (
 	usageWhereToSaveFile    = "where to save the file"
 	usageLinesOutput        = "output newline separated ip prefixes"
 	fmtDataWrittenTo        = "Data written to %s\n"
+	formatLines             = "lines"
 )

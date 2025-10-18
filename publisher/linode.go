@@ -22,7 +22,24 @@ func getLinodeJSON() ([]byte, error) {
 		return nil, err
 	}
 
-	return json.MarshalIndent(data, "", "  ")
+	records := make([]map[string]any, 0, len(data.Records))
+	for _, record := range data.Records {
+		records = append(records, map[string]any{
+			"prefix":     record.Prefix.String(),
+			"alpha2code": record.Alpha2Code,
+			"region":     record.Region,
+			"city":       record.City,
+			"postalCode": record.PostalCode,
+		})
+	}
+
+	intermediate := map[string]any{
+		"lastModified": data.LastModified,
+		"etag":         data.ETag,
+		"records":      records,
+	}
+
+	return json.MarshalIndent(intermediate, "", "  ")
 }
 
 func syncLinode(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {

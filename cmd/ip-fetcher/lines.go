@@ -1,58 +1,85 @@
 package main
 
 import (
-	"fmt"
+	"errors"
 	"net/netip"
 	"reflect"
 	"strings"
 )
 
+var errNoPrefixes = errors.New("no prefixes found")
+
 // docToLines converts any provider document or prefix slice to newline separated IP prefixes.
 func docToLines(doc any) ([]byte, error) {
 	if doc == nil {
-		return nil, fmt.Errorf("no prefixes found")
+		return nil, errNoPrefixes
 	}
 
-	var prefixes []string
-	addrType := reflect.TypeOf(netip.Addr{})
-	prefixType := reflect.TypeOf(netip.Prefix{})
-
-	var walk func(val reflect.Value)
-	walk = func(val reflect.Value) {
-		if !val.IsValid() {
-			return
-		}
-		if val.Type() == prefixType {
-			prefixes = append(prefixes, val.Interface().(netip.Prefix).String())
-			return
-		}
-		if val.Type() == addrType {
-			prefixes = append(prefixes, val.Interface().(netip.Addr).String())
-			return
-		}
-		switch val.Kind() {
-		case reflect.Ptr:
-			if !val.IsNil() {
-				walk(val.Elem())
-			}
-		case reflect.Struct:
-			for i := 0; i < val.NumField(); i++ {
-				walk(val.Field(i))
-			}
-		case reflect.Slice, reflect.Array:
-			for i := 0; i < val.Len(); i++ {
-				walk(val.Index(i))
-			}
-		}
-	}
-
-	walk(reflect.ValueOf(doc))
-
+	prefixes := collectPrefixes(doc)
 	if len(prefixes) == 0 {
-		return nil, fmt.Errorf("no prefixes found")
+		return nil, errNoPrefixes
 	}
 
 	joined := strings.Join(prefixes, "\n") + "\n"
 
 	return []byte(joined), nil
+}
+
+func collectPrefixes(input any) []string { //nolint:gocognit
+	prefixes := make([]string, 0)
+
+	var walk func(value any)
+	walk = func(value any) {
+		switch typed := value.(type) {
+		case netip.Prefix:
+			prefixes = append(prefixes, typed.String())
+			return
+		case netip.Addr:
+			prefixes = append(prefixes, typed.String())
+			return
+		case []netip.Prefix:
+			for _, prefix := range typed {
+				walk(prefix)
+			}
+			return
+		case []netip.Addr:
+			for _, addr := range typed {
+				walk(addr)
+			}
+			return
+		}
+
+		rv := reflect.ValueOf(value)
+		if !rv.IsValid() {
+			return
+		}
+
+		if rv.Kind() == reflect.Pointer {
+			if rv.IsNil() {
+				return
+			}
+
+			walk(rv.Elem().Interface())
+			return
+		}
+
+		if rv.Kind() == reflect.Struct {
+			n := rv.NumField()
+			for i := range n {
+				walk(rv.Field(i).Interface())
+			}
+			return
+		}
+
+		if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+			n := rv.Len()
+			for i := range n {
+				walk(rv.Index(i).Interface())
+			}
+		}
+	}
+
+	walk(input)
+
+	return prefixes
 }

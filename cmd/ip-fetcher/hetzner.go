@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"os"
-	"strings"
 
 	"github.com/jonhadfield/ip-fetcher/providers/hetzner"
 	"github.com/urfave/cli/v2"
@@ -39,18 +37,14 @@ func hetznerCmd() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("Path"))
-			if path == "" && !c.Bool("stdout") {
-				_ = cli.ShowSubcommandHelp(c)
-
-				fmt.Println("\n" + errStdoutOrPathRequired)
-
-				os.Exit(1)
+			path, stdout, err := resolveOutputTargets(c)
+			if err != nil {
+				return err
 			}
 
 			h := hetzner.New()
 
-			if os.Getenv("IP_FETCHER_MOCK_HETZNER") == "true" {
+			if isEnvEnabled("IP_FETCHER_MOCK_HETZNER") {
 				defer gock.Off()
 				urlBase := fmt.Sprintf(hetzner.DownloadURL, "24940")
 				u, _ := url.Parse(urlBase)
@@ -76,25 +70,11 @@ func hetznerCmd() *cli.Command {
 				return fmt.Errorf("failed to marshal Hetzner Data: %w", err)
 			}
 
-			var out string
-			if path != "" {
-				out, err = SaveFile(SaveFileInput{
-					Provider:        providerName,
-					Data:            asnPrefixes,
-					Path:            path,
-					DefaultFileName: fileName,
-				})
-				if err != nil {
-					return err
-				}
-				_, _ = fmt.Fprintf(os.Stderr, fmtDataWrittenTo, out)
-			}
-
-			if c.Bool("stdout") {
-				fmt.Printf("%s\n", asnPrefixes)
-			}
-
-			return nil
+			return writeOutputs(path, stdout, SaveFileInput{
+				Provider:        providerName,
+				DefaultFileName: fileName,
+				Data:            asnPrefixes,
+			})
 		},
 	}
 }

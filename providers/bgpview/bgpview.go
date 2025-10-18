@@ -14,7 +14,7 @@ import (
 
 const DefaultURL = "https://api.bgpview.io/asn/%s/prefixes"
 
-// Response represents the BGPView API response structure
+// Response represents the BGPView API response structure.
 type Response struct {
 	Status        string `json:"status"`
 	StatusMessage string `json:"status_message"`
@@ -59,14 +59,14 @@ type Response struct {
 	} `json:"@meta"`
 }
 
-// Doc represents a document containing IP prefixes
+// Doc represents a document containing IP prefixes.
 type Doc struct {
 	IPv4Prefixes []netip.Prefix `json:"IPv4Prefixes"`
 	IPv6Prefixes []netip.Prefix `json:"IPv6Prefixes"`
 }
 
-// FetchData fetches IP prefixes for multiple ASNs from BGPView API
-func FetchData(client *retryablehttp.Client, downloadURL string, asns []string, providerName string, timeout time.Duration) ([]byte, http.Header, int, error) {
+// FetchData fetches IP prefixes for multiple ASNs from the BGPView API.
+func FetchData(client *retryablehttp.Client, downloadURL string, asns []string, providerName string, timeout time.Duration) ([]byte, http.Header, int, error) { //nolint:gocognit
 	var (
 		headers http.Header
 		status  int
@@ -141,7 +141,7 @@ func FetchData(client *retryablehttp.Client, downloadURL string, asns []string, 
 	return jRaw, headers, status, nil
 }
 
-// ProcessData unmarshals the data into a Doc
+// ProcessData unmarshals the data into a Doc.
 func ProcessData(data []byte, providerName string) (Doc, error) {
 	var doc Doc
 	err := json.Unmarshal(data, &doc)

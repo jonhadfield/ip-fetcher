@@ -15,12 +15,13 @@ import (
 )
 
 const (
-	providerName  = "cloudflare"
-	IPsV4Filename = "ips-v4"
-	IPsV6Filename = "ips-v6"
+	providerName    = "cloudflare"
+	IPsV4Filename   = "ips-v4"
+	IPsV6Filename   = "ips-v6"
+	messageCapacity = 2
 )
 
-func cloudflareCmd() *cli.Command {
+func cloudflareCmd() *cli.Command { //nolint:gocognit,funlen,nestif
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch Cloudflare ip ranges",
@@ -51,24 +52,14 @@ func cloudflareCmd() *cli.Command {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("Path"))
-
-			four := c.Bool("4")
-			six := c.Bool("6")
-			stdOut := c.Bool("stdout")
-			var msg string
-
-			if path == "" && !stdOut {
-				// nolint:errcheck
-				_ = cli.ShowSubcommandHelp(c)
-
-				fmt.Println("\n" + errStdoutOrPathRequired)
-				os.Exit(1)
+			path, stdOut, err := resolveOutputTargets(c)
+			if err != nil {
+				return err
 			}
 
 			cf := cloudflare.New()
 
-			if os.Getenv("IP_FETCHER_MOCK_CLOUDFLARE") == "true" {
+			if isEnvEnabled("IP_FETCHER_MOCK_CLOUDFLARE") {
 				u4, _ := url.Parse(cloudflare.DefaultIPv4URL)
 				u6, _ := url.Parse(cloudflare.DefaultIPv6URL)
 
@@ -91,61 +82,69 @@ func cloudflareCmd() *cli.Command {
 				gock.InterceptClient(cf.Client.HTTPClient)
 			}
 
-			if four || (!four && !six) {
-				dataFour, _, _, err := cf.FetchIPv4Data()
-				if err != nil {
-					return err
-				}
-				if stdOut {
-					fmt.Printf("%s\n", dataFour)
-				}
-				if path != "" {
-					p := filepath.Join(path, IPsV4Filename)
-
-					var out string
-					if out, err = SaveFile(SaveFileInput{
-						Provider: providerName,
-						Data:     dataFour,
-						Path:     p,
-					}); err != nil {
-						return err
-					}
-
-					msg = fmt.Sprintf("ipv4 Data written to %s\n", out)
-				}
+			processIPv4 := c.Bool("4")
+			processIPv6 := c.Bool("6")
+			if !processIPv4 && !processIPv6 {
+				processIPv4 = true
+				processIPv6 = true
 			}
 
-			if six || (!four && !six) {
-				dataSix, _, _, err := cf.FetchIPv6Data()
-				if err != nil {
-					return err
+			messages := make([]string, 0, messageCapacity)
+
+			if processIPv4 { //nolint:nestif
+				ipv4Data, _, _, fetchErr := cf.FetchIPv4Data()
+				if fetchErr != nil {
+					return fetchErr
 				}
 
 				if stdOut {
-					fmt.Printf("%s\n", dataSix)
+					fmt.Printf("%s\n", ipv4Data)
 				}
 
 				if path != "" {
-					p := filepath.Join(path, IPsV6Filename)
-
-					var out string
-					if out, err = SaveFile(SaveFileInput{
+					savedPath, saveErr := SaveFile(SaveFileInput{
 						Provider: providerName,
-						Data:     dataSix,
-						Path:     p,
-					}); err != nil {
-						return err
+						Data:     ipv4Data,
+						Path:     filepath.Join(path, IPsV4Filename),
+					})
+					if saveErr != nil {
+						return saveErr
 					}
 
-					msg += fmt.Sprintf("ipv6 Data written to %s\n", out)
+					messages = append(messages, fmt.Sprintf("ipv4 Data written to %s", savedPath))
 				}
 			}
 
-			if msg != "" {
+			if processIPv6 { //nolint:nestif
+				ipv6Data, _, _, fetchErr := cf.FetchIPv6Data()
+				if fetchErr != nil {
+					return fetchErr
+				}
+
+				if stdOut {
+					fmt.Printf("%s\n", ipv6Data)
+				}
+
+				if path != "" {
+					savedPath, saveErr := SaveFile(SaveFileInput{
+						Provider: providerName,
+						Data:     ipv6Data,
+						Path:     filepath.Join(path, IPsV6Filename),
+					})
+					if saveErr != nil {
+						return saveErr
+					}
+
+					messages = append(messages, fmt.Sprintf("ipv6 Data written to %s", savedPath))
+				}
+			}
+
+			if len(messages) > 0 {
+				notification := strings.Join(messages, "\n") + "\n"
 				if stdOut {
 					fmt.Println()
-					_, _ = os.Stderr.WriteString(msg)
 				}
+				_, _ = os.Stderr.WriteString(notification)
 			}
 
 			return nil

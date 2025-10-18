@@ -96,7 +96,7 @@ func (doc *Doc) UnmarshalJSON(p []byte) error {
 
 			prefix, err = netip.ParsePrefix(rawCIDR.CIDR)
 			if err != nil {
-				return nil
+				return err
 			}
 
 			finalCIDR.CIDR = prefix

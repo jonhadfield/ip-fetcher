@@ -22,20 +22,21 @@ import (
 )
 
 const (
-	ShortName           = "icloudpr"
-	FullName            = "iCloud Private Relay"
-	HostType            = "anonymiser"
-	SourceURL           = "-"
-	DownloadURL         = "https://mask-api.icloud.com/egress-ip-ranges.csv"
-	errFailedToDownload = "failed to download iCloud Private Relay prefixes document "
+	ShortName              = "icloudpr"
+	FullName               = "iCloud Private Relay"
+	HostType               = "anonymiser"
+	SourceURL              = "-"
+	DownloadURL            = "https://mask-api.icloud.com/egress-ip-ranges.csv"
+	errFailedToDownload    = "failed to download iCloud Private Relay prefixes document "
+	ipv6SeparatorThreshold = 2
 )
 
 func IsIPv4(address string) bool {
-	return strings.Count(address, ":") < 2
+	return strings.Count(address, ":") < ipv6SeparatorThreshold
 }
 
 func IsIPv6(address string) bool {
-	return strings.Count(address, ":") >= 2
+	return strings.Count(address, ":") >= ipv6SeparatorThreshold
 }
 
 func extractNetFromString(in string) string {
@@ -106,9 +107,9 @@ func (a *ICloudPrivateRelay) FetchData() ([]byte, http.Header, int, error) {
 }
 
 type Doc struct {
-	LastModified time.Time
-	ETag         string
-	Records      []Record
+	LastModified time.Time `json:"lastModified" yaml:"lastModified"`
+	ETag         string    `json:"etag" yaml:"etag"`
+	Records      []Record  `json:"records" yaml:"records"`
 }
 
 func (a *ICloudPrivateRelay) Fetch() (Doc, error) {

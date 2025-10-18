@@ -184,7 +184,7 @@ func TestDownloadFileWithMissingDir(t *testing.T) {
 		Get(u.Path).
 		Reply(http.StatusOK).
 		File("testdata/mytextfile.txt").
-		SetHeader("hello", "World")
+		SetHeader("Hello", "World")
 
 	c := web.NewHTTPClient()
 	gock.InterceptClient(c.HTTPClient)
@@ -263,7 +263,7 @@ func TestHTTPGet(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, status)
 	require.Equal(t, "hello world", string(b))
-	require.Equal(t, "World", headers.Get("hello"))
+	require.Equal(t, "World", headers.Get("Hello"))
 }
 
 func TestMaskSecrets(t *testing.T) {

@@ -185,9 +185,9 @@ func DownloadFile(client *retryablehttp.Client, u, path string) (string, error) 
 
 	switch {
 	case info.Exists && info.IsDir:
-		pU, err := url.Parse(u)
-		if err != nil {
-			return "", err
+		pU, parseErr := url.Parse(u)
+		if parseErr != nil {
+			return "", parseErr
 		}
 		path = filepath.Join(path, filepath.Base(pU.Path))
 	case info.Exists || info.ParentExists:

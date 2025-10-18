@@ -14,7 +14,7 @@ func SaveFile(i SaveFileInput) (string, error) {
 		return "", err
 	}
 
-	if err := os.WriteFile(i.Path, i.Data, 0o644); err != nil {
+	if err := os.WriteFile(i.Path, i.Data, 0o600); err != nil {
 		return "", err
 	}
 

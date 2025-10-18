@@ -12,7 +12,7 @@ import (
 	"gopkg.in/h2non/gock.v1"
 )
 
-const TestASN = "24940"
+const TestASN = "20473"
 
 func TestFetch(t *testing.T) {
 	u, err := url.Parse(fmt.Sprintf(vultr.DownloadURL, TestASN))
@@ -30,6 +30,6 @@ func TestFetch(t *testing.T) {
 	doc, err := ac.Fetch()
 	require.NoError(t, err)
 	require.NotEmpty(t, doc)
-	require.Contains(t, doc.IPv4Prefixes, netip.MustParsePrefix("192.0.2.0/24"))
+	require.Contains(t, doc.IPv4Prefixes, netip.MustParsePrefix("5.102.113.0/24"))
 	require.Contains(t, doc.IPv6Prefixes, netip.MustParsePrefix("2a01:4f8::/32"))
 }

@@ -72,7 +72,7 @@ func TestFetchBlackListData(t *testing.T) {
 	require.Equal(t, http.StatusOK, status)
 }
 
-func TestFetchBlackList(t *testing.T) {
+func TestFetchBlackList(t *testing.T) { //nolint:nestif
 	ac := abuseipdb.New()
 	ac.APIKey = "test-key"
 	ac.APIURL = "https://example.com"
@@ -99,7 +99,7 @@ func TestFetchBlackList(t *testing.T) {
 	expectedAddr := netip.MustParseAddr("92.118.161.25")
 	expectedReportedAt := "2022-07-06T21:17:00+00:00"
 	for _, r := range doc.Records {
-		if r.IPAddress == expectedAddr {
+		if r.IPAddress == expectedAddr { //nolint:nestif
 			if r.CountryCode == "US" {
 				if r.AbuseConfidenceScore == 100 {
 					expectedReportedAt, _ := time.Parse(abuseipdb.TimeFormat, expectedReportedAt)

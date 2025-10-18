@@ -66,9 +66,9 @@ func (a *DigitalOcean) FetchData() ([]byte, http.Header, int, error) {
 }
 
 type Doc struct {
-	LastModified time.Time
-	ETag         string
-	Records      []Record
+	LastModified time.Time `json:"lastModified" yaml:"lastModified"`
+	ETag         string    `json:"etag" yaml:"etag"`
+	Records      []Record  `json:"records" yaml:"records"`
 }
 
 func (a *DigitalOcean) Fetch() (Doc, error) {

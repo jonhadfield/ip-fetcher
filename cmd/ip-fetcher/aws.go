@@ -1,26 +1,23 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
-	"os"
-	"strings"
 
 	"github.com/jonhadfield/ip-fetcher/providers/aws"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/h2non/gock.v1"
 )
 
-func awsCmd() *cli.Command {
-	const (
-		providerName  = "aws"
-		fileName      = "ip-ranges.json"
-		fileNameLines = "aws-prefixes.txt"
-	)
+const (
+	awsProviderName  = "aws"
+	awsFileName      = "ip-ranges.json"
+	awsFileNameLines = "aws-prefixes.txt"
+)
 
+func awsCmd() *cli.Command {
 	return &cli.Command{
-		Name:      providerName,
+		Name:      awsProviderName,
 		HelpName:  "- fetch AWS prefixes",
 		Usage:     "Amazon Web Services",
 		UsageText: "ip-fetcher aws {--stdout | --Path FILE} [--lines]",
@@ -39,74 +36,80 @@ func awsCmd() *cli.Command {
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
 			},
 			&cli.BoolFlag{
-				Name:  "lines",
+				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
-			path := strings.TrimSpace(c.String("Path"))
-			if path == "" && !c.Bool("stdout") {
-				_ = cli.ShowSubcommandHelp(c)
-
-				fmt.Println("\n" + errStdoutOrPathRequired)
-
-				os.Exit(1)
+			path, stdout, err := resolveOutputTargets(c)
+			if err != nil {
+				return err
 			}
 
 			a := aws.New()
 
-			if os.Getenv("IP_FETCHER_MOCK_AWS") == "true" {
+			mockEnabled, err := configureAWSMock(&a)
+			if err != nil {
+				return err
+			}
+			if mockEnabled {
 				defer gock.Off()
-				urlBase := aws.DownloadURL
-				u, _ := url.Parse(urlBase)
-				gock.New(urlBase).
-					Get(u.Path).
-					Reply(http.StatusOK).
-					File("../../providers/aws/testdata/ip-ranges.json")
-				gock.InterceptClient(a.Client.HTTPClient)
 			}
 
-			var data []byte
-			var err error
-			if c.Bool("lines") {
-				var doc aws.Doc
-				if doc, _, err = a.Fetch(); err != nil {
-					return err
-				}
-				if data, err = docToLines(doc); err != nil {
-					return err
-				}
-			} else {
-				data, _, _, err = a.FetchData()
-				if err != nil {
-					return err
-				}
+			data, fileName, err := awsData(&a, c.Bool(formatLines))
+			if err != nil {
+				return err
 			}
 
-			if path != "" {
-				var out string
-
-				df := fileName
-				if c.Bool("lines") {
-					df = fileNameLines
-				}
-				if out, err = SaveFile(SaveFileInput{
-					Provider:        providerName,
-					Data:            data,
-					Path:            path,
-					DefaultFileName: df,
-				}); err != nil {
-					return err
-				}
-
-				_, _ = fmt.Fprintf(os.Stderr, fmtDataWrittenTo, out)
-			}
-
-			if c.Bool("stdout") {
-				fmt.Printf("%s\n", data)
-			}
-
-			return nil
+			return writeOutputs(path, stdout, SaveFileInput{
+				Provider:        awsProviderName,
+				DefaultFileName: fileName,
+				Data:            data,
+			})
 		},
 	}
+}
+
+func configureAWSMock(a *aws.AWS) (bool, error) {
+	if !isEnvEnabled("IP_FETCHER_MOCK_AWS") {
+		return false, nil
+	}
+
+	urlBase := aws.DownloadURL
+	u, err := url.Parse(urlBase)
+	if err != nil {
+		return false, err
+	}
+
+	gock.New(urlBase).
+		Get(u.Path).
+		Reply(http.StatusOK).
+		File("../../providers/aws/testdata/ip-ranges.json")
+
+	gock.InterceptClient(a.Client.HTTPClient)
+
+	return true, nil
+}
+
+func awsData(a *aws.AWS, asLines bool) ([]byte, string, error) {
+	if asLines {
+		doc, _, err := a.Fetch()
+		if err != nil {
+			return nil, "", err
+		}
+
+		data, err := docToLines(doc)
+		if err != nil {
+			return nil, "", err
+		}
+
+		return data, awsFileNameLines, nil
+	}
+
+	data, _, _, err := a.FetchData()
+	if err != nil {
+		return nil, "", err
+	}
+
+	return data, awsFileName, nil
 }

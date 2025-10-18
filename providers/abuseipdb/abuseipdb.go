@@ -46,8 +46,8 @@ type RawBlacklistDoc struct {
 	} `json:"data"`
 }
 
-func retryPolicy(ctx context.Context, resp *http.Response, err error) (bool, error) {
-	if err != nil {
+func retryPolicy(ctx context.Context, resp *http.Response, err error) (bool, error) { //nolint:nestif
+	if err != nil { //nolint:nestif
 		v := &url.Error{}
 		if errors.As(err, &v) {
 			if redirectsErrorRe.MatchString(v.Error()) {
@@ -106,7 +106,7 @@ var (
 	notTrustedErrorRe = regexp.MustCompile(`certificate is not trusted`)
 )
 
-func (a *AbuseIPDB) FetchData() ([]byte, http.Header, int, error) {
+func (a *AbuseIPDB) FetchData() ([]byte, http.Header, int, error) { //nolint:nestif
 	// get download url if not specified
 	if a.APIURL == "" {
 		a.APIURL = APIURL
@@ -156,8 +156,8 @@ func (a *AbuseIPDB) FetchData() ([]byte, http.Header, int, error) {
 }
 
 type Doc struct {
-	GeneratedAt time.Time
-	Records     []Record
+	GeneratedAt time.Time `json:"generatedAt" yaml:"generatedAt"`
+	Records     []Record  `json:"records" yaml:"records"`
 }
 
 func (a *AbuseIPDB) Fetch() (Doc, error) {

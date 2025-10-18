@@ -2,10 +2,8 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
 	_url "github.com/jonhadfield/ip-fetcher/providers/url"
@@ -41,31 +39,26 @@ func urlCmd() *cli.Command {
 		},
 		Action: func(c *cli.Context) error {
 			urlList := c.Args().Slice()
-			path := strings.TrimSpace(c.String("Path"))
-			if path == "" && !c.Bool("stdout") {
-				_ = cli.ShowSubcommandHelp(c)
-
-				fmt.Println("\n" + errStdoutOrPathRequired)
-
-				os.Exit(1)
+			path, stdout, err := resolveOutputTargets(c)
+			if err != nil {
+				return err
 			}
 
 			h := _url.New()
 			var requests []_url.Request
 			for _, u := range urlList {
-				var pURL *url.URL
-				var err error
-				if pURL, err = url.Parse(u); err != nil {
+				parsedURL, parseErr := url.Parse(u)
+				if parseErr != nil {
 					continue
 				}
 
 				requests = append(requests, _url.Request{
-					URL:    pURL,
+					URL:    parsedURL,
 					Method: "GET",
 				})
 			}
 
-			if os.Getenv("IP_FETCHER_MOCK_URL") == "true" {
+			if isEnvEnabled("IP_FETCHER_MOCK_URL") {
 				defer gock.Off()
 				urlBase := "https://www.example.com/files/ips.txt"
 				u, _ := url.Parse(urlBase)
@@ -85,26 +78,13 @@ func urlCmd() *cli.Command {
 				return errors.New("no prefixes found")
 			}
 
-			if path != "" {
-				var out string
+			joined := strings.Join(prefixes, "\n")
 
-				if out, err = SaveFile(SaveFileInput{
-					Provider:        providerName,
-					Data:            []byte(strings.Join(prefixes, "\n")),
-					Path:            path,
-					DefaultFileName: fileName,
-				}); err != nil {
-					return err
-				}
-
-				_, _ = fmt.Fprintf(os.Stderr, fmtDataWrittenTo, out)
-			}
-
-			if c.Bool("stdout") {
-				fmt.Printf("%s\n", strings.Join(prefixes, "\n"))
-			}
-
-			return nil
+			return writeOutputs(path, stdout, SaveFileInput{
+				Provider:        providerName,
+				DefaultFileName: fileName,
+				Data:            []byte(joined),
+			})
 		},
 	}
 }

@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	mainpkg "github.com/jonhadfield/ip-fetcher/cmd/ip-fetcher"
-	"github.com/jonhadfield/ip-fetcher/providers/cloudflare"
 	"github.com/stretchr/testify/require"
 )
 
@@ -51,10 +50,6 @@ func TestCloudflareCmdSavetoPath(t *testing.T) {
 	defer os.Unsetenv("IP_FETCHER_MOCK_CLOUDFLARE")
 
 	tDir := t.TempDir()
-
-	ac := cloudflare.New()
-	ac.IPv4DownloadURL = cloudflare.DefaultIPv4URL
-	ac.IPv6DownloadURL = cloudflare.DefaultIPv6URL
 
 	app := mainpkg.GetApp()
 
@@ -127,10 +122,6 @@ func TestCloudflareCmdStdOutAndFiles(t *testing.T) {
 
 	t.Setenv("IP_FETCHER_MOCK_CLOUDFLARE", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_CLOUDFLARE")
-
-	ac := cloudflare.New()
-	ac.IPv4DownloadURL = cloudflare.DefaultIPv4URL
-	ac.IPv6DownloadURL = cloudflare.DefaultIPv6URL
 
 	// stdout only
 	old := os.Stdout

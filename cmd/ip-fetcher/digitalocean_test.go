@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	mainpkg "github.com/jonhadfield/ip-fetcher/cmd/ip-fetcher"
-	"github.com/jonhadfield/ip-fetcher/providers/digitalocean"
 	"github.com/stretchr/testify/require"
 )
 
@@ -46,9 +45,6 @@ func TestDigitaloceanCmdSavetoPath(t *testing.T) {
 	tDir := t.TempDir()
 	t.Setenv("IP_FETCHER_MOCK_DIGITALOCEAN", "true")
 	defer os.Unsetenv("IP_FETCHER_MOCK_DIGITALOCEAN")
-
-	ac := digitalocean.New()
-	ac.DownloadURL = digitalocean.DigitaloceanDownloadURL
 
 	app := mainpkg.GetApp()
 

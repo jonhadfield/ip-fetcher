@@ -45,9 +45,9 @@ type GCP struct {
 }
 
 type RawDoc struct {
-	SyncToken     string `json:"syncToken"`
-	CreationTime  string `json:"creationTime"`
-	LastRequested time.Time
+	SyncToken     string            `json:"syncToken"`
+	CreationTime  string            `json:"creationTime"`
+	LastRequested time.Time         `json:"-" yaml:"-"`
 	Entries       []json.RawMessage `json:"prefixes"`
 }
 
@@ -152,8 +152,8 @@ type IPv6Entry struct {
 }
 
 type Doc struct {
-	SyncToken    string
-	CreationTime time.Time
-	IPv4Prefixes []IPv4Entry
-	IPv6Prefixes []IPv6Entry
+	SyncToken    string      `json:"syncToken" yaml:"syncToken"`
+	CreationTime time.Time   `json:"creationTime" yaml:"creationTime"`
+	IPv4Prefixes []IPv4Entry `json:"ipv4Prefixes" yaml:"ipv4Prefixes"`
+	IPv6Prefixes []IPv6Entry `json:"ipv6Prefixes" yaml:"ipv6Prefixes"`
 }
