@@ -6,7 +6,7 @@ require (
 	github.com/Danny-Dasilva/CycleTLS/cycletls v1.0.30
 	github.com/agiledragon/gomonkey/v2 v2.13.0
 	github.com/go-git/go-billy/v5 v5.6.2
-	github.com/go-git/go-git/v5 v5.16.3
+	github.com/go-git/go-git/v5 v5.16.4
 	github.com/hashicorp/go-retryablehttp v0.7.8
 	github.com/jszwec/csvutil v1.10.0
 	github.com/sirupsen/logrus v1.9.3
