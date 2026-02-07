@@ -10,6 +10,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/hashicorp/go-retryablehttp"
 )
@@ -82,13 +83,22 @@ func (cf *Cloudflare) Fetch6() ([]netip.Prefix, error) {
 }
 
 func (cf *Cloudflare) Fetch() ([]netip.Prefix, error) {
-	p4, err := cf.Fetch4()
-	if err != nil {
-		return nil, err
-	}
+	var p4, p6 []netip.Prefix
 
-	p6, err := cf.Fetch6()
-	if err != nil {
+	var g errgroup.Group
+
+	g.Go(func() error {
+		var err error
+		p4, err = cf.Fetch4()
+		return err
+	})
+	g.Go(func() error {
+		var err error
+		p6, err = cf.Fetch6()
+		return err
+	})
+
+	if err := g.Wait(); err != nil {
 		return nil, err
 	}
 

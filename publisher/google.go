@@ -13,37 +13,34 @@ import (
 
 const googleFile = "google.json"
 
-func syncGoogle(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
+func fetchGoogle() ([]byte, error) {
 	a := google.New()
 
-	originContent, _, _, err := a.FetchData()
-	if err != nil {
-		return plumbing.ZeroHash, err
-	}
+	data, _, _, err := a.FetchData()
 
+	return data, err
+}
+
+func syncGoogleData(data []byte, wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
 	rgb, err := fs.Open(googleFile)
 	if err != nil && !os.IsNotExist(err) {
 		return plumbing.ZeroHash, err
 	}
-	// if the file doesn't exist, we need to create it
-	if err == nil {
-		var upToDate bool
 
-		upToDate, err = isUpToDate(bytes.NewReader(originContent), rgb)
-		if err != nil || upToDate {
-			return plumbing.ZeroHash, err
+	if err == nil {
+		upToDate, utdErr := isUpToDate(bytes.NewReader(data), rgb)
+		if utdErr != nil || upToDate {
+			return plumbing.ZeroHash, utdErr
 		}
 
 		slog.Info(googleFile, "up to date", upToDate)
 	}
 
-	if err = createFile(fs, googleFile, originContent); err != nil {
+	if err = createFile(fs, googleFile, data); err != nil {
 		return plumbing.ZeroHash, err
 	}
 
-	// Adds the new file to the staging area.
-	_, err = wt.Add(googleFile)
-	if err != nil {
+	if _, err = wt.Add(googleFile); err != nil {
 		return plumbing.ZeroHash, err
 	}
 

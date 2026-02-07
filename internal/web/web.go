@@ -34,9 +34,12 @@ func Resolve(name string) (netip.Addr, error) {
 }
 
 const (
-	defaultRetryMax     = 2
-	defaultRetryWaitMin = 2 * time.Second
-	defaultRetryWaitMax = 5 * time.Second
+	defaultRetryMax        = 2
+	defaultRetryWaitMin    = 2 * time.Second
+	defaultRetryWaitMax    = 5 * time.Second
+	defaultMaxIdleConns    = 100
+	defaultMaxConnsPerHost = 10
+	defaultIdleConnTimeout = 90 * time.Second
 	// DefaultRequestTimeout is used for HTTP requests unless otherwise specified.
 	DefaultRequestTimeout = 10 * time.Second
 	// ShortRequestTimeout is used for short HTTP requests.
@@ -46,7 +49,11 @@ const (
 )
 
 func NewHTTPClient() *retryablehttp.Client {
-	rc := &http.Client{Transport: &http.Transport{}}
+	rc := &http.Client{Transport: &http.Transport{
+		MaxIdleConns:        defaultMaxIdleConns,
+		MaxIdleConnsPerHost: defaultMaxConnsPerHost,
+		IdleConnTimeout:     defaultIdleConnTimeout,
+	}}
 	c := retryablehttp.NewClient()
 	c.HTTPClient = rc
 	c.RetryMax = defaultRetryMax

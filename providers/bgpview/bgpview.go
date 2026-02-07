@@ -10,6 +10,7 @@ import (
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
+	"golang.org/x/sync/errgroup"
 )
 
 const (
@@ -199,32 +200,55 @@ func FetchData(client *retryablehttp.Client, downloadURL string, asns []string, 
 		timeout = web.DefaultRequestTimeout
 	}
 
-	var responses []Response
-	for _, asn := range asns {
-		url := downloadURL
-		if !strings.Contains(url, "%s") {
-			url = strings.TrimSuffix(url, "/") + "/%s"
-		}
+	type asnResult struct {
+		response Response
+		headers  http.Header
+		status   int
+	}
 
-		url = fmt.Sprintf(url, asn)
+	results := make([]asnResult, len(asns))
 
-		// Try BGPView API first
-		var response Response
-		response, headers, status, err = fetchFromBGPView(client, asn, url, timeout)
-
-		// If BGPView fails, try RIPE stat API as fallback
-		if err != nil || status != http.StatusOK {
-			response, headers, status, err = fetchFromRIPEStat(client, asn, timeout)
-			if err != nil {
-				return nil, nil, 0, fmt.Errorf("both BGPView and RIPE stat APIs failed for ASN %s: %w", asn, err)
+	var g errgroup.Group
+	for i, asn := range asns {
+		g.Go(func() error {
+			asnURL := downloadURL
+			if !strings.Contains(asnURL, "%s") {
+				asnURL = strings.TrimSuffix(asnURL, "/") + "/%s"
 			}
-		}
 
-		responses = append(responses, response)
+			asnURL = fmt.Sprintf(asnURL, asn)
+
+			// Try BGPView API first
+			response, h, s, fetchErr := fetchFromBGPView(client, asn, asnURL, timeout)
+
+			// If BGPView fails, try RIPE stat API as fallback
+			if fetchErr != nil || s != http.StatusOK {
+				response, h, s, fetchErr = fetchFromRIPEStat(client, asn, timeout)
+				if fetchErr != nil {
+					return fmt.Errorf("both BGPView and RIPE stat APIs failed for ASN %s: %w", asn, fetchErr)
+				}
+			}
+
+			results[i] = asnResult{response: response, headers: h, status: s}
+
+			return nil
+		})
+	}
+
+	if err = g.Wait(); err != nil {
+		return nil, nil, 0, err
+	}
+
+	// Use headers/status from last result (matches previous sequential behavior)
+	if len(results) > 0 {
+		last := results[len(results)-1]
+		headers = last.headers
+		status = last.status
 	}
 
 	doc := Doc{}
-	for _, response := range responses {
+	for _, r := range results {
+		response := r.response
 		for _, prefix := range response.Data.Ipv4Prefixes {
 			var p netip.Prefix
 			p, err = netip.ParsePrefix(prefix.Prefix)

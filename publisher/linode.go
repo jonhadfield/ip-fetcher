@@ -14,7 +14,7 @@ import (
 
 const linodeFile = "linode.json"
 
-func getLinodeJSON() ([]byte, error) {
+func fetchLinode() ([]byte, error) {
 	a := linode.New()
 
 	data, err := a.Fetch()
@@ -42,35 +42,26 @@ func getLinodeJSON() ([]byte, error) {
 	return json.MarshalIndent(intermediate, "", "  ")
 }
 
-func syncLinode(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
-	linodeJSON, err := getLinodeJSON()
-	if err != nil {
-		return plumbing.ZeroHash, err
-	}
-
+func syncLinodeData(data []byte, wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
 	rgb, err := fs.Open(linodeFile)
 	if err != nil && !os.IsNotExist(err) {
 		return plumbing.ZeroHash, err
 	}
-	// if the file doesn't exist, we need to create it
-	if err == nil {
-		var upToDate bool
 
-		upToDate, err = isUpToDate(bytes.NewReader(linodeJSON), rgb)
-		if err != nil || upToDate {
-			return plumbing.ZeroHash, err
+	if err == nil {
+		upToDate, utdErr := isUpToDate(bytes.NewReader(data), rgb)
+		if utdErr != nil || upToDate {
+			return plumbing.ZeroHash, utdErr
 		}
 
 		slog.Info(linodeFile, "up to date", upToDate)
 	}
 
-	if err = createFile(fs, linodeFile, linodeJSON); err != nil {
+	if err = createFile(fs, linodeFile, data); err != nil {
 		return plumbing.ZeroHash, err
 	}
 
-	// Adds the new file to the staging area.
-	_, err = wt.Add(linodeFile)
-	if err != nil {
+	if _, err = wt.Add(linodeFile); err != nil {
 		return plumbing.ZeroHash, err
 	}
 

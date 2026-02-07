@@ -17,6 +17,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/go-git/go-git/v5/storage/memory"
+	"golang.org/x/sync/errgroup"
 )
 
 type Publisher struct {
@@ -70,15 +71,43 @@ func (p *Publisher) Run() error {
 		return err
 	}
 
-	// create list of providers to include in README
+	// Phase 1: Fetch all provider data in parallel
+	type fetchResult struct {
+		data []byte
+		err  error
+	}
+
+	results := make([]fetchResult, len(providers))
+
+	var g errgroup.Group
+
+	for i, provider := range providers {
+		g.Go(func() error {
+			data, fetchErr := provider.FetchFunc()
+			results[i] = fetchResult{data: data, err: fetchErr}
+
+			return nil // don't fail fast — collect all results
+		})
+	}
+
+	_ = g.Wait()
+
+	// Phase 2: Sync sequentially (git operations are not concurrency-safe)
 	var included []string
 
-	for _, provider := range providers {
+	for i, provider := range providers {
+		if results[i].err != nil {
+			slog.Info("failed to fetch", "provider", provider.ShortName, "error", results[i].err)
+
+			continue
+		}
+
 		var commit plumbing.Hash
 
-		commit, err = provider.SyncFunc(w, fs)
+		commit, err = provider.SyncDataFunc(results[i].data, w, fs)
 		if err != nil {
 			slog.Info("failed to sync", "provider", provider.ShortName, "error", err)
+
 			continue
 		}
 

@@ -16,6 +16,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/sync/errgroup"
 )
 
 var configureLogrusOnce sync.Once
@@ -536,8 +537,31 @@ func (gc *GeoIP) FetchAllFiles() (FetchFilesOutput, error) {
 		return FetchFilesOutput{}, err
 	}
 
-	asnOut, err := gc.FetchASNFiles()
-	if err != nil {
+	var (
+		asnOut     FetchASNFilesOutput
+		countryOut FetchCountryFilesOutput
+		cityOut    FetchCityFilesOutput
+	)
+
+	var g errgroup.Group
+
+	g.Go(func() error {
+		var err error
+		asnOut, err = gc.FetchASNFiles()
+		return err
+	})
+	g.Go(func() error {
+		var err error
+		countryOut, err = gc.FetchCountryFiles()
+		return err
+	})
+	g.Go(func() error {
+		var err error
+		cityOut, err = gc.FetchCityFiles()
+		return err
+	})
+
+	if err := g.Wait(); err != nil {
 		return FetchFilesOutput{}, err
 	}
 
@@ -546,23 +570,11 @@ func (gc *GeoIP) FetchAllFiles() (FetchFilesOutput, error) {
 	output.ASNIPv6FilePath = asnOut.IPv6FilePath
 	output.ASNVersion = asnOut.Version
 
-	countryOut, err := gc.FetchCountryFiles()
-	if err != nil {
-		return FetchFilesOutput{}, err
-	}
-
 	output.CountryCompressedFilePath = countryOut.CompressedPath
 	output.CountryIPv4FilePath = countryOut.IPv4FilePath
 	output.CountryIPv6FilePath = countryOut.IPv6FilePath
 	output.CountryLocationsFilePath = countryOut.LocationsFilePath
 	output.CountryVersion = countryOut.Version
-
-	cityOut, err := gc.FetchCityFiles()
-	if err != nil {
-		logrus.Errorf("%s | %s", pflog.GetFunctionName(), err.Error())
-
-		return FetchFilesOutput{}, err
-	}
 
 	output.CityCompressedFilePath = cityOut.CompressedPath
 	output.CityIPv4FilePath = cityOut.IPv4FilePath
@@ -579,12 +591,43 @@ func (gc *GeoIP) FetchFiles(input FetchFilesInput) (FetchFilesOutput, error) {
 		return FetchFilesOutput{}, err
 	}
 
-	if input.ASN {
-		asnOut, err := gc.FetchASNFiles()
-		if err != nil {
-			return FetchFilesOutput{}, err
-		}
+	var (
+		asnOut     FetchASNFilesOutput
+		countryOut FetchCountryFilesOutput
+		cityOut    FetchCityFilesOutput
+	)
 
+	var g errgroup.Group
+
+	if input.ASN {
+		g.Go(func() error {
+			var err error
+			asnOut, err = gc.FetchASNFiles()
+			return err
+		})
+	}
+
+	if input.Country {
+		g.Go(func() error {
+			var err error
+			countryOut, err = gc.FetchCountryFiles()
+			return err
+		})
+	}
+
+	if input.City {
+		g.Go(func() error {
+			var err error
+			cityOut, err = gc.FetchCityFiles()
+			return err
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return FetchFilesOutput{}, err
+	}
+
+	if input.ASN {
 		output.ASNDataPath = asnOut.DataRoot
 		output.ASNCompressedFilePath = asnOut.CompressedPath
 		output.ASNIPv4FilePath = asnOut.IPv4FilePath
@@ -593,11 +636,6 @@ func (gc *GeoIP) FetchFiles(input FetchFilesInput) (FetchFilesOutput, error) {
 	}
 
 	if input.Country {
-		countryOut, err := gc.FetchCountryFiles()
-		if err != nil {
-			return FetchFilesOutput{}, err
-		}
-
 		output.CountryDataPath = countryOut.DataRoot
 		output.CountryCompressedFilePath = countryOut.CompressedPath
 		output.CountryIPv4FilePath = countryOut.IPv4FilePath
@@ -607,11 +645,6 @@ func (gc *GeoIP) FetchFiles(input FetchFilesInput) (FetchFilesOutput, error) {
 	}
 
 	if input.City {
-		cityOut, err := gc.FetchCityFiles()
-		if err != nil {
-			return FetchFilesOutput{}, err
-		}
-
 		output.CityDataPath = cityOut.DataRoot
 		output.CityCompressedFilePath = cityOut.CompressedPath
 		output.CityIPv4FilePath = cityOut.IPv4FilePath

@@ -13,37 +13,34 @@ import (
 
 const azureFile = "azure.json"
 
-func syncAzure(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
+func fetchAzure() ([]byte, error) {
 	a := azure.New()
 
-	originContent, _, _, err := a.FetchData()
-	if err != nil {
-		return plumbing.ZeroHash, err
-	}
+	data, _, _, err := a.FetchData()
 
-	rgb, err := fs.Open("azure.json")
+	return data, err
+}
+
+func syncAzureData(data []byte, wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
+	rgb, err := fs.Open(azureFile)
 	if err != nil && !os.IsNotExist(err) {
 		return plumbing.ZeroHash, err
 	}
-	// if the file doesn't exist, we need to create it
-	if err == nil {
-		var upToDate bool
 
-		upToDate, err = isUpToDate(bytes.NewReader(originContent), rgb)
-		if err != nil || upToDate {
-			return plumbing.ZeroHash, err
+	if err == nil {
+		upToDate, utdErr := isUpToDate(bytes.NewReader(data), rgb)
+		if utdErr != nil || upToDate {
+			return plumbing.ZeroHash, utdErr
 		}
 
-		slog.Info("azure.json", "up to date", upToDate)
+		slog.Info(azureFile, "up to date", upToDate)
 	}
 
-	if err = createFile(fs, "azure.json", originContent); err != nil {
+	if err = createFile(fs, azureFile, data); err != nil {
 		return plumbing.ZeroHash, err
 	}
 
-	// Adds the new file to the staging area.
-	_, err = wt.Add("azure.json")
-	if err != nil {
+	if _, err = wt.Add(azureFile); err != nil {
 		return plumbing.ZeroHash, err
 	}
 

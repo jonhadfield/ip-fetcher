@@ -13,37 +13,34 @@ import (
 
 const awsFile = "aws.json"
 
-func syncAWS(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
+func fetchAWS() ([]byte, error) {
 	a := aws.New()
 
-	originContent, _, _, err := a.FetchData()
-	if err != nil {
-		return plumbing.ZeroHash, err
-	}
+	data, _, _, err := a.FetchData()
 
-	rgb, err := fs.Open("aws.json")
+	return data, err
+}
+
+func syncAWSData(data []byte, wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
+	rgb, err := fs.Open(awsFile)
 	if err != nil && !os.IsNotExist(err) {
 		return plumbing.ZeroHash, err
 	}
-	// if the file doesn't exist, we need to create it
-	if err == nil {
-		var upToDate bool
 
-		upToDate, err = isUpToDate(bytes.NewReader(originContent), rgb)
-		if err != nil || upToDate {
-			return plumbing.ZeroHash, err
+	if err == nil {
+		upToDate, utdErr := isUpToDate(bytes.NewReader(data), rgb)
+		if utdErr != nil || upToDate {
+			return plumbing.ZeroHash, utdErr
 		}
 
-		slog.Info("aws.json", "up to date", upToDate)
+		slog.Info(awsFile, "up to date", upToDate)
 	}
 
-	if err = createFile(fs, "aws.json", originContent); err != nil {
+	if err = createFile(fs, awsFile, data); err != nil {
 		return plumbing.ZeroHash, err
 	}
 
-	// Adds the new file to the staging area.
-	_, err = wt.Add("aws.json")
-	if err != nil {
+	if _, err = wt.Add(awsFile); err != nil {
 		return plumbing.ZeroHash, err
 	}
 

@@ -36,40 +36,34 @@ import (
 var ReadMeTemplate string
 
 type Provider struct {
-	SyncFunc  func(*git.Worktree, billy.Filesystem) (plumbing.Hash, error)
-	ShortName string
-	File      string
-	FullName  string
-	HostType  string
-	SourceURL string
+	FetchFunc    func() ([]byte, error)
+	SyncDataFunc func(data []byte, wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error)
+	ShortName    string
+	File         string
+	FullName     string
+	HostType     string
+	SourceURL    string
 }
 
 var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
-	{syncAlibaba, alibaba.ShortName, alibabaFile, alibaba.FullName, alibaba.HostType, alibaba.SourceURL},
-	{syncAWS, aws.ShortName, awsFile, aws.FullName, aws.HostType, aws.SourceURL},
-	{syncAzure, azure.ShortName, azureFile, azure.FullName, azure.HostType, azure.InitialURL},
-	{
-		syncCloudflare,
-		cloudflare.ShortName,
-		cloudflareFile,
-		cloudflare.FullName,
-		cloudflare.HostType,
-		cloudflare.SourceURL,
-	},
-	{syncFastly, fastly.ShortName, fastlyFile, fastly.FullName, fastly.HostType, fastly.SourceURL},
-	{syncGCP, gcp.ShortName, gcpFile, gcp.FullName, gcp.HostType, gcp.SourceURL},
-	{syncGoogle, google.ShortName, googleFile, google.FullName, google.HostType, google.SourceURL},
-	{syncGooglebot, googlebot.ShortName, googlebotFile, googlebot.FullName, googlebot.HostType, googlebot.SourceURL},
-	{syncGoogleSC, googlesc.ShortName, googlescFile, googlesc.FullName, googlesc.HostType, googlesc.SourceURL},
-	{syncGoogleUTF, googleutf.ShortName, googleutfFile, googleutf.FullName, googleutf.HostType, googleutf.SourceURL},
-	{syncHetzner, hetzner.ShortName, hetznerFile, hetzner.FullName, hetzner.HostType, hetzner.SourceURL},
-	{syncLinode, linode.ShortName, linodeFile, linode.FullName, linode.HostType, linode.SourceURL},
-	{syncM247, m247.ShortName, m247File, m247.FullName, m247.HostType, m247.SourceURL},
-	{syncOCI, oci.ShortName, ociFile, oci.FullName, oci.HostType, oci.SourceURL},
-	{syncOVH, ovh.ShortName, ovhFile, ovh.FullName, ovh.HostType, ovh.SourceURL},
-	{syncScaleway, scaleway.ShortName, scalewayFile, scaleway.FullName, scaleway.HostType, scaleway.SourceURL},
-	{syncVultr, vultr.ShortName, vultrFile, vultr.FullName, vultr.HostType, vultr.SourceURL},
-	{syncZscaler, zscaler.ShortName, zscalerFile, zscaler.FullName, zscaler.HostType, zscaler.SourceURL},
+	{fetchAlibaba, syncAlibabaData, alibaba.ShortName, alibabaFile, alibaba.FullName, alibaba.HostType, alibaba.SourceURL},
+	{fetchAWS, syncAWSData, aws.ShortName, awsFile, aws.FullName, aws.HostType, aws.SourceURL},
+	{fetchAzure, syncAzureData, azure.ShortName, azureFile, azure.FullName, azure.HostType, azure.InitialURL},
+	{fetchCloudflare, syncCloudflareData, cloudflare.ShortName, cloudflareFile, cloudflare.FullName, cloudflare.HostType, cloudflare.SourceURL},
+	{fetchFastly, syncFastlyData, fastly.ShortName, fastlyFile, fastly.FullName, fastly.HostType, fastly.SourceURL},
+	{fetchGCP, syncGCPData, gcp.ShortName, gcpFile, gcp.FullName, gcp.HostType, gcp.SourceURL},
+	{fetchGoogle, syncGoogleData, google.ShortName, googleFile, google.FullName, google.HostType, google.SourceURL},
+	{fetchGooglebot, syncGooglebotData, googlebot.ShortName, googlebotFile, googlebot.FullName, googlebot.HostType, googlebot.SourceURL},
+	{fetchGoogleSC, syncGoogleSCData, googlesc.ShortName, googlescFile, googlesc.FullName, googlesc.HostType, googlesc.SourceURL},
+	{fetchGoogleUTF, syncGoogleUTFData, googleutf.ShortName, googleutfFile, googleutf.FullName, googleutf.HostType, googleutf.SourceURL},
+	{fetchHetzner, syncHetznerData, hetzner.ShortName, hetznerFile, hetzner.FullName, hetzner.HostType, hetzner.SourceURL},
+	{fetchLinode, syncLinodeData, linode.ShortName, linodeFile, linode.FullName, linode.HostType, linode.SourceURL},
+	{fetchM247, syncM247Data, m247.ShortName, m247File, m247.FullName, m247.HostType, m247.SourceURL},
+	{fetchOCI, syncOCIData, oci.ShortName, ociFile, oci.FullName, oci.HostType, oci.SourceURL},
+	{fetchOVH, syncOVHData, ovh.ShortName, ovhFile, ovh.FullName, ovh.HostType, ovh.SourceURL},
+	{fetchScaleway, syncScalewayData, scaleway.ShortName, scalewayFile, scaleway.FullName, scaleway.HostType, scaleway.SourceURL},
+	{fetchVultr, syncVultrData, vultr.ShortName, vultrFile, vultr.FullName, vultr.HostType, vultr.SourceURL},
+	{fetchZscaler, syncZscalerData, zscaler.ShortName, zscalerFile, zscaler.FullName, zscaler.HostType, zscaler.SourceURL},
 }
 
 func GenerateReadMeContent(included []string) (string, error) {

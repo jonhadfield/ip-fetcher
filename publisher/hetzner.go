@@ -13,37 +13,34 @@ import (
 
 const hetznerFile = "hetzner.json"
 
-func syncHetzner(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
+func fetchHetzner() ([]byte, error) {
 	a := hetzner.New()
 
-	originContent, _, _, err := a.FetchData()
-	if err != nil {
-		return plumbing.ZeroHash, err
-	}
+	data, _, _, err := a.FetchData()
 
+	return data, err
+}
+
+func syncHetznerData(data []byte, wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
 	rgb, err := fs.Open(hetznerFile)
 	if err != nil && !os.IsNotExist(err) {
 		return plumbing.ZeroHash, err
 	}
-	// if the file doesn't exist, we need to create it
-	if err == nil {
-		var upToDate bool
 
-		upToDate, err = isUpToDate(bytes.NewReader(originContent), rgb)
-		if err != nil || upToDate {
-			return plumbing.ZeroHash, err
+	if err == nil {
+		upToDate, utdErr := isUpToDate(bytes.NewReader(data), rgb)
+		if utdErr != nil || upToDate {
+			return plumbing.ZeroHash, utdErr
 		}
 
-		slog.Info("hetzner.json", "up to date", upToDate)
+		slog.Info(hetznerFile, "up to date", upToDate)
 	}
 
-	if err = createFile(fs, hetznerFile, originContent); err != nil {
+	if err = createFile(fs, hetznerFile, data); err != nil {
 		return plumbing.ZeroHash, err
 	}
 
-	// Adds the new file to the staging area.
-	_, err = wt.Add(hetznerFile)
-	if err != nil {
+	if _, err = wt.Add(hetznerFile); err != nil {
 		return plumbing.ZeroHash, err
 	}
 

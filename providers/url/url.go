@@ -9,11 +9,13 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 
 	"github.com/sirupsen/logrus"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
@@ -81,27 +83,48 @@ func (c *Client) FetchPrefixesAsText(requests []Request) ([]string, error) {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
 
-	var (
-		responses []URLResponse
-		prefixes  []string
-		err       error
-	)
+	results := make([]URLResponse, len(requests))
 
-	for _, req := range requests {
-		var response URLResponse
+	var mu sync.Mutex
+	var fetchErrors []string
 
-		if response, err = c.get(req.URL, req.Header); err != nil {
-			logrus.Debugf("%s | %s", pflog.GetFunctionName(), err.Error())
+	var g errgroup.Group
 
-			continue
-		}
+	for i, req := range requests {
+		g.Go(func() error {
+			response, err := c.get(req.URL, req.Header)
+			if err != nil {
+				mu.Lock()
+				fetchErrors = append(fetchErrors, err.Error())
+				mu.Unlock()
 
-		responses = append(responses, response)
+				logrus.Debugf("%s | %s", pflog.GetFunctionName(), err.Error())
+
+				return nil //nolint:nilerr
+			}
+
+			results[i] = response
+
+			return nil
+		})
 	}
+
+	_ = g.Wait()
+
+	// Filter out zero-value responses (failed fetches)
+	var responses []URLResponse
+	for _, r := range results {
+		if r.Data != nil {
+			responses = append(responses, r)
+		}
+	}
+
 	pum, err := GetPrefixURLMapFromURLResponses(&responses)
 	if err != nil {
 		return nil, err
 	}
+
+	var prefixes []string
 	for k := range pum {
 		prefixes = append(prefixes, k.String())
 	}
@@ -142,31 +165,39 @@ func (c *Client) FetchPrefixes(requests []Request) (map[netip.Prefix][]string, e
 		logrus.SetLevel(logrus.DebugLevel)
 	}
 
-	var (
-		responses []URLResponse
-		prefixes  map[netip.Prefix][]string
-	)
+	results := make([]URLResponse, len(requests))
 
-	for _, req := range requests {
-		response, err := c.get(req.URL, req.Header)
-		if err != nil {
-			logrus.Debugf("%s | %s", pflog.GetFunctionName(), err.Error())
+	var g errgroup.Group
 
-			continue
-		}
+	for i, req := range requests {
+		g.Go(func() error {
+			response, err := c.get(req.URL, req.Header)
+			if err != nil {
+				logrus.Debugf("%s | %s", pflog.GetFunctionName(), err.Error())
 
-		responses = append(responses, response)
+				return nil //nolint:nilerr
+			}
+
+			results[i] = response
+
+			return nil
+		})
 	}
 
-	var err error
-	prefixes, err = GetPrefixURLMapFromURLResponses(&responses)
+	_ = g.Wait()
+
+	// Filter out zero-value responses (failed fetches)
+	var responses []URLResponse
+	for _, r := range results {
+		if r.Data != nil {
+			responses = append(responses, r)
+		}
+	}
+
+	prefixes, err := GetPrefixURLMapFromURLResponses(&responses)
 	if err != nil {
 		return nil, err
 	}
-	//
-	// for k := range pum {
-	// 	prefixes = append(prefixes, k)
-	// }
 
 	return prefixes, nil
 }
@@ -372,23 +403,30 @@ func (c *Client) Get(requests []Request) (*[]URLResponse, error) {
 		return nil, errors.New("no URLs to fetch")
 	}
 
-	var err error
+	results := make([]URLResponse, len(requests))
 
-	var responses []URLResponse
+	var g errgroup.Group
 
-	for _, req := range requests {
-		var response URLResponse
+	for i, req := range requests {
+		g.Go(func() error {
+			response, err := c.get(req.URL, req.Header)
+			if err != nil {
+				logrus.Debugf("%s | %s", pflog.GetFunctionName(), err.Error())
 
-		if response, err = c.get(req.URL, req.Header); err != nil {
-			logrus.Debugf("%s | %s", pflog.GetFunctionName(), err.Error())
+				return fmt.Errorf("%w", err)
+			}
 
-			return nil, fmt.Errorf("%w", err)
-		}
+			results[i] = response
 
-		responses = append(responses, response)
+			return nil
+		})
 	}
 
-	return &responses, nil
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+
+	return &results, nil
 }
 
 func (hf *HTTPFiles) FetchURLs() ([]URLResponse, error) {
@@ -400,15 +438,24 @@ func (hf *HTTPFiles) FetchURLs() ([]URLResponse, error) {
 		return nil, errors.New("no URLs to fetch")
 	}
 
-	var results []URLResponse
-	for _, hfURL := range hf.URLs {
-		result, err := FetchURLResponse(hf.Client, hfURL)
-		if err != nil {
-			logrus.Debugf("%s | %s", pflog.GetFunctionName(), err.Error())
-		}
+	results := make([]URLResponse, len(hf.URLs))
 
-		results = append(results, result)
+	var g errgroup.Group
+
+	for i, hfURL := range hf.URLs {
+		g.Go(func() error {
+			result, err := FetchURLResponse(hf.Client, hfURL)
+			if err != nil {
+				logrus.Debugf("%s | %s", pflog.GetFunctionName(), err.Error())
+			}
+
+			results[i] = result
+
+			return nil
+		})
 	}
+
+	_ = g.Wait()
 
 	return results, nil
 }

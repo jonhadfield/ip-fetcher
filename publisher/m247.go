@@ -13,37 +13,34 @@ import (
 
 const m247File = "m247.json"
 
-func syncM247(wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
+func fetchM247() ([]byte, error) {
 	a := m247.New()
 
-	originContent, _, _, err := a.FetchData()
-	if err != nil {
-		return plumbing.ZeroHash, err
-	}
+	data, _, _, err := a.FetchData()
 
+	return data, err
+}
+
+func syncM247Data(data []byte, wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
 	rgb, err := fs.Open(m247File)
 	if err != nil && !os.IsNotExist(err) {
 		return plumbing.ZeroHash, err
 	}
-	// if the file doesn't exist, we need to create it
-	if err == nil {
-		var upToDate bool
 
-		upToDate, err = isUpToDate(bytes.NewReader(originContent), rgb)
-		if err != nil || upToDate {
-			return plumbing.ZeroHash, err
+	if err == nil {
+		upToDate, utdErr := isUpToDate(bytes.NewReader(data), rgb)
+		if utdErr != nil || upToDate {
+			return plumbing.ZeroHash, utdErr
 		}
 
-		slog.Info("m247.json", "up to date", upToDate)
+		slog.Info(m247File, "up to date", upToDate)
 	}
 
-	if err = createFile(fs, m247File, originContent); err != nil {
+	if err = createFile(fs, m247File, data); err != nil {
 		return plumbing.ZeroHash, err
 	}
 
-	// Adds the new file to the staging area.
-	_, err = wt.Add(m247File)
-	if err != nil {
+	if _, err = wt.Add(m247File); err != nil {
 		return plumbing.ZeroHash, err
 	}
 
