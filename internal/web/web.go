@@ -63,6 +63,21 @@ func NewHTTPClient() *retryablehttp.Client {
 	return c
 }
 
+// NewHTTPClientWithLogger creates an HTTP client with standard logging configuration.
+// It sets the log level from environment and suppresses retryablehttp's logger
+// unless debug logging is enabled.
+func NewHTTPClientWithLogger() *retryablehttp.Client {
+	pflog.SetLogLevel()
+
+	c := NewHTTPClient()
+
+	if logrus.GetLevel() < logrus.DebugLevel {
+		c.Logger = nil
+	}
+
+	return c
+}
+
 func MaskSecrets(content string, secret []string) string {
 	for _, s := range secret {
 		content = strings.ReplaceAll(content, s, strings.Repeat("*", len(s)))

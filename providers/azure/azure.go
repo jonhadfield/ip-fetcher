@@ -11,9 +11,6 @@ import (
 
 	"github.com/Danny-Dasilva/CycleTLS/cycletls"
 
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
-	"github.com/sirupsen/logrus"
-
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
 )
@@ -52,17 +49,9 @@ func (a *Azure) SourceURL() string {
 }
 
 func New() Azure {
-	pflog.SetLogLevel()
-
-	c := web.NewHTTPClient()
-
-	if logrus.GetLevel() < logrus.DebugLevel {
-		c.Logger = nil
-	}
-
 	return Azure{
 		InitialURL: InitialURL,
-		Client:     c,
+		Client:     web.NewHTTPClientWithLogger(),
 		Timeout:    web.DefaultRequestTimeout,
 	}
 }

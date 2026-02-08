@@ -39,16 +39,9 @@ func configureLogrus() {
 
 func New() GeoIP {
 	configureLogrus()
-	pflog.SetLogLevel()
-
-	c := web.NewHTTPClient()
-
-	if logrus.GetLevel() < logrus.DebugLevel {
-		c.Logger = nil
-	}
 
 	return GeoIP{
-		Client: c,
+		Client: web.NewHTTPClientWithLogger(),
 	}
 }
 

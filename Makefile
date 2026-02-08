@@ -51,7 +51,7 @@ install:
 	go install ./cmd/...
 
 build-linux:
-	GOOS=linux CGO_ENABLED=0 GOARCH=amd64 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o "dist/ip-fetcher_linux_amd64" cmd/ip-fetcher/.go
+	GOOS=linux CGO_ENABLED=0 GOARCH=amd64 go build -ldflags '-s -w -X "main.version=[$(BUILD_TAG)-$(BUILD_SHA)] $(BUILD_DATE) UTC"' -o "dist/ip-fetcher_linux_amd64" cmd/ip-fetcher/*.go
 
 mac-install: build
 	install dist/ip-fetcher /usr/local/bin/ip-fetcher

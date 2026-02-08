@@ -5,10 +5,8 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
 	"github.com/jonhadfield/ip-fetcher/providers/bgpview"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -31,17 +29,10 @@ type Scaleway struct {
 type Doc = bgpview.Doc
 
 func New() Scaleway {
-	pflog.SetLogLevel()
-
-	c := web.NewHTTPClient()
-	if logrus.GetLevel() < logrus.DebugLevel {
-		c.Logger = nil
-	}
-
 	return Scaleway{
 		DownloadURL: bgpview.DefaultURL,
 		ASNs:        ASNs,
-		Client:      c,
+		Client:      web.NewHTTPClientWithLogger(),
 		Timeout:     web.DefaultRequestTimeout,
 	}
 }

@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
 	"github.com/sirupsen/logrus"
 )
@@ -83,14 +82,7 @@ func retryPolicy(ctx context.Context, resp *http.Response, err error) (bool, err
 }
 
 func New() AbuseIPDB {
-	pflog.SetLogLevel()
-
-	c := web.NewHTTPClient()
-
-	if logrus.GetLevel() < logrus.DebugLevel {
-		c.Logger = nil
-	}
-
+	c := web.NewHTTPClientWithLogger()
 	c.CheckRetry = retryPolicy
 
 	return AbuseIPDB{

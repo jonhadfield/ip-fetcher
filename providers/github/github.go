@@ -7,9 +7,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -27,17 +25,9 @@ type GitHub struct {
 }
 
 func New() GitHub {
-	pflog.SetLogLevel()
-
-	c := web.NewHTTPClient()
-
-	if logrus.GetLevel() < logrus.DebugLevel {
-		c.Logger = nil
-	}
-
 	return GitHub{
 		DownloadURL: DownloadURL,
-		Client:      c,
+		Client:      web.NewHTTPClientWithLogger(),
 		Timeout:     web.DefaultRequestTimeout,
 	}
 }

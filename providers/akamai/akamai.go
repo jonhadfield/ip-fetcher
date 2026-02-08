@@ -8,9 +8,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -28,16 +26,9 @@ type Akamai struct {
 }
 
 func New() Akamai {
-	pflog.SetLogLevel()
-
-	c := web.NewHTTPClient()
-	if logrus.GetLevel() < logrus.DebugLevel {
-		c.Logger = nil
-	}
-
 	return Akamai{
 		DownloadURL: DownloadURL,
-		Client:      c,
+		Client:      web.NewHTTPClientWithLogger(),
 		Timeout:     web.DefaultRequestTimeout,
 	}
 }

@@ -8,9 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
-	"github.com/sirupsen/logrus"
-
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
 )
@@ -47,17 +44,9 @@ func (a *AWS) SourceURL() string {
 }
 
 func New() AWS {
-	pflog.SetLogLevel()
-
-	c := web.NewHTTPClient()
-
-	if logrus.GetLevel() < logrus.DebugLevel {
-		c.Logger = nil
-	}
-
 	return AWS{
 		InitialURL: DownloadURL,
-		Client:     c,
+		Client:     web.NewHTTPClientWithLogger(),
 		Timeout:    web.DefaultRequestTimeout,
 	}
 }

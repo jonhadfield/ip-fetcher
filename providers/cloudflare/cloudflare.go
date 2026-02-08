@@ -7,9 +7,7 @@ import (
 	"net/netip"
 	"time"
 
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
-	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/hashicorp/go-retryablehttp"
@@ -25,18 +23,10 @@ const (
 )
 
 func New() Cloudflare {
-	pflog.SetLogLevel()
-
-	c := web.NewHTTPClient()
-
-	if logrus.GetLevel() < logrus.DebugLevel {
-		c.Logger = nil
-	}
-
 	return Cloudflare{
 		IPv4DownloadURL: DefaultIPv4URL,
 		IPv6DownloadURL: DefaultIPv6URL,
-		Client:          c,
+		Client:          web.NewHTTPClientWithLogger(),
 		Timeout:         web.DefaultRequestTimeout,
 	}
 }

@@ -6,7 +6,6 @@ import (
 	"net/netip"
 	"time"
 
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
 	"github.com/sirupsen/logrus"
 
@@ -22,17 +21,9 @@ const (
 )
 
 func New() Fastly {
-	pflog.SetLogLevel()
-
-	c := web.NewHTTPClient()
-
-	if logrus.GetLevel() < logrus.DebugLevel {
-		c.Logger = nil
-	}
-
 	return Fastly{
 		DownloadURL: DownloadURL,
-		Client:      c,
+		Client:      web.NewHTTPClientWithLogger(),
 		Timeout:     web.DefaultRequestTimeout,
 	}
 }

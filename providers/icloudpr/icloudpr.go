@@ -15,10 +15,8 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
 	"github.com/jszwec/csvutil"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -71,17 +69,9 @@ type ICloudPrivateRelay struct {
 }
 
 func New() ICloudPrivateRelay {
-	pflog.SetLogLevel()
-
-	c := web.NewHTTPClient()
-
-	if logrus.GetLevel() < logrus.DebugLevel {
-		c.Logger = nil
-	}
-
 	return ICloudPrivateRelay{
 		DownloadURL: DownloadURL,
-		Client:      c,
+		Client:      web.NewHTTPClientWithLogger(),
 		Timeout:     web.DefaultRequestTimeout,
 	}
 }

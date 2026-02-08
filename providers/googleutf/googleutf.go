@@ -6,9 +6,6 @@ import (
 	"net/netip"
 	"time"
 
-	"github.com/jonhadfield/ip-fetcher/internal/pflog"
-	"github.com/sirupsen/logrus"
-
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
 )
@@ -23,17 +20,9 @@ const (
 )
 
 func New() Googleutf {
-	pflog.SetLogLevel()
-
-	c := web.NewHTTPClient()
-
-	if logrus.GetLevel() < logrus.DebugLevel {
-		c.Logger = nil
-	}
-
 	return Googleutf{
 		DownloadURL: DownloadURL,
-		Client:      c,
+		Client:      web.NewHTTPClientWithLogger(),
 		Timeout:     web.DefaultRequestTimeout,
 	}
 }
