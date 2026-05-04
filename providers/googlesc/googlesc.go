@@ -15,7 +15,7 @@ const (
 	FullName                 = "Google Special Crawlers"
 	HostType                 = "crawlers"
 	SourceURL                = "https://developers.google.com/search/docs/crawling-indexing/verifying-googlebot"
-	DownloadURL              = "https://developers.google.com/static/search/apis/ipranges/special-crawlers.json"
+	DownloadURL              = "https://developers.google.com/static/crawling/ipranges/special-crawlers.json"
 	downloadedFileTimeFormat = "2006-01-02T15:04:05.999999"
 )
 

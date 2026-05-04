@@ -15,7 +15,7 @@ const (
 	FullName                 = "Google User-Triggered Fetchers"
 	HostType                 = "crawlers"
 	SourceURL                = "https://developers.google.com/search/docs/crawling-indexing/verifying-googlebot"
-	DownloadURL              = "https://developers.google.com/static/search/apis/ipranges/user-triggered-fetchers.json"
+	DownloadURL              = "https://developers.google.com/static/crawling/ipranges/user-triggered-fetchers.json"
 	downloadedFileTimeFormat = "2006-01-02T15:04:05.999999"
 )
 
