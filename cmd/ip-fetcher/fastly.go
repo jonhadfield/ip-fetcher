@@ -20,7 +20,7 @@ const (
 	fileNameLines        = "fastly-prefixes.txt"
 )
 
-var fastlyFormats = []string{"json", "yaml", formatLines, "csv"}
+var fastlyFormats = []string{formatJSON, formatYAML, formatLines, formatCSV}
 
 func fastlyCmd() *cli.Command {
 	return &cli.Command{
@@ -35,16 +35,16 @@ func fastlyCmd() *cli.Command {
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "Path",
+				Name:  flagPath,
 				Usage: usageWhereToSaveFile, Aliases: []string{"p"},
 			},
 			&cli.BoolFlag{
-				Name:  "stdout",
+				Name:  flagStdout,
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
 			},
 			&cli.StringFlag{
-				Name:  "format",
-				Usage: strings.Join(fastlyFormats, ", "), Value: "json", Aliases: []string{"f"},
+				Name:  flagFormat,
+				Usage: strings.Join(fastlyFormats, ", "), Value: formatJSON, Aliases: []string{"f"},
 			},
 			&cli.BoolFlag{
 				Name:  formatLines,
@@ -75,7 +75,7 @@ func fastlyCmd() *cli.Command {
 				return err
 			}
 
-			format := c.String("format")
+			format := c.String(flagFormat)
 			if c.Bool(formatLines) {
 				format = formatLines
 			}
@@ -97,15 +97,15 @@ func fastlyOutput(doc fastly.Doc, format string, stdout bool, path string) error
 	)
 
 	switch format {
-	case "csv":
+	case formatCSV:
 		data = fastlyCsv(doc)
 	case formatLines:
 		data = fastlyLines(doc)
-	case "yaml":
+	case formatYAML:
 		if data, err = yaml.Marshal(doc); err != nil {
 			return err
 		}
-	case "json":
+	case formatJSON:
 		if data, err = json.MarshalIndent(doc, "", " "); err != nil {
 			return err
 		}
@@ -130,11 +130,11 @@ func fastlyOutput(doc fastly.Doc, format string, stdout bool, path string) error
 func fastlyLines(in fastly.Doc) []byte {
 	sl := strings.Builder{}
 	for x := range in.IPv4Prefixes {
-		sl.WriteString(fmt.Sprintf("%s\n", in.IPv4Prefixes[x].String()))
+		fmt.Fprintf(&sl, "%s\n", in.IPv4Prefixes[x].String())
 	}
 
 	for x := range in.IPv6Prefixes {
-		sl.WriteString(fmt.Sprintf("%s\n", in.IPv6Prefixes[x].String()))
+		fmt.Fprintf(&sl, "%s\n", in.IPv6Prefixes[x].String())
 	}
 
 	return []byte(sl.String())
@@ -143,7 +143,7 @@ func fastlyLines(in fastly.Doc) []byte {
 func fastlyCsv(in fastly.Doc) []byte {
 	sl := strings.Builder{}
 	for x := range in.IPv4Prefixes {
-		sl.WriteString(fmt.Sprintf("\"%s\"", in.IPv4Prefixes[x].String()))
+		fmt.Fprintf(&sl, "\"%s\"", in.IPv4Prefixes[x].String())
 		// output comma if not last line and there are ipv6 prefixes
 		if x != len(in.IPv4Prefixes)-1 && len(in.IPv6Prefixes) > 0 {
 			sl.WriteString(",\n")
@@ -151,7 +151,7 @@ func fastlyCsv(in fastly.Doc) []byte {
 	}
 
 	for x := range in.IPv6Prefixes {
-		sl.WriteString(fmt.Sprintf("\"%s\"", in.IPv6Prefixes[x].String()))
+		fmt.Fprintf(&sl, "\"%s\"", in.IPv6Prefixes[x].String())
 
 		if x != len(in.IPv6Prefixes)-1 {
 			sl.WriteString(",\n")

@@ -24,12 +24,12 @@ func geoipCmd() *cli.Command {
 				Usage: "license key", Aliases: []string{"k"}, Required: true,
 			},
 			&cli.StringFlag{
-				Name:  "Path",
+				Name:  flagPath,
 				Usage: "where to save the files", Aliases: []string{"p"}, Required: true,
 			},
 			&cli.StringFlag{
-				Name:  "format",
-				Usage: "database format csv or mmdb", Value: "csv", Aliases: []string{"f"},
+				Name:  flagFormat,
+				Usage: "database format csv or mmdb", Value: formatCSV, Aliases: []string{"f"},
 			},
 			&cli.StringFlag{
 				Name:  "edition",
@@ -44,8 +44,8 @@ func geoipCmd() *cli.Command {
 			a := geoip.New()
 			a.LicenseKey = c.String("key")
 			a.Edition = c.String("edition")
-			a.DBFormat = c.String("format")
-			a.Root = strings.TrimSpace(c.String("Path"))
+			a.DBFormat = c.String(flagFormat)
+			a.Root = strings.TrimSpace(c.String(flagPath))
 			a.Extract = c.Bool("extract")
 			_, err := a.FetchFiles(geoip.FetchFilesInput{
 				ASN:     true,

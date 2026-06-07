@@ -39,11 +39,11 @@ func abuseipdbCmd() *cli.Command {
 				Aliases: []string{"l"},
 			},
 			&cli.StringFlag{
-				Name:  "Path",
+				Name:  flagPath,
 				Usage: usageWhereToSaveFile, Aliases: []string{"p"},
 			},
 			&cli.BoolFlag{
-				Name:  "stdout",
+				Name:  flagStdout,
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
 			},
 		},

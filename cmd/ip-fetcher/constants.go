@@ -6,5 +6,14 @@ const (
 	usageWhereToSaveFile    = "where to save the file"
 	usageLinesOutput        = "output newline separated ip prefixes"
 	fmtDataWrittenTo        = "Data written to %s\n"
-	formatLines             = "lines"
+
+	flagPath   = "Path"
+	flagStdout = "stdout"
+	flagFormat = "format"
+	flagIPv4   = "ipv4"
+
+	formatLines = "lines"
+	formatJSON  = "json"
+	formatCSV   = "csv"
+	formatYAML  = "yaml"
 )

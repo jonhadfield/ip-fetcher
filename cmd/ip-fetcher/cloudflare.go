@@ -35,20 +35,20 @@ func cloudflareCmd() *cli.Command { //nolint:gocognit,funlen,nestif
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "Path",
+				Name:  flagPath,
 				Usage: "where to save the file(s)", TakesFile: true,
 			},
 			&cli.BoolFlag{
-				Name:  "stdout",
+				Name:  flagStdout,
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
 			},
 			&cli.BoolFlag{
 				Name:  "4",
-				Usage: "ipv4", Aliases: []string{"ipv4"},
+				Usage: flagIPv4, Aliases: []string{flagIPv4},
 			},
 			&cli.BoolFlag{
 				Name:  "6",
-				Usage: "ipv4", Aliases: []string{"ipv6"},
+				Usage: "ipv6", Aliases: []string{"ipv6"},
 			},
 		},
 		Action: func(c *cli.Context) error {

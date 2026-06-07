@@ -72,15 +72,14 @@ func GenerateReadMeContent(included []string) (string, error) {
 	for _, inc := range included {
 		for _, provider := range providers {
 			if inc == provider.ShortName {
-				rows.WriteString(
-					fmt.Sprintf(
-						"| [%s](%s)  | %s |  %s | [source](%s) |  \r\n",
-						provider.File,
-						provider.File,
-						provider.FullName,
-						provider.HostType,
-						provider.SourceURL,
-					),
+				fmt.Fprintf(
+					&rows,
+					"| [%s](%s)  | %s |  %s | [source](%s) |  \r\n",
+					provider.File,
+					provider.File,
+					provider.FullName,
+					provider.HostType,
+					provider.SourceURL,
 				)
 			}
 		}

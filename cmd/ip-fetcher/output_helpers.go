@@ -9,8 +9,8 @@ import (
 )
 
 func resolveOutputTargets(c *cli.Context) (string, bool, error) {
-	path := strings.TrimSpace(c.String("Path"))
-	stdout := c.Bool("stdout")
+	path := strings.TrimSpace(c.String(flagPath))
+	stdout := c.Bool(flagStdout)
 
 	if path == "" && !stdout {
 		_ = cli.ShowSubcommandHelp(c)

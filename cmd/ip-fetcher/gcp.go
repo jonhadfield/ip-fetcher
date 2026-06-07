@@ -33,16 +33,16 @@ func gcpCmd() *cli.Command {
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "Path",
+				Name:  flagPath,
 				Usage: usageWhereToSaveFile, Aliases: []string{"p"},
 			},
 			&cli.BoolFlag{
-				Name:  "stdout",
+				Name:  flagStdout,
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
 			},
 			&cli.StringFlag{
-				Name:  "format",
-				Usage: "json, yaml, lines, csv", Value: "json", Aliases: []string{"f"},
+				Name:  flagFormat,
+				Usage: "json, yaml, lines, csv", Value: formatJSON, Aliases: []string{"f"},
 			},
 			&cli.BoolFlag{
 				Name:  formatLines,
@@ -74,7 +74,7 @@ func gcpCmd() *cli.Command {
 				return err
 			}
 
-			format := c.String("format")
+			format := c.String(flagFormat)
 			if c.Bool(formatLines) {
 				format = formatLines
 			}
@@ -91,11 +91,11 @@ func output(doc gcp.Doc, format string, stdout bool, path string) error {
 	)
 
 	switch format {
-	case "csv":
+	case formatCSV:
 		data = csv(doc)
 	case formatLines:
 		data = lines(doc)
-	case "yaml":
+	case formatYAML:
 		jsonPayload, marshalErr := json.Marshal(doc)
 		if marshalErr != nil {
 			return marshalErr
@@ -109,7 +109,7 @@ func output(doc gcp.Doc, format string, stdout bool, path string) error {
 		if data, err = yaml.Marshal(intermediate); err != nil {
 			return err
 		}
-	case "json":
+	case formatJSON:
 		if data, err = json.MarshalIndent(doc, "", " "); err != nil {
 			return err
 		}
@@ -130,11 +130,11 @@ func output(doc gcp.Doc, format string, stdout bool, path string) error {
 func lines(in gcp.Doc) []byte {
 	sl := strings.Builder{}
 	for x := range in.IPv4Prefixes {
-		sl.WriteString(fmt.Sprintf("%s\n", in.IPv4Prefixes[x].IPv4Prefix.String()))
+		fmt.Fprintf(&sl, "%s\n", in.IPv4Prefixes[x].IPv4Prefix.String())
 	}
 
 	for x := range in.IPv6Prefixes {
-		sl.WriteString(fmt.Sprintf("%s\n", in.IPv6Prefixes[x].IPv6Prefix.String()))
+		fmt.Fprintf(&sl, "%s\n", in.IPv6Prefixes[x].IPv6Prefix.String())
 	}
 
 	return []byte(sl.String())
@@ -143,7 +143,7 @@ func lines(in gcp.Doc) []byte {
 func csv(in gcp.Doc) []byte {
 	sl := strings.Builder{}
 	for x := range in.IPv4Prefixes {
-		sl.WriteString(fmt.Sprintf("\"%s\"", in.IPv4Prefixes[x].IPv4Prefix.String()))
+		fmt.Fprintf(&sl, "\"%s\"", in.IPv4Prefixes[x].IPv4Prefix.String())
 		// output comma if not last line and there are ipv6 prefixes
 		if x != len(in.IPv4Prefixes)-1 && len(in.IPv6Prefixes) > 0 {
 			sl.WriteString(",\n")
@@ -151,7 +151,7 @@ func csv(in gcp.Doc) []byte {
 	}
 
 	for x := range in.IPv6Prefixes {
-		sl.WriteString(fmt.Sprintf("\"%s\"", in.IPv6Prefixes[x].IPv6Prefix.String()))
+		fmt.Fprintf(&sl, "\"%s\"", in.IPv6Prefixes[x].IPv6Prefix.String())
 		if x != len(in.IPv6Prefixes)-1 {
 			sl.WriteString(",\n")
 		}

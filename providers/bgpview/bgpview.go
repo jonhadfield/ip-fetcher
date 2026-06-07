@@ -18,11 +18,14 @@ const (
 	FallbackURL = "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS%s"
 )
 
-// ripeSem caps concurrent RIPE stat requests across every caller of this package.
-// The publisher fans out 6 BGP-backed providers in parallel and each provider has
-// multiple ASNs, which trivially produces a dozen+ simultaneous RIPE calls and
-// triggers per-IP throttling. A small global budget keeps us under the limit.
-var ripeSem = make(chan struct{}, 2) //nolint:gochecknoglobals
+// maxConcurrentRIPECalls caps concurrent RIPE stat requests across every caller
+// of this package. The publisher fans out 6 BGP-backed providers in parallel and
+// each provider has multiple ASNs, which trivially produces a dozen+ simultaneous
+// RIPE calls and triggers per-IP throttling. A small global budget keeps us under
+// the limit.
+const maxConcurrentRIPECalls = 2
+
+var ripeSem = make(chan struct{}, maxConcurrentRIPECalls) //nolint:gochecknoglobals
 
 // Response represents the BGPView API response structure.
 type Response struct {
@@ -227,7 +230,7 @@ func FetchData(client *retryablehttp.Client, downloadURL string, asns []string, 
 	// some queries, so blasting 4+ ASNs in parallel turns into timeouts even though each
 	// one would individually complete in <1s.
 	var g errgroup.Group
-	g.SetLimit(2)
+	g.SetLimit(maxConcurrentRIPECalls)
 	for i, asn := range asns {
 		g.Go(func() error {
 			asnURL := downloadURL
@@ -245,7 +248,7 @@ func FetchData(client *retryablehttp.Client, downloadURL string, asns []string, 
 				var bgpErr error
 				response, h, s, bgpErr = fetchFromBGPView(client, asn, asnURL, timeout)
 				if bgpErr != nil {
-					return fmt.Errorf("both RIPE stat and BGPView APIs failed for ASN %s: RIPE: %v; BGPView: %w", asn, ripeErr, bgpErr)
+					return fmt.Errorf("both RIPE stat and BGPView APIs failed for ASN %s: RIPE: %w; BGPView: %w", asn, ripeErr, bgpErr)
 				}
 			}
 

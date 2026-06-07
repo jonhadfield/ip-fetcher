@@ -28,11 +28,11 @@ func scalewayCmd() *cli.Command {
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:  "Path",
+				Name:  flagPath,
 				Usage: usageWhereToSaveFile, Aliases: []string{"p"}, TakesFile: true,
 			},
 			&cli.BoolFlag{
-				Name:  "stdout",
+				Name:  flagStdout,
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
 			},
 		},
