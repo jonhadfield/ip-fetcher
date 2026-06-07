@@ -1,6 +1,7 @@
 package geoip_test
 
 import (
+	"archive/zip"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -600,4 +601,78 @@ func TestDownloadExtractCityWithoutRoot(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, filepath.Join("/tmp", "GeoLite2-City-CSV_20220617.zip"), out.CityCompressedFilePath)
+}
+
+// writeZip builds a zip file at path containing the given entries (name -> body).
+func writeZip(t *testing.T, path string, entries map[string]string) {
+	t.Helper()
+
+	f, err := os.Create(path)
+	require.NoError(t, err)
+	defer f.Close()
+
+	w := zip.NewWriter(f)
+	for name, body := range entries {
+		zf, createErr := w.Create(name)
+		require.NoError(t, createErr)
+		_, writeErr := zf.Write([]byte(body))
+		require.NoError(t, writeErr)
+	}
+	require.NoError(t, w.Close())
+}
+
+// TestUnzipFilesRejectsZipSlip is a regression guard for the CodeQL Zip Slip
+// alert fixed in c349a04. Each case crafts a zip entry whose name would,
+// without the containment check, write outside the destination directory.
+func TestUnzipFilesRejectsZipSlip(t *testing.T) {
+	cases := []struct {
+		name  string
+		entry string
+	}{
+		{name: "parent traversal", entry: "../escape.txt"},
+		{name: "nested parent traversal", entry: "a/../../escape.txt"},
+		{name: "absolute unix path", entry: "/etc/passwd"},
+		{name: "lone dotdot", entry: ".."},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			tmp := t.TempDir()
+			zipPath := filepath.Join(tmp, "evil.zip")
+			dest := filepath.Join(tmp, "out")
+
+			writeZip(t, zipPath, map[string]string{tc.entry: "pwned"})
+
+			err := geoip.UnzipFiles(zipPath, dest)
+			require.Error(t, err)
+			require.Contains(t, err.Error(), "illegal file path")
+
+			// Ensure nothing was written outside dest.
+			_, statErr := os.Stat(filepath.Join(filepath.Dir(tmp), "escape.txt"))
+			require.True(t, os.IsNotExist(statErr), "file written outside dest: %v", statErr)
+		})
+	}
+}
+
+// TestUnzipFilesExtractsBenignEntries confirms the containment check doesn't
+// reject legitimate paths.
+func TestUnzipFilesExtractsBenignEntries(t *testing.T) {
+	tmp := t.TempDir()
+	zipPath := filepath.Join(tmp, "good.zip")
+	dest := filepath.Join(tmp, "out")
+
+	writeZip(t, zipPath, map[string]string{
+		"top.txt":          "hello",
+		"nested/child.txt": "world",
+	})
+
+	require.NoError(t, geoip.UnzipFiles(zipPath, dest))
+
+	top, err := os.ReadFile(filepath.Join(dest, "top.txt"))
+	require.NoError(t, err)
+	require.Equal(t, "hello", string(top))
+
+	child, err := os.ReadFile(filepath.Join(dest, "nested", "child.txt"))
+	require.NoError(t, err)
+	require.Equal(t, "world", string(child))
 }
