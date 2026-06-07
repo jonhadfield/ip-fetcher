@@ -232,7 +232,12 @@ func UnzipFiles(src, dest string) (err error) {
 		return err
 	}
 
-	cleanDest := filepath.Clean(dest)
+	absDest, err := filepath.Abs(dest)
+	if err != nil {
+		return err
+	}
+
+	cleanDest := filepath.Clean(absDest)
 	var totalUncompressed uint64
 
 	for _, file := range r.File {
@@ -255,14 +260,22 @@ func extractFile(f *zip.File, dest string, totalUncompressed *uint64) error {
 	}
 
 	relativePath := filepath.Clean(f.Name)
+	if filepath.IsAbs(relativePath) || filepath.VolumeName(relativePath) != "" {
+		return fmt.Errorf("illegal file path: %s", f.Name)
+	}
 	if relativePath == ".." || strings.HasPrefix(relativePath, ".."+string(os.PathSeparator)) {
 		return fmt.Errorf("illegal file path: %s", f.Name)
 	}
 
 	targetPath := filepath.Join(dest, relativePath)
-	if !strings.HasPrefix(targetPath, dest+string(os.PathSeparator)) && targetPath != dest {
+	absTargetPath, err := filepath.Abs(targetPath)
+	if err != nil {
+		return err
+	}
+	if !strings.HasPrefix(absTargetPath, dest+string(os.PathSeparator)) && absTargetPath != dest {
 		return fmt.Errorf("illegal file path: %s", f.Name)
 	}
+	targetPath = absTargetPath
 
 	rc, err := f.Open()
 	if err != nil {
