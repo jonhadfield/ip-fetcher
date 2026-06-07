@@ -33,7 +33,7 @@ func New() Hetzner {
 		DownloadURL: bgpview.DefaultURL,
 		ASNs:        ASNs,
 		Client:      web.NewHTTPClientWithLogger(),
-		Timeout:     web.DefaultRequestTimeout,
+		Timeout:     web.LongRequestTimeout,
 	}
 }
 

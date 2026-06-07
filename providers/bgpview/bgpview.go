@@ -18,6 +18,12 @@ const (
 	FallbackURL = "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS%s"
 )
 
+// ripeSem caps concurrent RIPE stat requests across every caller of this package.
+// The publisher fans out 6 BGP-backed providers in parallel and each provider has
+// multiple ASNs, which trivially produces a dozen+ simultaneous RIPE calls and
+// triggers per-IP throttling. A small global budget keeps us under the limit.
+var ripeSem = make(chan struct{}, 2) //nolint:gochecknoglobals
+
 // Response represents the BGPView API response structure.
 type Response struct {
 	Status        string `json:"status"`
@@ -108,6 +114,9 @@ func fetchFromBGPView(client *retryablehttp.Client, asn, url string, timeout tim
 
 // fetchFromRIPEStat fetches data from the RIPE stat API for a single ASN.
 func fetchFromRIPEStat(client *retryablehttp.Client, asn string, timeout time.Duration) (Response, http.Header, int, error) {
+	ripeSem <- struct{}{}
+	defer func() { <-ripeSem }()
+
 	url := fmt.Sprintf(FallbackURL, asn)
 
 	body, headers, status, err := web.Request(client, url, http.MethodGet, nil, nil, timeout)
@@ -184,7 +193,13 @@ func fetchFromRIPEStat(client *retryablehttp.Client, asn string, timeout time.Du
 	return response, headers, status, nil
 }
 
-// FetchData fetches IP prefixes for multiple ASNs from the BGPView API with RIPE stat fallback.
+// FetchData fetches IP prefixes for multiple ASNs from the RIPE stat API with BGPView as fallback.
+//
+// Order rationale: RIPE stat is the authoritative RIR-operated source and is currently the
+// only one of the two that resolves — api.bgpview.io has been NXDOMAIN since at least
+// mid-2026. Trying BGPView first burned ~6s per call on retryablehttp DNS retries before
+// falling through to RIPE; trying RIPE first means the BGPView fallback is only paid when
+// RIPE itself fails, and silently turns back into a real fallback if BGPView ever returns.
 func FetchData(client *retryablehttp.Client, downloadURL string, asns []string, providerName string, timeout time.Duration) ([]byte, http.Header, int, error) { //nolint:gocognit
 	var (
 		headers http.Header
@@ -197,7 +212,7 @@ func FetchData(client *retryablehttp.Client, downloadURL string, asns []string, 
 	}
 
 	if timeout == 0 {
-		timeout = web.DefaultRequestTimeout
+		timeout = web.LongRequestTimeout
 	}
 
 	type asnResult struct {
@@ -208,7 +223,11 @@ func FetchData(client *retryablehttp.Client, downloadURL string, asns []string, 
 
 	results := make([]asnResult, len(asns))
 
+	// Cap concurrent ASN lookups: RIPE stat appears to rate-limit per-IP and serialises
+	// some queries, so blasting 4+ ASNs in parallel turns into timeouts even though each
+	// one would individually complete in <1s.
 	var g errgroup.Group
+	g.SetLimit(2)
 	for i, asn := range asns {
 		g.Go(func() error {
 			asnURL := downloadURL
@@ -218,14 +237,15 @@ func FetchData(client *retryablehttp.Client, downloadURL string, asns []string, 
 
 			asnURL = fmt.Sprintf(asnURL, asn)
 
-			// Try BGPView API first
-			response, h, s, fetchErr := fetchFromBGPView(client, asn, asnURL, timeout)
+			// Try RIPE stat first (currently the only working source).
+			response, h, s, ripeErr := fetchFromRIPEStat(client, asn, timeout)
 
-			// If BGPView fails, try RIPE stat API as fallback
-			if fetchErr != nil || s != http.StatusOK {
-				response, h, s, fetchErr = fetchFromRIPEStat(client, asn, timeout)
-				if fetchErr != nil {
-					return fmt.Errorf("both BGPView and RIPE stat APIs failed for ASN %s: %w", asn, fetchErr)
+			// Fall back to BGPView if RIPE stat fails.
+			if ripeErr != nil || s != http.StatusOK {
+				var bgpErr error
+				response, h, s, bgpErr = fetchFromBGPView(client, asn, asnURL, timeout)
+				if bgpErr != nil {
+					return fmt.Errorf("both RIPE stat and BGPView APIs failed for ASN %s: RIPE: %v; BGPView: %w", asn, ripeErr, bgpErr)
 				}
 			}
 
