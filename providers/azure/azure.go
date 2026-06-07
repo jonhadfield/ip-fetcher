@@ -20,7 +20,7 @@ const (
 	FullName              = "Microsoft Azure"
 	HostType              = "cloud"
 	InitialURL            = "https://www.microsoft.com/en-gb/download/details.aspx?id=56519"
-	WorkaroundDownloadURL = "https://download.microsoft.com/download/7/1/d/71d86715-5596-4529-9b13-da13a5de5b63/ServiceTags_Public_20250721.json"
+	WorkaroundDownloadURL = "https://download.microsoft.com/download/7/1/d/71d86715-5596-4529-9b13-da13a5de5b63/ServiceTags_Public_20260601.json"
 
 	errFailedToDownload = "failed to retrieve azure prefixes initial page"
 )
@@ -62,6 +62,7 @@ func (a *Azure) GetDownloadURL() (string, error) {
 	}
 
 	client := cycletls.Init()
+	defer client.Close()
 
 	var url string
 
@@ -110,18 +111,17 @@ func (a *Azure) GetDownloadURL() (string, error) {
 }
 
 func (a *Azure) FetchData() ([]byte, http.Header, int, error) {
-	// get download url if not specified
 	if a.DownloadURL == "" {
-		a.DownloadURL = WorkaroundDownloadURL
-		// a.DownloadURL, err = a.GetDownloadURL()
-		// if err != nil {
-		// 	return
-		// }
+		// Microsoft rotates the dated snapshot URL on roughly a weekly cadence.
+		// Scrape the download page for the current URL and fall back to the
+		// last-known snapshot if discovery fails.
+		discoveredURL, err := a.GetDownloadURL()
+		if err != nil || discoveredURL == "" {
+			a.DownloadURL = WorkaroundDownloadURL
+		} else {
+			a.DownloadURL = discoveredURL
+		}
 	}
-
-	// if a.DownloadURL == "" {
-	// 	a.DownloadURL = WorkaroundDownloadURL
-	// }
 
 	data, headers, status, err := web.Request(
 		a.Client,
