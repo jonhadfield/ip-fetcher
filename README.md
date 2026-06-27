@@ -14,6 +14,8 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://aws.amazon.com/" target="_blank">AWS</a> (Amazon Web Services)
 - <a href="https://www.alibabacloud.com" target="_blank">Alibaba</a>
 - <a href="https://www.bing.com/webmasters/help/which-crawlers-does-bing-use-8c184ec0" target="_blank">Bingbot</a>
+- <a href="https://bunny.net/" target="_blank">Bunny.net</a>
+- <a href="https://www.cdn77.com/" target="_blank">CDN77</a>
 - <a href="https://www.cloudflare.com/" target="_blank">Cloudflare</a>
 - <a href="https://www.digitalocean.com/" target="_blank">DigitalOcean</a>
 - <a href="https://www.fastly.com/" target="_blank">Fastly</a>

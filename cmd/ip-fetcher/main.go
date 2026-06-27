@@ -48,6 +48,8 @@ func GetApp() *cli.App {
 		awsCmd(),
 		azureCmd(),
 		bingbotCmd(),
+		bunnyCmd(),
+		cdn77Cmd(),
 		cloudflareCmd(),
 		digitaloceanCmd(),
 		fastlyCmd(),
