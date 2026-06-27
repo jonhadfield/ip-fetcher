@@ -21,6 +21,8 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/jonhadfield/ip-fetcher/providers/aws"
 	"github.com/jonhadfield/ip-fetcher/providers/azure"
+	"github.com/jonhadfield/ip-fetcher/providers/bunny"
+	"github.com/jonhadfield/ip-fetcher/providers/cdn77"
 	"github.com/jonhadfield/ip-fetcher/providers/cloudflare"
 	"github.com/jonhadfield/ip-fetcher/providers/fastly"
 	"github.com/jonhadfield/ip-fetcher/providers/gcp"
@@ -49,6 +51,8 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchAlibaba, syncAlibabaData, alibaba.ShortName, alibabaFile, alibaba.FullName, alibaba.HostType, alibaba.SourceURL},
 	{fetchAWS, syncAWSData, aws.ShortName, awsFile, aws.FullName, aws.HostType, aws.SourceURL},
 	{fetchAzure, syncAzureData, azure.ShortName, azureFile, azure.FullName, azure.HostType, azure.InitialURL},
+	{fetchBunny, syncBunnyData, bunny.ShortName, bunnyFile, bunny.FullName, bunny.HostType, bunny.SourceURL},
+	{fetchCDN77, syncCDN77Data, cdn77.ShortName, cdn77File, cdn77.FullName, cdn77.HostType, cdn77.SourceURL},
 	{fetchCloudflare, syncCloudflareData, cloudflare.ShortName, cloudflareFile, cloudflare.FullName, cloudflare.HostType, cloudflare.SourceURL},
 	{fetchFastly, syncFastlyData, fastly.ShortName, fastlyFile, fastly.FullName, fastly.HostType, fastly.SourceURL},
 	{fetchGCP, syncGCPData, gcp.ShortName, gcpFile, gcp.FullName, gcp.HostType, gcp.SourceURL},
