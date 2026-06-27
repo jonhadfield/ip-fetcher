@@ -19,6 +19,7 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://www.cloudflare.com/" target="_blank">Cloudflare</a>
 - <a href="https://www.digitalocean.com/" target="_blank">DigitalOcean</a>
 - <a href="https://www.fastly.com/" target="_blank">Fastly</a>
+- <a href="https://fly.io/" target="_blank">Fly.io</a>
 - <a href="https://cloud.google.com/" target="_blank">GCP</a> (Google Cloud Platform)
 - <a href="https://www.google.com/" target="_blank">Google</a>
 - <a href="https://developers.google.com/search/docs/crawling-indexing/googlebot" target="_blank">Googlebot</a>
@@ -35,6 +36,7 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://www.oracle.com/cloud/" target="_blank">Oracle Cloud Infrastructure</a>
 - <a href="https://support.apple.com/en-us/HT212614" target="_blank">iCloud Private Relay</a>
 - <a href="https://www.ovhcloud.com" target="_blank">OVHcloud</a>
+- <a href="https://render.com/" target="_blank">Render</a>
 - <a href="https://www.vultr.com" target="_blank">Vultr</a>
 - <a href="https://www.zscaler.com" target="_blank">Zscaler</a>
 - <a href="https://github.com/jonhadfield/ip-fetcher" target="_blank">Custom URL</a>

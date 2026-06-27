@@ -25,6 +25,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/cdn77"
 	"github.com/jonhadfield/ip-fetcher/providers/cloudflare"
 	"github.com/jonhadfield/ip-fetcher/providers/fastly"
+	"github.com/jonhadfield/ip-fetcher/providers/flyio"
 	"github.com/jonhadfield/ip-fetcher/providers/gcp"
 	"github.com/jonhadfield/ip-fetcher/providers/google"
 	"github.com/jonhadfield/ip-fetcher/providers/googlebot"
@@ -32,6 +33,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/googleutf"
 	"github.com/jonhadfield/ip-fetcher/providers/linode"
 	"github.com/jonhadfield/ip-fetcher/providers/oci"
+	"github.com/jonhadfield/ip-fetcher/providers/render"
 )
 
 //go:embed README.template
@@ -55,6 +57,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchCDN77, syncCDN77Data, cdn77.ShortName, cdn77File, cdn77.FullName, cdn77.HostType, cdn77.SourceURL},
 	{fetchCloudflare, syncCloudflareData, cloudflare.ShortName, cloudflareFile, cloudflare.FullName, cloudflare.HostType, cloudflare.SourceURL},
 	{fetchFastly, syncFastlyData, fastly.ShortName, fastlyFile, fastly.FullName, fastly.HostType, fastly.SourceURL},
+	{fetchFlyio, syncFlyioData, flyio.ShortName, flyioFile, flyio.FullName, flyio.HostType, flyio.SourceURL},
 	{fetchGCP, syncGCPData, gcp.ShortName, gcpFile, gcp.FullName, gcp.HostType, gcp.SourceURL},
 	{fetchGoogle, syncGoogleData, google.ShortName, googleFile, google.FullName, google.HostType, google.SourceURL},
 	{fetchGooglebot, syncGooglebotData, googlebot.ShortName, googlebotFile, googlebot.FullName, googlebot.HostType, googlebot.SourceURL},
@@ -65,6 +68,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchM247, syncM247Data, m247.ShortName, m247File, m247.FullName, m247.HostType, m247.SourceURL},
 	{fetchOCI, syncOCIData, oci.ShortName, ociFile, oci.FullName, oci.HostType, oci.SourceURL},
 	{fetchOVH, syncOVHData, ovh.ShortName, ovhFile, ovh.FullName, ovh.HostType, ovh.SourceURL},
+	{fetchRender, syncRenderData, render.ShortName, renderFile, render.FullName, render.HostType, render.SourceURL},
 	{fetchScaleway, syncScalewayData, scaleway.ShortName, scalewayFile, scaleway.FullName, scaleway.HostType, scaleway.SourceURL},
 	{fetchVultr, syncVultrData, vultr.ShortName, vultrFile, vultr.FullName, vultr.HostType, vultr.SourceURL},
 	{fetchZscaler, syncZscalerData, zscaler.ShortName, zscalerFile, zscaler.FullName, zscaler.HostType, zscaler.SourceURL},
