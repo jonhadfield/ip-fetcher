@@ -1,0 +1,33 @@
+{
+  "creationDate": "2024-01-15",
+  "syncToken": "1705320000",
+  "items": [
+    {
+      "network": "13.52.5.0",
+      "mask_len": 24,
+      "cidr": "13.52.5.0/24",
+      "mask": "255.255.255.0",
+      "region": ["us-west-1"],
+      "product": ["jira", "confluence"],
+      "direction": ["egress", "ingress"]
+    },
+    {
+      "network": "18.205.93.0",
+      "mask_len": 25,
+      "cidr": "18.205.93.0/25",
+      "mask": "255.255.255.128",
+      "region": ["us-east-1"],
+      "product": ["bitbucket"],
+      "direction": ["egress"]
+    },
+    {
+      "network": "2401:1d80::",
+      "mask_len": 32,
+      "cidr": "2401:1d80::/32",
+      "mask": "ffff:ffff::",
+      "region": ["us-east-1"],
+      "product": ["jira"],
+      "direction": ["ingress"]
+    }
+  ]
+}

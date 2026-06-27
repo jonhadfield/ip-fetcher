@@ -1,0 +1,47 @@
+{
+  "status": "ok",
+  "status_message": "Query was successful",
+  "data": {
+    "ipv4_prefixes": [
+      {
+        "prefix": "62.171.128.0/17",
+        "ip": "62.171.128.0",
+        "cidr": 17,
+        "roa_status": "Valid",
+        "name": "CONTABO",
+        "description": "Contabo GmbH",
+        "country_code": "DE",
+        "parent": {
+          "prefix": "62.171.128.0/17",
+          "ip": "62.171.128.0",
+          "cidr": 17,
+          "rir_name": "RIPE",
+          "allocation_status": "allocated"
+        }
+      }
+    ],
+    "ipv6_prefixes": [
+      {
+        "prefix": "2a02:c200::/32",
+        "ip": "2a02:c200::",
+        "cidr": 32,
+        "roa_status": "Valid",
+        "name": null,
+        "description": null,
+        "country_code": null,
+        "parent": {
+          "prefix": null,
+          "ip": null,
+          "cidr": null,
+          "rir_name": null,
+          "allocation_status": "unknown"
+        }
+      }
+    ]
+  },
+  "@meta": {
+    "time_zone": "UTC",
+    "api_version": 1,
+    "execution_time": "50.00 ms"
+  }
+}

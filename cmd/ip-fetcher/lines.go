@@ -2,12 +2,27 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/netip"
 	"reflect"
 	"strings"
 )
 
 var errNoPrefixes = errors.New("no prefixes found")
+
+// prefixesToLines renders IPv4 then IPv6 prefixes as newline separated text.
+func prefixesToLines(ipv4, ipv6 []netip.Prefix) []byte {
+	sl := strings.Builder{}
+	for x := range ipv4 {
+		fmt.Fprintf(&sl, "%s\n", ipv4[x].String())
+	}
+
+	for x := range ipv6 {
+		fmt.Fprintf(&sl, "%s\n", ipv6[x].String())
+	}
+
+	return []byte(sl.String())
+}
 
 // docToLines converts any provider document or prefix slice to newline separated IP prefixes.
 func docToLines(doc any) ([]byte, error) {
