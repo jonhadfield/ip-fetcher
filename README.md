@@ -13,12 +13,16 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://www.abuseipdb.com/" target="_blank">AbuseIPDB</a>
 - <a href="https://aws.amazon.com/" target="_blank">AWS</a> (Amazon Web Services)
 - <a href="https://www.alibabacloud.com" target="_blank">Alibaba</a>
+- <a href="https://ip-ranges.atlassian.com/" target="_blank">Atlassian</a>
 - <a href="https://www.bing.com/webmasters/help/which-crawlers-does-bing-use-8c184ec0" target="_blank">Bingbot</a>
 - <a href="https://bunny.net/" target="_blank">Bunny.net</a>
 - <a href="https://www.cdn77.com/" target="_blank">CDN77</a>
 - <a href="https://www.cloudflare.com/" target="_blank">Cloudflare</a>
+- <a href="https://contabo.com/" target="_blank">Contabo</a>
+- <a href="https://docs.datadoghq.com/api/latest/ip-ranges/" target="_blank">Datadog</a>
 - <a href="https://www.digitalocean.com/" target="_blank">DigitalOcean</a>
 - <a href="https://www.fastly.com/" target="_blank">Fastly</a>
+- <a href="https://fly.io/" target="_blank">Fly.io</a>
 - <a href="https://cloud.google.com/" target="_blank">GCP</a> (Google Cloud Platform)
 - <a href="https://www.google.com/" target="_blank">Google</a>
 - <a href="https://developers.google.com/search/docs/crawling-indexing/googlebot" target="_blank">Googlebot</a>
@@ -28,13 +32,19 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://azure.microsoft.com" target="_blank">Microsoft Azure</a>
 - <a href="https://www.akamai.com" target="_blank">Akamai</a>
 - <a href="https://www.hetzner.com" target="_blank">Hetzner</a>
+- <a href="https://www.ibm.com/cloud" target="_blank">IBM Cloud</a>
+- <a href="https://www.imperva.com" target="_blank">Imperva</a>
 - <a href="https://www.github.com" target="_blank">GitHub</a>
+- <a href="https://www.leaseweb.com/" target="_blank">Leaseweb</a>
 - <a href="https://www.linode.com" target="_blank">Linode</a>
 - <a href="https://www.m247.com/" target="_blank">M247</a>
 - <a href="https://www.scaleway.com/" target="_blank">Scaleway</a>
+- <a href="https://docs.stripe.com/ips" target="_blank">Stripe</a>
+- <a href="https://www.tencentcloud.com/" target="_blank">Tencent Cloud</a>
 - <a href="https://www.oracle.com/cloud/" target="_blank">Oracle Cloud Infrastructure</a>
 - <a href="https://support.apple.com/en-us/HT212614" target="_blank">iCloud Private Relay</a>
 - <a href="https://www.ovhcloud.com" target="_blank">OVHcloud</a>
+- <a href="https://render.com/" target="_blank">Render</a>
 - <a href="https://www.vultr.com" target="_blank">Vultr</a>
 - <a href="https://www.zscaler.com" target="_blank">Zscaler</a>
 - <a href="https://github.com/jonhadfield/ip-fetcher" target="_blank">Custom URL</a>

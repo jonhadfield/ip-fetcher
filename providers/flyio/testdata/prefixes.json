@@ -1,0 +1,47 @@
+{
+  "status": "ok",
+  "status_message": "Query was successful",
+  "data": {
+    "ipv4_prefixes": [
+      {
+        "prefix": "137.66.0.0/16",
+        "ip": "137.66.0.0",
+        "cidr": 16,
+        "roa_status": "Valid",
+        "name": "FLY",
+        "description": "Fly.io, Inc.",
+        "country_code": "US",
+        "parent": {
+          "prefix": "137.66.0.0/16",
+          "ip": "137.66.0.0",
+          "cidr": 16,
+          "rir_name": "ARIN",
+          "allocation_status": "allocated"
+        }
+      }
+    ],
+    "ipv6_prefixes": [
+      {
+        "prefix": "2a09:8280::/29",
+        "ip": "2a09:8280::",
+        "cidr": 29,
+        "roa_status": "Valid",
+        "name": null,
+        "description": null,
+        "country_code": null,
+        "parent": {
+          "prefix": null,
+          "ip": null,
+          "cidr": null,
+          "rir_name": null,
+          "allocation_status": "unknown"
+        }
+      }
+    ]
+  },
+  "@meta": {
+    "time_zone": "UTC",
+    "api_version": 1,
+    "execution_time": "50.00 ms"
+  }
+}

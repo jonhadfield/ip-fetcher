@@ -1,0 +1,47 @@
+{
+  "status": "ok",
+  "status_message": "Query was successful",
+  "data": {
+    "ipv4_prefixes": [
+      {
+        "prefix": "216.24.56.0/22",
+        "ip": "216.24.56.0",
+        "cidr": 22,
+        "roa_status": "Valid",
+        "name": "RENDER",
+        "description": "Render",
+        "country_code": "US",
+        "parent": {
+          "prefix": "216.24.56.0/22",
+          "ip": "216.24.56.0",
+          "cidr": 22,
+          "rir_name": "ARIN",
+          "allocation_status": "allocated"
+        }
+      }
+    ],
+    "ipv6_prefixes": [
+      {
+        "prefix": "2600:1f16::/32",
+        "ip": "2600:1f16::",
+        "cidr": 32,
+        "roa_status": "Valid",
+        "name": null,
+        "description": null,
+        "country_code": null,
+        "parent": {
+          "prefix": null,
+          "ip": null,
+          "cidr": null,
+          "rir_name": null,
+          "allocation_status": "unknown"
+        }
+      }
+    ]
+  },
+  "@meta": {
+    "time_zone": "UTC",
+    "api_version": 1,
+    "execution_time": "50.00 ms"
+  }
+}

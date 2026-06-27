@@ -1,0 +1,47 @@
+{
+  "status": "ok",
+  "status_message": "Query was successful",
+  "data": {
+    "ipv4_prefixes": [
+      {
+        "prefix": "5.79.0.0/16",
+        "ip": "5.79.0.0",
+        "cidr": 16,
+        "roa_status": "Valid",
+        "name": "LEASEWEB-NL",
+        "description": "LeaseWeb Netherlands B.V.",
+        "country_code": "NL",
+        "parent": {
+          "prefix": "5.79.0.0/16",
+          "ip": "5.79.0.0",
+          "cidr": 16,
+          "rir_name": "RIPE",
+          "allocation_status": "allocated"
+        }
+      }
+    ],
+    "ipv6_prefixes": [
+      {
+        "prefix": "2a00:c98::/32",
+        "ip": "2a00:c98::",
+        "cidr": 32,
+        "roa_status": "Valid",
+        "name": null,
+        "description": null,
+        "country_code": null,
+        "parent": {
+          "prefix": null,
+          "ip": null,
+          "cidr": null,
+          "rir_name": null,
+          "allocation_status": "unknown"
+        }
+      }
+    ]
+  },
+  "@meta": {
+    "time_zone": "UTC",
+    "api_version": 1,
+    "execution_time": "50.00 ms"
+  }
+}

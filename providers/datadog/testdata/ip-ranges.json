@@ -1,0 +1,20 @@
+{
+  "version": 61,
+  "modified": "2024-01-15-12-00-00",
+  "agents": {
+    "prefixes_ipv4": ["3.233.144.0/20"],
+    "prefixes_ipv6": []
+  },
+  "api": {
+    "prefixes_ipv4": ["3.233.144.0/20", "54.171.0.0/16"],
+    "prefixes_ipv6": ["2600:1f18::/32"]
+  },
+  "webhooks": {
+    "prefixes_ipv4": ["44.207.0.0/16"],
+    "prefixes_ipv6": []
+  },
+  "synthetics": {
+    "prefixes_ipv4": ["18.197.0.0/16"],
+    "prefixes_ipv6": ["2a05:d014::/32"]
+  }
+}
