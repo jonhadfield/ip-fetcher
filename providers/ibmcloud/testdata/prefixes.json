@@ -1,0 +1,47 @@
+{
+  "status": "ok",
+  "status_message": "Query was successful",
+  "data": {
+    "ipv4_prefixes": [
+      {
+        "prefix": "169.45.0.0/16",
+        "ip": "169.45.0.0",
+        "cidr": 16,
+        "roa_status": "Valid",
+        "name": "SOFTLAYER",
+        "description": "IBM Cloud",
+        "country_code": "US",
+        "parent": {
+          "prefix": "169.44.0.0/14",
+          "ip": "169.44.0.0",
+          "cidr": 14,
+          "rir_name": "ARIN",
+          "allocation_status": "allocated"
+        }
+      }
+    ],
+    "ipv6_prefixes": [
+      {
+        "prefix": "2607:f0d0::/32",
+        "ip": "2607:f0d0::",
+        "cidr": 32,
+        "roa_status": "Valid",
+        "name": null,
+        "description": null,
+        "country_code": null,
+        "parent": {
+          "prefix": null,
+          "ip": null,
+          "cidr": null,
+          "rir_name": null,
+          "allocation_status": "unknown"
+        }
+      }
+    ]
+  },
+  "@meta": {
+    "time_zone": "UTC",
+    "api_version": 1,
+    "execution_time": "50.00 ms"
+  }
+}

@@ -14,6 +14,8 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/ovh"
 
 	"github.com/jonhadfield/ip-fetcher/providers/hetzner"
+	"github.com/jonhadfield/ip-fetcher/providers/ibmcloud"
+	"github.com/jonhadfield/ip-fetcher/providers/tencent"
 	"github.com/jonhadfield/ip-fetcher/providers/zscaler"
 
 	"github.com/go-git/go-billy/v5"
@@ -64,12 +66,14 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchGoogleSC, syncGoogleSCData, googlesc.ShortName, googlescFile, googlesc.FullName, googlesc.HostType, googlesc.SourceURL},
 	{fetchGoogleUTF, syncGoogleUTFData, googleutf.ShortName, googleutfFile, googleutf.FullName, googleutf.HostType, googleutf.SourceURL},
 	{fetchHetzner, syncHetznerData, hetzner.ShortName, hetznerFile, hetzner.FullName, hetzner.HostType, hetzner.SourceURL},
+	{fetchIBMCloud, syncIBMCloudData, ibmcloud.ShortName, ibmcloudFile, ibmcloud.FullName, ibmcloud.HostType, ibmcloud.SourceURL},
 	{fetchLinode, syncLinodeData, linode.ShortName, linodeFile, linode.FullName, linode.HostType, linode.SourceURL},
 	{fetchM247, syncM247Data, m247.ShortName, m247File, m247.FullName, m247.HostType, m247.SourceURL},
 	{fetchOCI, syncOCIData, oci.ShortName, ociFile, oci.FullName, oci.HostType, oci.SourceURL},
 	{fetchOVH, syncOVHData, ovh.ShortName, ovhFile, ovh.FullName, ovh.HostType, ovh.SourceURL},
 	{fetchRender, syncRenderData, render.ShortName, renderFile, render.FullName, render.HostType, render.SourceURL},
 	{fetchScaleway, syncScalewayData, scaleway.ShortName, scalewayFile, scaleway.FullName, scaleway.HostType, scaleway.SourceURL},
+	{fetchTencent, syncTencentData, tencent.ShortName, tencentFile, tencent.FullName, tencent.HostType, tencent.SourceURL},
 	{fetchVultr, syncVultrData, vultr.ShortName, vultrFile, vultr.FullName, vultr.HostType, vultr.SourceURL},
 	{fetchZscaler, syncZscalerData, zscaler.ShortName, zscalerFile, zscaler.FullName, zscaler.HostType, zscaler.SourceURL},
 }

@@ -1,0 +1,47 @@
+{
+  "status": "ok",
+  "status_message": "Query was successful",
+  "data": {
+    "ipv4_prefixes": [
+      {
+        "prefix": "43.128.0.0/14",
+        "ip": "43.128.0.0",
+        "cidr": 14,
+        "roa_status": "Valid",
+        "name": "TENCENT",
+        "description": "Tencent Cloud Computing",
+        "country_code": "SG",
+        "parent": {
+          "prefix": "43.128.0.0/14",
+          "ip": "43.128.0.0",
+          "cidr": 14,
+          "rir_name": "APNIC",
+          "allocation_status": "allocated"
+        }
+      }
+    ],
+    "ipv6_prefixes": [
+      {
+        "prefix": "2402:4e00::/32",
+        "ip": "2402:4e00::",
+        "cidr": 32,
+        "roa_status": "Valid",
+        "name": null,
+        "description": null,
+        "country_code": null,
+        "parent": {
+          "prefix": null,
+          "ip": null,
+          "cidr": null,
+          "rir_name": null,
+          "allocation_status": "unknown"
+        }
+      }
+    ]
+  },
+  "@meta": {
+    "time_zone": "UTC",
+    "api_version": 1,
+    "execution_time": "50.00 ms"
+  }
+}
