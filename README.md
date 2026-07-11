@@ -41,6 +41,7 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://www.scaleway.com/" target="_blank">Scaleway</a>
 - <a href="https://docs.stripe.com/ips" target="_blank">Stripe</a>
 - <a href="https://www.tencentcloud.com/" target="_blank">Tencent Cloud</a>
+- <a href="https://platform.openai.com/docs/bots" target="_blank">OpenAI Bots</a> (GPTBot, OAI-SearchBot and ChatGPT-User)
 - <a href="https://www.oracle.com/cloud/" target="_blank">Oracle Cloud Infrastructure</a>
 - <a href="https://support.apple.com/en-us/HT212614" target="_blank">iCloud Private Relay</a>
 - <a href="https://www.ovhcloud.com" target="_blank">OVHcloud</a>

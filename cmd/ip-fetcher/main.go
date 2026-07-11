@@ -72,6 +72,7 @@ func GetApp() *cli.App {
 		linodeCmd(),
 		m247Cmd(),
 		ociCmd(),
+		openaiCmd(),
 		ovhCmd(),
 		publishCmd(),
 		renderCmd(),
