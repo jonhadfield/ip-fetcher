@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/netip"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
@@ -81,8 +82,10 @@ func (a *Atlassian) Fetch() (Doc, error) {
 
 type rawDoc struct {
 	CreationDate string `json:"creationDate"`
-	SyncToken    string `json:"syncToken"`
-	Items        []Item `json:"items"`
+	// SyncToken is a JSON number in the live feed but has historically been
+	// published as a string, so accept either form.
+	SyncToken json.RawMessage `json:"syncToken"`
+	Items     []Item          `json:"items"`
 }
 
 func ProcessData(data []byte) (Doc, error) {
@@ -93,7 +96,7 @@ func ProcessData(data []byte) (Doc, error) {
 
 	doc := Doc{
 		CreationDate: raw.CreationDate,
-		SyncToken:    raw.SyncToken,
+		SyncToken:    strings.Trim(string(raw.SyncToken), `"`),
 		Items:        raw.Items,
 	}
 
