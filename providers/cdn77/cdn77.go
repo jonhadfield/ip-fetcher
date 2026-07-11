@@ -101,6 +101,22 @@ func parseEntries(data []byte) ([]string, error) {
 		return list, nil
 	}
 
+	// live feed shape: {"updated_at": "...", "prefixes": [{"prefix": "x.x.x.x/nn"}, ...]}
+	var wrappedObjects struct {
+		Prefixes []struct {
+			Prefix string `json:"prefix"`
+		} `json:"prefixes"`
+	}
+
+	if err := json.Unmarshal(data, &wrappedObjects); err == nil && len(wrappedObjects.Prefixes) > 0 {
+		entries := make([]string, 0, len(wrappedObjects.Prefixes))
+		for _, p := range wrappedObjects.Prefixes {
+			entries = append(entries, p.Prefix)
+		}
+
+		return entries, nil
+	}
+
 	var wrapped map[string][]string
 	if err := json.Unmarshal(data, &wrapped); err != nil {
 		return nil, err

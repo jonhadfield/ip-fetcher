@@ -22,7 +22,7 @@ func TestFetch(t *testing.T) {
 	gock.New(fmt.Sprintf("%s://%s", u.Scheme, u.Host)).
 		Get(u.Path).
 		Reply(http.StatusOK).
-		File("testdata/prefixes.json")
+		File("testdata/public_lmax_prefixes.json")
 
 	c := cdn77.New()
 	gock.InterceptClient(c.Client.HTTPClient)
@@ -42,4 +42,23 @@ func TestProcessDataWrappedObject(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, doc.IPv4Prefixes, 1)
 	require.Len(t, doc.IPv6Prefixes, 1)
+}
+
+func TestProcessDataPlainArray(t *testing.T) {
+	data := []byte(`["185.59.220.0/22","212.102.32.0/19","2a13:aac0::/29"]`)
+
+	doc, err := cdn77.ProcessData(data)
+	require.NoError(t, err)
+	require.Len(t, doc.IPv4Prefixes, 2)
+	require.Len(t, doc.IPv6Prefixes, 1)
+}
+
+func TestProcessDataPrefixObjects(t *testing.T) {
+	data := []byte(`{"updated_at":"2026-03-25T16:00:03+00:00","prefixes":[{"prefix":"89.222.125.0/26"},{"prefix":"2606:fd00::/32"}]}`)
+
+	doc, err := cdn77.ProcessData(data)
+	require.NoError(t, err)
+	require.Len(t, doc.IPv4Prefixes, 1)
+	require.Len(t, doc.IPv6Prefixes, 1)
+	require.Contains(t, doc.IPv4Prefixes, netip.MustParsePrefix("89.222.125.0/26"))
 }
