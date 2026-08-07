@@ -22,7 +22,7 @@ const (
 	HostType  = "cdn"
 	SourceURL = "https://techdocs.akamai.com/property-manager/docs/origin-ip-access-control"
 	// DownloadURL is the CIDR list Akamai publishes for origin allowlisting:
-	// a zip containing akamai_ipv4_CIDRs.txt and akamai_ipv6_CIDRs.txt
+	// a zip containing akamai_ipv4_CIDRs.txt and akamai_ipv6_CIDRs.txt.
 	DownloadURL = "https://techdocs.akamai.com/property-manager/pdfs/akamai_ipv4_ipv6_CIDRs-txt.zip"
 )
 
@@ -85,22 +85,22 @@ func processZip(data []byte) ([]netip.Prefix, error) {
 			continue
 		}
 
-		rc, err := f.Open()
-		if err != nil {
-			return nil, fmt.Errorf("failed to open %s in akamai zip: %w", f.Name, err)
+		rc, oErr := f.Open()
+		if oErr != nil {
+			return nil, fmt.Errorf("failed to open %s in akamai zip: %w", f.Name, oErr)
 		}
 
-		content, err := io.ReadAll(rc)
+		content, rErr := io.ReadAll(rc)
 
 		_ = rc.Close()
 
-		if err != nil {
-			return nil, fmt.Errorf("failed to read %s in akamai zip: %w", f.Name, err)
+		if rErr != nil {
+			return nil, fmt.Errorf("failed to read %s in akamai zip: %w", f.Name, rErr)
 		}
 
-		filePrefixes, err := parsePrefixLines(content)
-		if err != nil {
-			return nil, err
+		filePrefixes, pErr := parsePrefixLines(content)
+		if pErr != nil {
+			return nil, pErr
 		}
 
 		prefixes = append(prefixes, filePrefixes...)
