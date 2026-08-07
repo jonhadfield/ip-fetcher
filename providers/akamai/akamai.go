@@ -1,10 +1,15 @@
 package akamai
 
 import (
+	"archive/zip"
 	"bufio"
 	"bytes"
+	"fmt"
+	"io"
 	"net/http"
 	"net/netip"
+	"path"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
@@ -12,11 +17,13 @@ import (
 )
 
 const (
-	ShortName   = "akamai"
-	FullName    = "Akamai"
-	HostType    = "cdn"
-	SourceURL   = "https://techdocs.akamai.com/"
-	DownloadURL = "https://ip-ranges.akamai.com/"
+	ShortName = "akamai"
+	FullName  = "Akamai"
+	HostType  = "cdn"
+	SourceURL = "https://techdocs.akamai.com/property-manager/docs/origin-ip-access-control"
+	// DownloadURL is the CIDR list Akamai publishes for origin allowlisting:
+	// a zip containing akamai_ipv4_CIDRs.txt and akamai_ipv6_CIDRs.txt
+	DownloadURL = "https://techdocs.akamai.com/property-manager/pdfs/akamai_ipv4_ipv6_CIDRs-txt.zip"
 )
 
 type Akamai struct {
@@ -50,16 +57,77 @@ func (a *Akamai) Fetch() ([]netip.Prefix, error) {
 	return ProcessData(data)
 }
 
+// ProcessData parses Akamai CIDR data: either the published zip of
+// akamai_ipv4_CIDRs.txt/akamai_ipv6_CIDRs.txt, or a plain text list of
+// prefixes, one per line.
 func ProcessData(data []byte) ([]netip.Prefix, error) {
-	r := bytes.NewReader(data)
-	scanner := bufio.NewScanner(r)
+	if bytes.HasPrefix(data, []byte("PK\x03\x04")) {
+		return processZip(data)
+	}
+
+	return parsePrefixLines(data)
+}
+
+func processZip(data []byte) ([]netip.Prefix, error) {
+	zr, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
+	if err != nil {
+		return nil, fmt.Errorf("failed to read akamai zip: %w", err)
+	}
+
 	var prefixes []netip.Prefix
-	for scanner.Scan() {
-		prefix, err := netip.ParsePrefix(scanner.Text())
+
+	for _, f := range zr.File {
+		// the published zip includes macOS resource-fork entries
+		// (__MACOSX/._*.txt) that are not CIDR data
+		if !strings.HasSuffix(f.Name, ".txt") ||
+			strings.HasPrefix(f.Name, "__MACOSX/") ||
+			strings.HasPrefix(path.Base(f.Name), "._") {
+			continue
+		}
+
+		rc, err := f.Open()
+		if err != nil {
+			return nil, fmt.Errorf("failed to open %s in akamai zip: %w", f.Name, err)
+		}
+
+		content, err := io.ReadAll(rc)
+
+		_ = rc.Close()
+
+		if err != nil {
+			return nil, fmt.Errorf("failed to read %s in akamai zip: %w", f.Name, err)
+		}
+
+		filePrefixes, err := parsePrefixLines(content)
 		if err != nil {
 			return nil, err
 		}
+
+		prefixes = append(prefixes, filePrefixes...)
+	}
+
+	return prefixes, nil
+}
+
+func parsePrefixLines(data []byte) ([]netip.Prefix, error) {
+	scanner := bufio.NewScanner(bytes.NewReader(data))
+
+	var prefixes []netip.Prefix
+
+	for scanner.Scan() {
+		// published files carry trailing whitespace on each line
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			continue
+		}
+
+		prefix, err := netip.ParsePrefix(line)
+		if err != nil {
+			return nil, err
+		}
+
 		prefixes = append(prefixes, prefix)
 	}
+
 	return prefixes, nil
 }
