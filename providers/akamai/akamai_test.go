@@ -25,6 +25,35 @@ func TestProcessData(t *testing.T) {
 	require.Contains(t, prefixes, netip.MustParsePrefix("2001:db8::/32"))
 }
 
+func TestProcessDataZip(t *testing.T) {
+	data, err := os.ReadFile("testdata/cidrs.zip")
+	require.NoError(t, err)
+
+	prefixes, err := akamai.ProcessData(data)
+	require.NoError(t, err)
+	require.Len(t, prefixes, 3)
+	require.Contains(t, prefixes, netip.MustParsePrefix("203.0.113.0/24"))
+	require.Contains(t, prefixes, netip.MustParsePrefix("198.51.100.0/24"))
+	require.Contains(t, prefixes, netip.MustParsePrefix("2001:db8::/32"))
+}
+
+func TestFetchZip(t *testing.T) {
+	u, err := url.Parse(akamai.DownloadURL)
+	require.NoError(t, err)
+
+	gock.New(fmt.Sprintf("%s://%s", u.Scheme, u.Host)).
+		Get(u.Path).
+		Reply(http.StatusOK).
+		File("testdata/cidrs.zip")
+
+	a := akamai.New()
+	gock.InterceptClient(a.Client.HTTPClient)
+
+	prefixes, err := a.Fetch()
+	require.NoError(t, err)
+	require.Len(t, prefixes, 3)
+}
+
 func TestFetch(t *testing.T) {
 	u, err := url.Parse(akamai.DownloadURL)
 	require.NoError(t, err)
