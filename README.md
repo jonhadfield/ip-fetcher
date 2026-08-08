@@ -11,8 +11,10 @@ Please raise an issue if you have any issues or suggestions for new providers.
 ## supported providers
 
 - <a href="https://www.abuseipdb.com/" target="_blank">AbuseIPDB</a>
+- <a href="https://api.ahrefs.com/v3/public/crawler-ip-ranges" target="_blank">AhrefsBot</a>
 - <a href="https://aws.amazon.com/" target="_blank">AWS</a> (Amazon Web Services)
 - <a href="https://www.alibabacloud.com" target="_blank">Alibaba</a>
+- <a href="https://support.apple.com/en-us/119829" target="_blank">Applebot</a>
 - <a href="https://ip-ranges.atlassian.com/" target="_blank">Atlassian</a>
 - <a href="https://www.bing.com/webmasters/help/which-crawlers-does-bing-use-8c184ec0" target="_blank">Bingbot</a>
 - <a href="https://bunny.net/" target="_blank">Bunny.net</a>
@@ -21,6 +23,7 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://contabo.com/" target="_blank">Contabo</a>
 - <a href="https://docs.datadoghq.com/api/latest/ip-ranges/" target="_blank">Datadog</a>
 - <a href="https://www.digitalocean.com/" target="_blank">DigitalOcean</a>
+- <a href="https://duckduckgo.com/duckduckbot" target="_blank">DuckDuckBot</a>
 - <a href="https://www.fastly.com/" target="_blank">Fastly</a>
 - <a href="https://fly.io/" target="_blank">Fly.io</a>
 - <a href="https://cloud.google.com/" target="_blank">GCP</a> (Google Cloud Platform)
@@ -45,6 +48,7 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://www.oracle.com/cloud/" target="_blank">Oracle Cloud Infrastructure</a>
 - <a href="https://support.apple.com/en-us/HT212614" target="_blank">iCloud Private Relay</a>
 - <a href="https://www.ovhcloud.com" target="_blank">OVHcloud</a>
+- <a href="https://www.perplexity.com/perplexitybot.json" target="_blank">PerplexityBot</a>
 - <a href="https://render.com/" target="_blank">Render</a>
 - <a href="https://www.vultr.com" target="_blank">Vultr</a>
 - <a href="https://www.zscaler.com" target="_blank">Zscaler</a>
