@@ -43,8 +43,10 @@ func GetApp() *cli.App {
 	app.Usage = "Download and display ips for various cloud providers and services"
 	app.Commands = []*cli.Command{
 		abuseipdbCmd(),
+		ahrefsCmd(),
 		akamaiCmd(),
 		alibabaCmd(),
+		applebotCmd(),
 		atlassianCmd(),
 		awsCmd(),
 		azureCmd(),
@@ -55,6 +57,7 @@ func GetApp() *cli.App {
 		contaboCmd(),
 		datadogCmd(),
 		digitaloceanCmd(),
+		duckduckbotCmd(),
 		fastlyCmd(),
 		flyioCmd(),
 		gcpCmd(),
@@ -74,6 +77,7 @@ func GetApp() *cli.App {
 		ociCmd(),
 		openaiCmd(),
 		ovhCmd(),
+		perplexitybotCmd(),
 		publishCmd(),
 		renderCmd(),
 		scalewayCmd(),
