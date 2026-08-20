@@ -10,7 +10,9 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/scaleway"
 	"github.com/jonhadfield/ip-fetcher/providers/vultr"
 
+	"github.com/jonhadfield/ip-fetcher/providers/akamai"
 	"github.com/jonhadfield/ip-fetcher/providers/alibaba"
+	"github.com/jonhadfield/ip-fetcher/providers/openai"
 	"github.com/jonhadfield/ip-fetcher/providers/ovh"
 
 	"github.com/jonhadfield/ip-fetcher/providers/hetzner"
@@ -40,10 +42,12 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/fastly"
 	"github.com/jonhadfield/ip-fetcher/providers/flyio"
 	"github.com/jonhadfield/ip-fetcher/providers/gcp"
+	"github.com/jonhadfield/ip-fetcher/providers/github"
 	"github.com/jonhadfield/ip-fetcher/providers/google"
 	"github.com/jonhadfield/ip-fetcher/providers/googlebot"
 	"github.com/jonhadfield/ip-fetcher/providers/googlesc"
 	"github.com/jonhadfield/ip-fetcher/providers/googleutf"
+	"github.com/jonhadfield/ip-fetcher/providers/icloudpr"
 	"github.com/jonhadfield/ip-fetcher/providers/imperva"
 	"github.com/jonhadfield/ip-fetcher/providers/leaseweb"
 	"github.com/jonhadfield/ip-fetcher/providers/linode"
@@ -70,6 +74,7 @@ type Provider struct {
 
 var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchAhrefs, syncAhrefsData, ahrefs.ShortName, ahrefsFile, ahrefs.FullName, ahrefs.HostType, ahrefs.SourceURL},
+	{fetchAkamai, syncAkamaiData, akamai.ShortName, akamaiFile, akamai.FullName, akamai.HostType, akamai.SourceURL},
 	{fetchAlibaba, syncAlibabaData, alibaba.ShortName, alibabaFile, alibaba.FullName, alibaba.HostType, alibaba.SourceURL},
 	{fetchAnthropic, syncAnthropicData, anthropic.ShortName, anthropicFile, anthropic.FullName, anthropic.HostType, anthropic.SourceURL},
 	{fetchApplebot, syncApplebotData, applebot.ShortName, applebotFile, applebot.FullName, applebot.HostType, applebot.SourceURL},
@@ -89,17 +94,20 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchFastly, syncFastlyData, fastly.ShortName, fastlyFile, fastly.FullName, fastly.HostType, fastly.SourceURL},
 	{fetchFlyio, syncFlyioData, flyio.ShortName, flyioFile, flyio.FullName, flyio.HostType, flyio.SourceURL},
 	{fetchGCP, syncGCPData, gcp.ShortName, gcpFile, gcp.FullName, gcp.HostType, gcp.SourceURL},
+	{fetchGitHub, syncGitHubData, github.ShortName, githubFile, github.FullName, github.HostType, github.SourceURL},
 	{fetchGoogle, syncGoogleData, google.ShortName, googleFile, google.FullName, google.HostType, google.SourceURL},
 	{fetchGooglebot, syncGooglebotData, googlebot.ShortName, googlebotFile, googlebot.FullName, googlebot.HostType, googlebot.SourceURL},
 	{fetchGoogleSC, syncGoogleSCData, googlesc.ShortName, googlescFile, googlesc.FullName, googlesc.HostType, googlesc.SourceURL},
 	{fetchGoogleUTF, syncGoogleUTFData, googleutf.ShortName, googleutfFile, googleutf.FullName, googleutf.HostType, googleutf.SourceURL},
 	{fetchHetzner, syncHetznerData, hetzner.ShortName, hetznerFile, hetzner.FullName, hetzner.HostType, hetzner.SourceURL},
 	{fetchIBMCloud, syncIBMCloudData, ibmcloud.ShortName, ibmcloudFile, ibmcloud.FullName, ibmcloud.HostType, ibmcloud.SourceURL},
+	{fetchICloudPR, syncICloudPRData, icloudpr.ShortName, icloudprFile, icloudpr.FullName, icloudpr.HostType, icloudpr.SourceURL},
 	{fetchImperva, syncImpervaData, imperva.ShortName, impervaFile, imperva.FullName, imperva.HostType, imperva.SourceURL},
 	{fetchLeaseweb, syncLeasewebData, leaseweb.ShortName, leasewebFile, leaseweb.FullName, leaseweb.HostType, leaseweb.SourceURL},
 	{fetchLinode, syncLinodeData, linode.ShortName, linodeFile, linode.FullName, linode.HostType, linode.SourceURL},
 	{fetchM247, syncM247Data, m247.ShortName, m247File, m247.FullName, m247.HostType, m247.SourceURL},
 	{fetchOCI, syncOCIData, oci.ShortName, ociFile, oci.FullName, oci.HostType, oci.SourceURL},
+	{fetchOpenAI, syncOpenAIData, openai.ShortName, openaiFile, openai.FullName, openai.HostType, openai.SourceURL},
 	{fetchOVH, syncOVHData, ovh.ShortName, ovhFile, ovh.FullName, ovh.HostType, ovh.SourceURL},
 	{fetchPerplexitybot, syncPerplexitybotData, perplexitybot.ShortName, perplexitybotFile, perplexitybot.FullName, perplexitybot.HostType, perplexitybot.SourceURL},
 	{fetchRender, syncRenderData, render.ShortName, renderFile, render.FullName, render.HostType, render.SourceURL},

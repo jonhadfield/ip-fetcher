@@ -22,7 +22,11 @@ func TestGenerateReadMeContentIncludesRegisteredProviders(t *testing.T) {
 		wantFile  string
 		wantName  string
 	}{
+		{"akamai", "akamai.txt", "Akamai"},
 		{"ahrefs", "ahrefs.json", "AhrefsBot"},
+		{"github", "github.txt", "GitHub"},
+		{"icloudpr", "icloudpr.csv", "iCloud Private Relay"},
+		{"openai", "openai.json", "OpenAI Bots"},
 		{"blocklistde", "blocklistde.txt", "Blocklist.de"},
 		{"cinsscore", "cinsscore.txt", "CINS Army List"},
 		{"dshield", "dshield.txt", "DShield Recommended Block List"},

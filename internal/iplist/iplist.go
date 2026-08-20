@@ -6,6 +6,7 @@ import (
 	"bufio"
 	"bytes"
 	"net/netip"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 )
@@ -75,4 +76,16 @@ func strip(line []byte) string {
 	}
 
 	return string(bytes.TrimSpace(line))
+}
+
+// ToLines renders a prefix list as newline separated text, for providers whose
+// upstream feed is not itself publishable (an archive, or several documents
+// that have to be combined).
+func ToLines(prefixes []netip.Prefix) []byte {
+	lines := make([]string, 0, len(prefixes))
+	for _, prefix := range prefixes {
+		lines = append(lines, prefix.String())
+	}
+
+	return []byte(strings.Join(lines, "\n"))
 }

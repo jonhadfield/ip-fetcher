@@ -72,3 +72,15 @@ func TestToPrefix(t *testing.T) {
 		})
 	}
 }
+
+func TestToLines(t *testing.T) {
+	got := iplist.ToLines([]netip.Prefix{
+		netip.MustParsePrefix("2.16.0.0/13"),
+		netip.MustParsePrefix("2a02:26f0::/32"),
+	})
+	require.Equal(t, "2.16.0.0/13\n2a02:26f0::/32", string(got))
+}
+
+func TestToLinesEmpty(t *testing.T) {
+	require.Empty(t, iplist.ToLines(nil))
+}

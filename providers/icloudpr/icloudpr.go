@@ -23,7 +23,7 @@ const (
 	ShortName              = "icloudpr"
 	FullName               = "iCloud Private Relay"
 	HostType               = "anonymiser"
-	SourceURL              = "-"
+	SourceURL              = "https://support.apple.com/en-us/HT212614"
 	DownloadURL            = "https://mask-api.icloud.com/egress-ip-ranges.csv"
 	errFailedToDownload    = "failed to download iCloud Private Relay prefixes document "
 	ipv6SeparatorThreshold = 2
