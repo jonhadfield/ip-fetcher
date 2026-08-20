@@ -30,6 +30,33 @@ type Azure struct {
 	InitialURL  string
 	DownloadURL string
 	Timeout     time.Duration
+
+	// PageFetcher retrieves the download page during discovery. It defaults to
+	// FetchPageWithCycleTLS and is exported so tests can replace it: cycletls
+	// does not use the shared http.Client, so gock cannot intercept it and any
+	// test exercising discovery would otherwise reach the live page.
+	PageFetcher PageFetcher
+}
+
+// PageFetcher retrieves a page, returning its body and HTTP status.
+type PageFetcher func(url string) (body string, status int, err error)
+
+// FetchPageWithCycleTLS retrieves the download page using a spoofed TLS
+// fingerprint, which the download site requires.
+func FetchPageWithCycleTLS(url string) (string, int, error) {
+	client := cycletls.Init()
+	defer client.Close()
+
+	response, err := client.Do(url, cycletls.Options{
+		Body:      "",
+		Ja3:       "771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-51-57-47-53-10,0-23-65281-10-11-35-16-5-51-43-13-45-28-21,29-23-24-25-256-257,0",
+		UserAgent: "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:87.0) Gecko/20100101 Firefox/87.0",
+	}, "GET")
+	if err != nil {
+		return "", 0, err
+	}
+
+	return response.Body, response.Status, nil
 }
 
 func (a *Azure) ShortName() string {
@@ -50,9 +77,10 @@ func (a *Azure) SourceURL() string {
 
 func New() Azure {
 	return Azure{
-		InitialURL: InitialURL,
-		Client:     web.NewHTTPClientWithLogger(),
-		Timeout:    web.DefaultRequestTimeout,
+		InitialURL:  InitialURL,
+		Client:      web.NewHTTPClientWithLogger(),
+		Timeout:     web.DefaultRequestTimeout,
+		PageFetcher: FetchPageWithCycleTLS,
 	}
 }
 
@@ -61,53 +89,42 @@ func (a *Azure) GetDownloadURL() (string, error) {
 		a.InitialURL = InitialURL
 	}
 
-	client := cycletls.Init()
-	defer client.Close()
+	if a.PageFetcher == nil {
+		a.PageFetcher = FetchPageWithCycleTLS
+	}
 
-	var url string
-
-	response, err := client.Do(a.InitialURL, cycletls.Options{
-		Body:      "",
-		Ja3:       "771,4865-4867-4866-49195-49199-52393-52392-49196-49200-49162-49161-49171-49172-51-57-47-53-10,0-23-65281-10-11-35-16-5-51-43-13-45-28-21,29-23-24-25-256-257,0",
-		UserAgent: "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:87.0) Gecko/20100101 Firefox/87.0",
-	}, "GET")
+	body, status, err := a.PageFetcher(a.InitialURL)
 	if err != nil {
 		return "", errors.New(errFailedToDownload)
 	}
 
-	if response.Status >= http.StatusBadRequest {
-		return url, errors.New(errFailedToDownload)
+	if status >= http.StatusBadRequest {
+		return "", errors.New(errFailedToDownload)
 	}
 
-	body := response.Body
+	return ParseDownloadURL(body), nil
+}
 
+// ParseDownloadURL extracts the first download.microsoft.com link from the
+// download page, returning an empty string if the page holds none.
+func ParseDownloadURL(body string) string {
 	reATags := regexp.MustCompile("<a [^>]+>")
-
-	aTags := reATags.FindAllString(body, -1)
-
 	reHRefs := regexp.MustCompile("href=\"[^\"]+\"")
+	reDownloadURL := regexp.MustCompile("(http|https)://[^\"]+")
 
-	var hrefs []string
+	for _, aTag := range reATags.FindAllString(body, -1) {
+		for _, hrefMatch := range reHRefs.FindAllString(aTag, -1) {
+			if !strings.Contains(hrefMatch, "download.microsoft.com/download/") {
+				continue
+			}
 
-	for _, href := range aTags {
-		hrefMatches := reHRefs.FindAllString(href, -1)
-		for _, hrefMatch := range hrefMatches {
-			if strings.Contains(hrefMatch, "download.microsoft.com/download/") {
-				hrefs = append(hrefs, hrefMatch)
+			if url := reDownloadURL.FindString(hrefMatch); url != "" {
+				return url
 			}
 		}
 	}
 
-	reDownloadURL := regexp.MustCompile("(http|https)://[^\"]+")
-
-	for _, href := range hrefs {
-		url = reDownloadURL.FindString(href)
-		if url != "" {
-			break
-		}
-	}
-
-	return url, nil
+	return ""
 }
 
 func (a *Azure) FetchData() ([]byte, http.Header, int, error) {
