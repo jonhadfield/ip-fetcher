@@ -13,7 +13,7 @@ import (
 const (
 	ShortName                = "perplexitybot"
 	FullName                 = "PerplexityBot"
-	HostType                 = "crawler"
+	HostType                 = "crawlers"
 	SourceURL                = "https://www.perplexity.com/perplexitybot.json"
 	DownloadURL              = "https://www.perplexity.com/perplexitybot.json"
 	downloadedFileTimeFormat = "2006-01-02T15:04:05.999999"

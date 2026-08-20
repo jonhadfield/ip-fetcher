@@ -13,7 +13,7 @@ import (
 const (
 	ShortName                = "applebot"
 	FullName                 = "Applebot"
-	HostType                 = "crawler"
+	HostType                 = "crawlers"
 	SourceURL                = "https://support.apple.com/en-us/119829"
 	DownloadURL              = "https://search.developer.apple.com/applebot.json"
 	downloadedFileTimeFormat = "2006-01-02T15:04:05.999999"

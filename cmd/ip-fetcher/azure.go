@@ -12,9 +12,6 @@ import (
 func azureCmd() *cli.Command {
 	const (
 		testMockAzureDownloadURL = azure.WorkaroundDownloadURL
-		// testMockAzureDownloadURL = "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_2000000.json"
-		// testMockAzureDownloadURL     = azure.WorkaroundDownloadURL
-		testAzureInitialFilePath = "../../providers/azure/testdata/initial.html"
 		testAzureDataFilePath    = "../../providers/azure/testdata/ServiceTags_Public_20221212.json"
 		providerName             = "azure"
 		fileName                 = "ServiceTags_Public.json"
@@ -54,11 +51,12 @@ func azureCmd() *cli.Command {
 
 			if isEnvEnabled("IP_FETCHER_MOCK_AZURE") {
 				defer gock.Off()
-				// u, _ := url.Parse(azure.InitialURL)
-				// gock.New(azure.InitialURL).
-				// 	Get(u.Path).
-				// 	Reply(http.StatusOK).
-				// 	File(testAzureInitialFilePath)
+
+				// Pin the download URL so FetchData skips discovery. Discovery
+				// scrapes the live download page with cycletls, which gock
+				// cannot intercept, and returns whichever dated snapshot
+				// Microsoft currently advertises.
+				a.DownloadURL = testMockAzureDownloadURL
 
 				uDownload, _ := url.Parse(testMockAzureDownloadURL)
 				gock.New(testMockAzureDownloadURL).

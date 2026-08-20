@@ -11,9 +11,8 @@ import (
 
 func akamaiCmd() *cli.Command {
 	const (
-		providerName  = "akamai"
-		fileName      = "prefixes.txt"
-		fileNameLines = "alibaba-prefixes.txt"
+		providerName = "akamai"
+		fileName     = "prefixes.txt"
 	)
 
 	return &cli.Command{
@@ -50,11 +49,18 @@ func akamaiCmd() *cli.Command {
 				gock.New(urlBase).
 					Get(u.Path).
 					Reply(http.StatusOK).
-					File("../../providers/akamai/testdata/prefixes.txt")
+					File("../../providers/akamai/testdata/cidrs.zip")
 				gock.InterceptClient(a.Client.HTTPClient)
 			}
 
-			data, _, _, err := a.FetchData()
+			// Akamai publishes its CIDRs inside a zip, so the response has
+			// to be parsed before it can be written as text.
+			prefixes, err := a.Fetch()
+			if err != nil {
+				return err
+			}
+
+			data, err := docToLines(prefixes)
 			if err != nil {
 				return err
 			}

@@ -1,0 +1,11 @@
+{"cidr":"2001:678:254::/48","sblid":"SBL697648","rir":"ripencc"}
+{"cidr":"2001:678:6c0::/48","sblid":"SBL624855","rir":"ripencc"}
+{"cidr":"2001:678:6c4::/48","sblid":"SBL626637","rir":"ripencc"}
+{"cidr":"2001:678:724::/48","sblid":"SBL631364","rir":"ripencc"}
+{"cidr":"2001:678:738::/48","sblid":"SBL635837","rir":"ripencc"}
+{"cidr":"2001:678:73c::/48","sblid":"SBL618306","rir":"ripencc"}
+{"cidr":"2001:678:754::/48","sblid":"SBL430383","rir":"ripencc"}
+{"cidr":"2001:678:758::/48","sblid":"SBL618312","rir":"ripencc"}
+{"cidr":"2001:678:770::/48","sblid":"SBL619324","rir":"ripencc"}
+{"cidr":"2001:678:780::/48","sblid":"SBL619747","rir":"ripencc"}
+{"type":"metadata","timestamp":1786542242,"size":5752,"records":91,"copyright":"(c) 2026 The Spamhaus Project SLU","terms":"https://www.spamhaus.org/drop/terms/"}
