@@ -18,13 +18,17 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://support.apple.com/en-us/119829" target="_blank">Applebot</a>
 - <a href="https://ip-ranges.atlassian.com/" target="_blank">Atlassian</a>
 - <a href="https://www.bing.com/webmasters/help/which-crawlers-does-bing-use-8c184ec0" target="_blank">Bingbot</a>
+- <a href="https://www.blocklist.de/en/index.html" target="_blank">Blocklist.de</a>
 - <a href="https://bunny.net/" target="_blank">Bunny.net</a>
 - <a href="https://www.cdn77.com/" target="_blank">CDN77</a>
+- <a href="https://cinsscore.com/" target="_blank">CINS Army List</a>
 - <a href="https://www.cloudflare.com/" target="_blank">Cloudflare</a>
 - <a href="https://contabo.com/" target="_blank">Contabo</a>
 - <a href="https://docs.datadoghq.com/api/latest/ip-ranges/" target="_blank">Datadog</a>
 - <a href="https://www.digitalocean.com/" target="_blank">DigitalOcean</a>
+- <a href="https://www.dshield.org/" target="_blank">DShield</a> (SANS Internet Storm Center recommended block list)
 - <a href="https://duckduckgo.com/duckduckbot" target="_blank">DuckDuckBot</a>
+- <a href="https://rules.emergingthreats.net/blockrules/" target="_blank">Emerging Threats</a> (compromised hosts)
 - <a href="https://www.fastly.com/" target="_blank">Fastly</a>
 - <a href="https://fly.io/" target="_blank">Fly.io</a>
 - <a href="https://cloud.google.com/" target="_blank">GCP</a> (Google Cloud Platform)

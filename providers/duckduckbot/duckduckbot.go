@@ -13,7 +13,7 @@ import (
 const (
 	ShortName                = "duckduckbot"
 	FullName                 = "DuckDuckBot"
-	HostType                 = "crawler"
+	HostType                 = "crawlers"
 	SourceURL                = "https://duckduckgo.com/duckduckbot.json"
 	DownloadURL              = "https://duckduckgo.com/duckduckbot.json"
 	downloadedFileTimeFormat = "2006-01-02T15:04:05.999999"

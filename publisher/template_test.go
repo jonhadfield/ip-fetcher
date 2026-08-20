@@ -23,6 +23,10 @@ func TestGenerateReadMeContentIncludesRegisteredProviders(t *testing.T) {
 		wantName  string
 	}{
 		{"ahrefs", "ahrefs.json", "AhrefsBot"},
+		{"blocklistde", "blocklistde.txt", "Blocklist.de"},
+		{"cinsscore", "cinsscore.txt", "CINS Army List"},
+		{"dshield", "dshield.txt", "DShield Recommended Block List"},
+		{"emergingthreats", "emergingthreats.txt", "Emerging Threats Compromised IPs"},
 		{"anthropic", "anthropic.json", "Anthropic Crawler Bots"},
 		{"applebot", "applebot.json", "Applebot"},
 		{"duckduckbot", "duckduckbot.json", "DuckDuckBot"},

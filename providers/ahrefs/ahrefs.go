@@ -13,7 +13,7 @@ import (
 const (
 	ShortName                = "ahrefs"
 	FullName                 = "AhrefsBot"
-	HostType                 = "crawler"
+	HostType                 = "crawlers"
 	SourceURL                = "https://api.ahrefs.com/v3/public/crawler-ip-ranges"
 	DownloadURL              = "https://api.ahrefs.com/v3/public/crawler-ip-ranges"
 	downloadedFileTimeFormat = "2006-01-02T15:04:05.999999"

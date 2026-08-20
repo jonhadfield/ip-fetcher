@@ -27,12 +27,16 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/atlassian"
 	"github.com/jonhadfield/ip-fetcher/providers/aws"
 	"github.com/jonhadfield/ip-fetcher/providers/azure"
+	"github.com/jonhadfield/ip-fetcher/providers/blocklistde"
 	"github.com/jonhadfield/ip-fetcher/providers/bunny"
 	"github.com/jonhadfield/ip-fetcher/providers/cdn77"
+	"github.com/jonhadfield/ip-fetcher/providers/cinsscore"
 	"github.com/jonhadfield/ip-fetcher/providers/cloudflare"
 	"github.com/jonhadfield/ip-fetcher/providers/contabo"
 	"github.com/jonhadfield/ip-fetcher/providers/datadog"
+	"github.com/jonhadfield/ip-fetcher/providers/dshield"
 	"github.com/jonhadfield/ip-fetcher/providers/duckduckbot"
+	"github.com/jonhadfield/ip-fetcher/providers/emergingthreats"
 	"github.com/jonhadfield/ip-fetcher/providers/fastly"
 	"github.com/jonhadfield/ip-fetcher/providers/flyio"
 	"github.com/jonhadfield/ip-fetcher/providers/gcp"
@@ -72,12 +76,16 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchAtlassian, syncAtlassianData, atlassian.ShortName, atlassianFile, atlassian.FullName, atlassian.HostType, atlassian.SourceURL},
 	{fetchAWS, syncAWSData, aws.ShortName, awsFile, aws.FullName, aws.HostType, aws.SourceURL},
 	{fetchAzure, syncAzureData, azure.ShortName, azureFile, azure.FullName, azure.HostType, azure.InitialURL},
+	{fetchBlocklistde, syncBlocklistdeData, blocklistde.ShortName, blocklistdeFile, blocklistde.FullName, blocklistde.HostType, blocklistde.SourceURL},
 	{fetchBunny, syncBunnyData, bunny.ShortName, bunnyFile, bunny.FullName, bunny.HostType, bunny.SourceURL},
 	{fetchCDN77, syncCDN77Data, cdn77.ShortName, cdn77File, cdn77.FullName, cdn77.HostType, cdn77.SourceURL},
+	{fetchCinsscore, syncCinsscoreData, cinsscore.ShortName, cinsscoreFile, cinsscore.FullName, cinsscore.HostType, cinsscore.SourceURL},
 	{fetchCloudflare, syncCloudflareData, cloudflare.ShortName, cloudflareFile, cloudflare.FullName, cloudflare.HostType, cloudflare.SourceURL},
 	{fetchContabo, syncContaboData, contabo.ShortName, contaboFile, contabo.FullName, contabo.HostType, contabo.SourceURL},
 	{fetchDatadog, syncDatadogData, datadog.ShortName, datadogFile, datadog.FullName, datadog.HostType, datadog.SourceURL},
+	{fetchDshield, syncDshieldData, dshield.ShortName, dshieldFile, dshield.FullName, dshield.HostType, dshield.SourceURL},
 	{fetchDuckduckbot, syncDuckduckbotData, duckduckbot.ShortName, duckduckbotFile, duckduckbot.FullName, duckduckbot.HostType, duckduckbot.SourceURL},
+	{fetchEmergingthreats, syncEmergingthreatsData, emergingthreats.ShortName, emergingthreatsFile, emergingthreats.FullName, emergingthreats.HostType, emergingthreats.SourceURL},
 	{fetchFastly, syncFastlyData, fastly.ShortName, fastlyFile, fastly.FullName, fastly.HostType, fastly.SourceURL},
 	{fetchFlyio, syncFlyioData, flyio.ShortName, flyioFile, flyio.FullName, flyio.HostType, flyio.SourceURL},
 	{fetchGCP, syncGCPData, gcp.ShortName, gcpFile, gcp.FullName, gcp.HostType, gcp.SourceURL},

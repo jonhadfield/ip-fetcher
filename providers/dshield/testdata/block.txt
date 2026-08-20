@@ -1,0 +1,48 @@
+#
+#   DShield.org Recommended Block List 
+#    (c) $year DShield.org
+#   some rights reserved. Details http://creativecommons.org/licenses/by-nc-sa/2.5/
+#   use on your own risk. No warranties implied.
+#   primary URL: https://feeds.dshield.org/block.txt
+#     PGP Sign.: https://feeds.dshield.org/block.txt.asc
+#
+#   comments: systems@isc.sans.edu
+#    updated: 2026-08-20T14:00:24.391841
+#   
+#    This list summarizes the top 20 attacking class C (/24) subnets
+#   over the last three days. The number of 'attacks' indicates the 
+#   number of targets reporting scans from this subnet.
+#
+#
+#    Columns (tab delimited):
+#
+#    (1) start of netblock  
+#    (2) end of netblock
+#    (3) subnet (/24 for class C)
+#    (4) number of targets scanned
+#    (5) name of Network 
+#    (6) Country
+#    (7) contact email address
+#
+#    If a range is assigned to multiple users, the first one is listed. 
+#     
+205.210.31.0	205.210.31.255	24	339	GOOGLE-CLOUD-PLATFORM	US	None
+66.132.195.0	66.132.195.255	24	336	-	-	-
+5.61.209.0	5.61.209.255	24	335	ASN-TCABLE	ES	tvcablesantapola-abuse@gestionclientes.org
+45.205.1.0	45.205.1.255	24	329	MULTA-ASN1	US	abuse@multacom.com
+85.217.149.0	85.217.149.255	24	329	MAYAK	BG	ripe@mayak.bg
+91.196.152.0	91.196.152.255	24	329	ATT-INTERNET4	US	abuse@att.net
+45.194.67.0	45.194.67.255	24	327	Africa-on-Cloud-AS	ZA	>>UNKNOWN<<
+193.163.125.0	193.163.125.255	24	327	INTERNET-MEASUREMENT	GB	>>UNKNOWN<<
+85.217.140.0	85.217.140.255	24	326	NETERRA-AS	BG	abuse@neterra.net
+185.242.226.0	185.242.226.255	24	326	AS49870-BV	NL	abuse@westcall.ru
+64.62.156.0	64.62.156.255	24	325	HURRICANE	US	abuse@he.net
+64.62.197.0	64.62.197.255	24	325	HURRICANE	US	abuse@he.net
+77.90.185.0	77.90.185.255	24	325	BTHOSTER	GB	abuse@inetia.pl
+172.110.223.0	172.110.223.255	24	324	-	-	-
+66.132.172.0	66.132.172.255	24	323	-	-	-
+45.142.193.0	45.142.193.255	24	322	MAGHOST_	RO	office@magbross.ro
+167.94.145.0	167.94.145.255	24	321	CENSYS-ARIN-02	US	None
+45.148.10.0	45.148.10.255	24	320	PPTECHNOLOGY	GB	abuse@vegatele.com
+31.14.254.0	31.14.254.255	24	319	BANDWIDTH-AS	GB	abuse@zare.com
+45.194.92.0	45.194.92.255	24	319	MULTA-ASN1	US	abuse@multacom.com
