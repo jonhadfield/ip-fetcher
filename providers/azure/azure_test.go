@@ -1,9 +1,11 @@
 package azure_test
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"testing"
 
 	"github.com/jonhadfield/ip-fetcher/providers/azure"
@@ -22,28 +24,54 @@ const (
 	testDataFilePath    = "testdata/ServiceTags_Public_20221212.json"
 )
 
-// func TestGetDownloadURL(t *testing.T) {
-// 	defer gock.Off()
-//
-// 	u, err := url.Parse(testInitialURL)
-// 	require.NoError(t, err)
-//
-// 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
-// 	gock.New(urlBase).
-// 		MatchParam("id", "00000").
-// 		Get(u.Path).
-// 		Reply(http.StatusOK).
-// 		File(testInitialFilePath)
-//
-// 	ac := New()
-// 	ac.InitialURL = testInitialURL
-// 	gock.InterceptClient(ac.Client.HTTPClient)
-//
-// 	dURL, err := ac.GetDownloadURL()
-// 	require.NoError(t, err)
-// 	require.NotEmpty(t, dURL)
-// 	require.Equal(t, "https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_2000000.json", dURL)
-// }
+// stubPage returns a PageFetcher serving fixed content, standing in for the
+// cycletls call so discovery can be tested without reaching the live page.
+func stubPage(body string, status int, err error) azure.PageFetcher {
+	return func(string) (string, int, error) {
+		return body, status, err
+	}
+}
+
+func TestGetDownloadURL(t *testing.T) {
+	page, err := os.ReadFile(testInitialFilePath)
+	require.NoError(t, err)
+
+	ac := azure.New()
+	ac.InitialURL = testInitialURL
+	ac.PageFetcher = stubPage(string(page), http.StatusOK, nil)
+
+	dURL, err := ac.GetDownloadURL()
+	require.NoError(t, err)
+	require.Equal(t,
+		"https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_2000000.json",
+		dURL)
+}
+
+// a failing fetch is reported rather than silently yielding an empty URL.
+func TestGetDownloadURLFetchError(t *testing.T) {
+	ac := azure.New()
+	ac.InitialURL = testInitialURL
+	ac.PageFetcher = stubPage("", 0, errors.New("boom"))
+
+	_, err := ac.GetDownloadURL()
+	require.Error(t, err)
+}
+
+func TestGetDownloadURLBadStatus(t *testing.T) {
+	ac := azure.New()
+	ac.InitialURL = testInitialURL
+	ac.PageFetcher = stubPage("", http.StatusNotFound, nil)
+
+	_, err := ac.GetDownloadURL()
+	require.Error(t, err)
+}
+
+// a page with no download link yields an empty URL, which FetchData treats as
+// a discovery failure and falls back on.
+func TestParseDownloadURLNoLink(t *testing.T) {
+	require.Empty(t, azure.ParseDownloadURL(`<a href="https://example.com/nope">x</a>`))
+	require.Empty(t, azure.ParseDownloadURL(""))
+}
 
 func TestFetchRaw(t *testing.T) {
 	defer gock.Off()
@@ -74,27 +102,29 @@ func TestFetchRaw(t *testing.T) {
 	require.Len(t, data, 2938956)
 }
 
+// with no DownloadURL set, FetchData runs discovery. The page fetch is stubbed
+// as failing so it falls back to WorkaroundDownloadURL, which gock can serve.
 func TestFetchRawNoDownloadURL(t *testing.T) {
 	defer gock.Off()
 
-	u, err := url.Parse(testInitialURL)
+	u, err := url.Parse(azure.WorkaroundDownloadURL)
 	require.NoError(t, err)
 
-	// intercept initial url
-	gock.New(testInitialURL).
+	gock.New(fmt.Sprintf("%s://%s", u.Scheme, u.Host)).
 		Get(u.Path).
-		Reply(http.StatusNotFound)
-
-	_, err = url.Parse(testInitialURL)
-
-	require.NoError(t, err)
+		Reply(http.StatusOK).
+		File(testDataFilePath)
 
 	ac := azure.New()
 	ac.InitialURL = testInitialURL
+	ac.PageFetcher = stubPage("", http.StatusNotFound, nil)
 	gock.InterceptClient(ac.Client.HTTPClient)
 
-	_, _, _, err = ac.FetchData()
-	require.Error(t, err)
+	data, _, status, err := ac.FetchData()
+	require.NoError(t, err)
+	require.Equal(t, http.StatusOK, status)
+	require.NotEmpty(t, data)
+	require.Equal(t, azure.WorkaroundDownloadURL, ac.DownloadURL)
 }
 
 func TestFetchRawFailure(t *testing.T) {
