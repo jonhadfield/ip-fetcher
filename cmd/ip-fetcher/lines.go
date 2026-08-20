@@ -79,8 +79,16 @@ func collectPrefixes(input any) []string { //nolint:gocognit
 		}
 
 		if rv.Kind() == reflect.Struct {
+			rt := rv.Type()
+
 			n := rv.NumField()
 			for i := range n {
+				// unexported fields (e.g. those within an embedded time.Time)
+				// cannot be read via reflection, and hold no prefixes.
+				if !rt.Field(i).IsExported() {
+					continue
+				}
+
 				walk(rv.Field(i).Interface())
 			}
 			return

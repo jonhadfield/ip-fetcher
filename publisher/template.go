@@ -21,6 +21,9 @@ import (
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/jonhadfield/ip-fetcher/providers/ahrefs"
+	"github.com/jonhadfield/ip-fetcher/providers/anthropic"
+	"github.com/jonhadfield/ip-fetcher/providers/applebot"
 	"github.com/jonhadfield/ip-fetcher/providers/atlassian"
 	"github.com/jonhadfield/ip-fetcher/providers/aws"
 	"github.com/jonhadfield/ip-fetcher/providers/azure"
@@ -29,6 +32,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/cloudflare"
 	"github.com/jonhadfield/ip-fetcher/providers/contabo"
 	"github.com/jonhadfield/ip-fetcher/providers/datadog"
+	"github.com/jonhadfield/ip-fetcher/providers/duckduckbot"
 	"github.com/jonhadfield/ip-fetcher/providers/fastly"
 	"github.com/jonhadfield/ip-fetcher/providers/flyio"
 	"github.com/jonhadfield/ip-fetcher/providers/gcp"
@@ -40,8 +44,11 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/leaseweb"
 	"github.com/jonhadfield/ip-fetcher/providers/linode"
 	"github.com/jonhadfield/ip-fetcher/providers/oci"
+	"github.com/jonhadfield/ip-fetcher/providers/perplexitybot"
 	"github.com/jonhadfield/ip-fetcher/providers/render"
+	"github.com/jonhadfield/ip-fetcher/providers/spamhaus"
 	"github.com/jonhadfield/ip-fetcher/providers/stripe"
+	"github.com/jonhadfield/ip-fetcher/providers/uptimerobot"
 )
 
 //go:embed README.template
@@ -58,7 +65,10 @@ type Provider struct {
 }
 
 var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
+	{fetchAhrefs, syncAhrefsData, ahrefs.ShortName, ahrefsFile, ahrefs.FullName, ahrefs.HostType, ahrefs.SourceURL},
 	{fetchAlibaba, syncAlibabaData, alibaba.ShortName, alibabaFile, alibaba.FullName, alibaba.HostType, alibaba.SourceURL},
+	{fetchAnthropic, syncAnthropicData, anthropic.ShortName, anthropicFile, anthropic.FullName, anthropic.HostType, anthropic.SourceURL},
+	{fetchApplebot, syncApplebotData, applebot.ShortName, applebotFile, applebot.FullName, applebot.HostType, applebot.SourceURL},
 	{fetchAtlassian, syncAtlassianData, atlassian.ShortName, atlassianFile, atlassian.FullName, atlassian.HostType, atlassian.SourceURL},
 	{fetchAWS, syncAWSData, aws.ShortName, awsFile, aws.FullName, aws.HostType, aws.SourceURL},
 	{fetchAzure, syncAzureData, azure.ShortName, azureFile, azure.FullName, azure.HostType, azure.InitialURL},
@@ -67,6 +77,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchCloudflare, syncCloudflareData, cloudflare.ShortName, cloudflareFile, cloudflare.FullName, cloudflare.HostType, cloudflare.SourceURL},
 	{fetchContabo, syncContaboData, contabo.ShortName, contaboFile, contabo.FullName, contabo.HostType, contabo.SourceURL},
 	{fetchDatadog, syncDatadogData, datadog.ShortName, datadogFile, datadog.FullName, datadog.HostType, datadog.SourceURL},
+	{fetchDuckduckbot, syncDuckduckbotData, duckduckbot.ShortName, duckduckbotFile, duckduckbot.FullName, duckduckbot.HostType, duckduckbot.SourceURL},
 	{fetchFastly, syncFastlyData, fastly.ShortName, fastlyFile, fastly.FullName, fastly.HostType, fastly.SourceURL},
 	{fetchFlyio, syncFlyioData, flyio.ShortName, flyioFile, flyio.FullName, flyio.HostType, flyio.SourceURL},
 	{fetchGCP, syncGCPData, gcp.ShortName, gcpFile, gcp.FullName, gcp.HostType, gcp.SourceURL},
@@ -82,10 +93,13 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchM247, syncM247Data, m247.ShortName, m247File, m247.FullName, m247.HostType, m247.SourceURL},
 	{fetchOCI, syncOCIData, oci.ShortName, ociFile, oci.FullName, oci.HostType, oci.SourceURL},
 	{fetchOVH, syncOVHData, ovh.ShortName, ovhFile, ovh.FullName, ovh.HostType, ovh.SourceURL},
+	{fetchPerplexitybot, syncPerplexitybotData, perplexitybot.ShortName, perplexitybotFile, perplexitybot.FullName, perplexitybot.HostType, perplexitybot.SourceURL},
 	{fetchRender, syncRenderData, render.ShortName, renderFile, render.FullName, render.HostType, render.SourceURL},
 	{fetchScaleway, syncScalewayData, scaleway.ShortName, scalewayFile, scaleway.FullName, scaleway.HostType, scaleway.SourceURL},
+	{fetchSpamhaus, syncSpamhausData, spamhaus.ShortName, spamhausFile, spamhaus.FullName, spamhaus.HostType, spamhaus.SourceURL},
 	{fetchStripe, syncStripeData, stripe.ShortName, stripeFile, stripe.FullName, stripe.HostType, stripe.SourceURL},
 	{fetchTencent, syncTencentData, tencent.ShortName, tencentFile, tencent.FullName, tencent.HostType, tencent.SourceURL},
+	{fetchUptimerobot, syncUptimerobotData, uptimerobot.ShortName, uptimerobotFile, uptimerobot.FullName, uptimerobot.HostType, uptimerobot.SourceURL},
 	{fetchVultr, syncVultrData, vultr.ShortName, vultrFile, vultr.FullName, vultr.HostType, vultr.SourceURL},
 	{fetchZscaler, syncZscalerData, zscaler.ShortName, zscalerFile, zscaler.FullName, zscaler.HostType, zscaler.SourceURL},
 }

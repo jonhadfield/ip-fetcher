@@ -125,3 +125,20 @@ func TestDigitaloceanCmdStdOutAndFile(t *testing.T) {
 	require.FileExists(t, filepath.Join(tDir, "google.csv"))
 	require.Contains(t, out, "207.154.192.0/20,DE,DE-HE,Frankfurt,60342")
 }
+
+// --lines previously panicked, as collectPrefixes could not reflect over the
+// unexported fields of the Doc's LastModified time.
+func TestDigitaloceanCmdLines(t *testing.T) {
+	defer testCleanUp(os.Args)
+	t.Setenv("IP_FETCHER_MOCK_DIGITALOCEAN", "true")
+	defer os.Unsetenv("IP_FETCHER_MOCK_DIGITALOCEAN")
+
+	tDir := t.TempDir()
+
+	out := captureStdout(t,
+		[]string{"ip-fetcher", "digitalocean", "--stdout", "--lines", "--Path", tDir})
+
+	require.Contains(t, out, "207.154.192.0/20")
+	require.NotContains(t, out, "Frankfurt")
+	require.FileExists(t, filepath.Join(tDir, "digitalocean-prefixes.txt"))
+}
