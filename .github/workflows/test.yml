@@ -1,0 +1,23 @@
+name: test
+on:
+  push:
+    tags:
+      - '*'
+    branches:
+      - main
+  pull_request:
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.25'
+      - name: go test
+        run: go test -covermode=atomic -coverprofile=coverage.txt -timeout=600s ./...
+      - name: coverage
+        run: go tool cover -func=coverage.txt | tail -1
