@@ -37,8 +37,10 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: '1.25'
+      # pinned rather than @latest so a CI run is reproducible and the
+      # scanner itself is not fetched unpinned from the network
       - name: govulncheck
         run: |
-          go install golang.org/x/vuln/cmd/govulncheck@latest
+          go install golang.org/x/vuln/cmd/govulncheck@v1.7.0
           go version
           govulncheck ./...
