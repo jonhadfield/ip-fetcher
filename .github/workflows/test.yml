@@ -27,20 +27,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
-      # Deliberately not golang/govulncheck-action: its go-version-input
-      # defaults to "stable", which setup-go prefers over go-version-file, so
-      # the scan silently ran against the newest Go rather than the toolchain
-      # in go.mod. Standard library findings depend on that version, so a
-      # pinned-but-vulnerable toolchain would have passed unnoticed.
-      - name: Setup Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: '1.25'
-      # pinned rather than @latest so a CI run is reproducible and the
-      # scanner itself is not fetched unpinned from the network
+      # go-version-input must be set explicitly: it defaults to "stable", and
+      # setup-go prefers it over go-version-file, so the scan would otherwise
+      # run against the newest Go rather than the release line this module
+      # ships. Standard library findings depend on that version, so a pinned
+      # but vulnerable toolchain would pass unnoticed.
       - name: govulncheck
-        run: |
-          go install golang.org/x/vuln/cmd/govulncheck@v1.7.0
-          go version
-          govulncheck ./...
+        uses: golang/govulncheck-action@v1
+        with:
+          go-version-input: '1.25'
+          go-package: ./...
