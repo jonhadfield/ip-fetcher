@@ -6,7 +6,7 @@ toolchain go1.25.14
 
 require (
 	github.com/Danny-Dasilva/CycleTLS/cycletls v1.0.30
-	github.com/agiledragon/gomonkey/v2 v2.14.0
+	github.com/agiledragon/gomonkey/v2 v2.14.2
 	github.com/go-git/go-billy/v5 v5.9.0
 	github.com/go-git/go-git/v5 v5.19.2
 	github.com/hashicorp/go-retryablehttp v0.7.8
