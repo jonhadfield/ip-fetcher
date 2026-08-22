@@ -21,8 +21,10 @@ jobs:
       # generated rather than committed, so it has to be produced here.
       - name: go test
         run: go test -covermode=atomic -coverprofile=coverage.txt -timeout=600s ./...
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@ba3875ecf642b2129de2b589510c81a8b53dbf4e # master — repo archived, see SonarSource/sonarqube-scan-action
+      # SONAR_HOST_URL is not set: it is only required for a self hosted
+      # SonarQube Server, not for SonarQube Cloud.
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@22918119ff8e1ca75a623e15c8296b6ea4fbe28f # v8.2.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
