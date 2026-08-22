@@ -14,7 +14,7 @@ jobs:
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Setup Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         with:
           go-version: '1.25'
       # sonar.go.coverage.reportPaths points at coverage.txt, which is
