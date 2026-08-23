@@ -30,8 +30,8 @@ func TestFetch(t *testing.T) {
 	doc, err := ac.Fetch()
 	require.NoError(t, err)
 	require.NotEmpty(t, doc.IPv4Prefixes)
-	require.Contains(t, doc.IPv4Prefixes, applebot.IPv4Entry{netip.MustParsePrefix("17.241.208.160/27")})
-	require.Contains(t, doc.IPv4Prefixes, applebot.IPv4Entry{netip.MustParsePrefix("17.22.237.0/24")})
+	require.Contains(t, doc.IPv4Prefixes, applebot.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("17.241.208.160/27")})
+	require.Contains(t, doc.IPv4Prefixes, applebot.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("17.22.237.0/24")})
 	require.Empty(t, doc.IPv6Prefixes)
 }
 
@@ -42,7 +42,7 @@ func TestProcessData(t *testing.T) {
 	doc, err := applebot.ProcessData(data)
 	require.NoError(t, err)
 	require.Len(t, doc.IPv4Prefixes, 4)
-	require.Contains(t, doc.IPv4Prefixes, applebot.IPv4Entry{netip.MustParsePrefix("17.246.15.0/24")})
+	require.Contains(t, doc.IPv4Prefixes, applebot.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("17.246.15.0/24")})
 	require.Empty(t, doc.IPv6Prefixes)
 	require.Equal(t, 2023, doc.CreationTime.Year())
 }

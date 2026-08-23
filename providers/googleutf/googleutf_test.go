@@ -29,7 +29,7 @@ func TestFetch(t *testing.T) {
 	doc, err := sc.Fetch()
 	require.NoError(t, err)
 	require.NotEmpty(t, doc.IPv4Prefixes)
-	require.Contains(t, doc.IPv4Prefixes, googleutf.IPv4Entry{netip.MustParsePrefix("35.187.132.96/27")})
+	require.Contains(t, doc.IPv4Prefixes, googleutf.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("35.187.132.96/27")})
 	require.NotEmpty(t, doc.IPv6Prefixes)
-	require.Contains(t, doc.IPv6Prefixes, googleutf.IPv6Entry{netip.MustParsePrefix("2404:f340:4010:4000::/64")})
+	require.Contains(t, doc.IPv6Prefixes, googleutf.IPv6Entry{IPv6Prefix: netip.MustParsePrefix("2404:f340:4010:4000::/64")})
 }

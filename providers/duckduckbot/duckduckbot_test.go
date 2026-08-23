@@ -31,8 +31,8 @@ func TestFetch(t *testing.T) {
 	doc, err := ac.Fetch()
 	require.NoError(t, err)
 	require.NotEmpty(t, doc.IPv4Prefixes)
-	require.Contains(t, doc.IPv4Prefixes, duckduckbot.IPv4Entry{netip.MustParsePrefix("104.43.54.127/32")})
-	require.Contains(t, doc.IPv4Prefixes, duckduckbot.IPv4Entry{netip.MustParsePrefix("13.86.35.212/32")})
+	require.Contains(t, doc.IPv4Prefixes, duckduckbot.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("104.43.54.127/32")})
+	require.Contains(t, doc.IPv4Prefixes, duckduckbot.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("13.86.35.212/32")})
 }
 
 func TestProcessData(t *testing.T) {
@@ -43,6 +43,6 @@ func TestProcessData(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, doc.IPv4Prefixes, 4)
 	require.Empty(t, doc.IPv6Prefixes)
-	require.Contains(t, doc.IPv4Prefixes, duckduckbot.IPv4Entry{netip.MustParsePrefix("128.203.132.152/32")})
+	require.Contains(t, doc.IPv4Prefixes, duckduckbot.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("128.203.132.152/32")})
 	require.Equal(t, time.Date(2026, time.July, 3, 15, 15, 37, 0, time.UTC), doc.CreationTime)
 }
