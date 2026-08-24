@@ -30,8 +30,8 @@ func TestFetch(t *testing.T) {
 	doc, err := ac.Fetch()
 	require.NoError(t, err)
 	require.NotEmpty(t, doc.IPv4Prefixes)
-	require.Contains(t, doc.IPv4Prefixes, perplexitybot.IPv4Entry{netip.MustParsePrefix("107.20.236.150/32")})
-	require.Contains(t, doc.IPv4Prefixes, perplexitybot.IPv4Entry{netip.MustParsePrefix("18.97.9.96/29")})
+	require.Contains(t, doc.IPv4Prefixes, perplexitybot.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("107.20.236.150/32")})
+	require.Contains(t, doc.IPv4Prefixes, perplexitybot.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("18.97.9.96/29")})
 }
 
 func TestProcessData(t *testing.T) {
@@ -42,6 +42,6 @@ func TestProcessData(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, doc.IPv4Prefixes, 4)
 	require.Empty(t, doc.IPv6Prefixes)
-	require.Contains(t, doc.IPv4Prefixes, perplexitybot.IPv4Entry{netip.MustParsePrefix("3.224.62.45/32")})
+	require.Contains(t, doc.IPv4Prefixes, perplexitybot.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("3.224.62.45/32")})
 	require.Equal(t, 2025, doc.CreationTime.Year())
 }

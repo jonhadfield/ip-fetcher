@@ -30,7 +30,7 @@ func TestFetch(t *testing.T) {
 	doc, err := ac.Fetch()
 	require.NoError(t, err)
 	require.NotEmpty(t, doc.IPv4Prefixes)
-	require.Contains(t, doc.IPv4Prefixes, ahrefs.IPv4Entry{netip.MustParsePrefix("54.36.148.0/23")})
+	require.Contains(t, doc.IPv4Prefixes, ahrefs.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("54.36.148.0/23")})
 	require.Empty(t, doc.IPv6Prefixes)
 	require.True(t, doc.CreationTime.IsZero())
 }
@@ -42,7 +42,7 @@ func TestProcessData(t *testing.T) {
 	doc, err := ahrefs.ProcessData(data)
 	require.NoError(t, err)
 	require.Len(t, doc.IPv4Prefixes, 4)
-	require.Contains(t, doc.IPv4Prefixes, ahrefs.IPv4Entry{netip.MustParsePrefix("198.244.240.0/24")})
+	require.Contains(t, doc.IPv4Prefixes, ahrefs.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("198.244.240.0/24")})
 	require.Empty(t, doc.IPv6Prefixes)
 	require.True(t, doc.CreationTime.IsZero())
 }
@@ -52,8 +52,8 @@ func TestProcessDataWithCreationTime(t *testing.T) {
 
 	doc, err := ahrefs.ProcessData(data)
 	require.NoError(t, err)
-	require.Contains(t, doc.IPv4Prefixes, ahrefs.IPv4Entry{netip.MustParsePrefix("5.39.1.224/27")})
-	require.Contains(t, doc.IPv6Prefixes, ahrefs.IPv6Entry{netip.MustParsePrefix("2001:db8::/32")})
+	require.Contains(t, doc.IPv4Prefixes, ahrefs.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("5.39.1.224/27")})
+	require.Contains(t, doc.IPv6Prefixes, ahrefs.IPv6Entry{IPv6Prefix: netip.MustParsePrefix("2001:db8::/32")})
 	require.False(t, doc.CreationTime.IsZero())
 	require.Equal(t, 2026, doc.CreationTime.Year())
 }
