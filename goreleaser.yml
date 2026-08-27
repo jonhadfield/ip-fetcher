@@ -1,3 +1,5 @@
+version: 2
+
 project_name: ip-fetcher
 
 env:
@@ -9,64 +11,9 @@ before:
   hooks:
     - make clean
     - go mod tidy
+
 builds:
-  -
-    id: macos-ip-fetcher
-    main: ./cmd/ip-fetcher/
-    binary: ip-fetcher
-    goos:
-      - darwin
-    goarch:
-      - amd64
-      - arm64
-    flags:
-      - -trimpath
-    ldflags:
-      - "-s -w -X main.version={{ .Version }} -X main.sha={{ .ShortCommit }} -X main.buildDate={{ .Date }} -X main.tag={{ .Tag }}"
-    hooks:
-      post:
-        - |
-          sh -c '
-          cat > /tmp/ip-fetcher_gon_arm64.hcl << EOF
-          source = ["./dist/macos-ip-fetcher_darwin_arm64/ip-fetcher"]
-          bundle_id = "uk.co.lessknown.ip-fetcher"
-          apple_id {
-            username = "jon@lessknown.co.uk"
-            password = "@env:AC_PASSWORD"
-          }
-          sign {
-            application_identity = "Developer ID Application: Jonathan Hadfield (VBZY8FBYR5)"
-          }
-          zip {
-            output_path = "./dist/ip-fetcher_darwin_arm64.zip"
-          }
-          EOF
-          gon /tmp/ip-fetcher_gon_arm64.hcl
-          echo $?
-          '
-          echo $?
-        - |
-          sh -c '
-          cat > /tmp/ip-fetcher_gon_amd64.hcl << EOF
-          source = ["./dist/macos-ip-fetcher_darwin_amd64_v1/ip-fetcher"]
-          bundle_id = "uk.co.lessknown.ip-fetcher"
-          apple_id {
-            username = "jon@lessknown.co.uk"
-            password = "@env:AC_PASSWORD"
-          }
-          sign {
-            application_identity = "Developer ID Application: Jonathan Hadfield (VBZY8FBYR5)"
-          }
-          zip {
-            output_path = "./dist/ip-fetcher_darwin_amd64_v1.zip"
-          }
-          EOF
-          echo $?
-          gon /tmp/ip-fetcher_gon_amd64.hcl
-          echo $?
-          '
-  -
-    id: ip-fetcher
+  - id: ip-fetcher
     main: ./cmd/ip-fetcher/
     binary: ip-fetcher
     env:
@@ -75,10 +22,17 @@ builds:
       - linux
       - windows
       - freebsd
+      - darwin
     goarch:
       - amd64
       - arm
       - arm64
+    ignore:
+      # 32 bit arm is not a darwin or windows target
+      - goos: darwin
+        goarch: arm
+      - goos: windows
+        goarch: arm
     flags:
       - -trimpath
     ldflags:
@@ -86,12 +40,14 @@ builds:
 
 archives:
   - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
-    builds:
+    ids:
       - ip-fetcher
-    format: tar.gz
+    formats:
+      - tar.gz
     format_overrides:
       - goos: windows
-        format: zip
+        formats:
+          - zip
     files:
       - none*
 
@@ -101,14 +57,12 @@ release:
     name: ip-fetcher
   prerelease: auto
   name_template: '{{ .Tag }}'
-  extra_files:
-    - glob: ./dist/ip-fetcher_darwin*.zip
 
 announce:
   skip: true
 
 snapshot:
-  name_template: "{{ .Tag }}-devel"
+  version_template: "{{ .Tag }}-devel"
 
 changelog:
   sort: asc
