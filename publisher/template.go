@@ -15,6 +15,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/openai"
 	"github.com/jonhadfield/ip-fetcher/providers/ovh"
 
+	"github.com/jonhadfield/ip-fetcher/providers/greensnow"
 	"github.com/jonhadfield/ip-fetcher/providers/hetzner"
 	"github.com/jonhadfield/ip-fetcher/providers/ibmcloud"
 	"github.com/jonhadfield/ip-fetcher/providers/tencent"
@@ -35,6 +36,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/cinsscore"
 	"github.com/jonhadfield/ip-fetcher/providers/cloudflare"
 	"github.com/jonhadfield/ip-fetcher/providers/contabo"
+	"github.com/jonhadfield/ip-fetcher/providers/cymru"
 	"github.com/jonhadfield/ip-fetcher/providers/datadog"
 	"github.com/jonhadfield/ip-fetcher/providers/dshield"
 	"github.com/jonhadfield/ip-fetcher/providers/duckduckbot"
@@ -87,6 +89,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchCinsscore, syncCinsscoreData, cinsscore.ShortName, cinsscoreFile, cinsscore.FullName, cinsscore.HostType, cinsscore.SourceURL},
 	{fetchCloudflare, syncCloudflareData, cloudflare.ShortName, cloudflareFile, cloudflare.FullName, cloudflare.HostType, cloudflare.SourceURL},
 	{fetchContabo, syncContaboData, contabo.ShortName, contaboFile, contabo.FullName, contabo.HostType, contabo.SourceURL},
+	{fetchCymru, syncCymruData, cymru.ShortName, cymruFile, cymru.FullName, cymru.HostType, cymru.SourceURL},
 	{fetchDatadog, syncDatadogData, datadog.ShortName, datadogFile, datadog.FullName, datadog.HostType, datadog.SourceURL},
 	{fetchDshield, syncDshieldData, dshield.ShortName, dshieldFile, dshield.FullName, dshield.HostType, dshield.SourceURL},
 	{fetchDuckduckbot, syncDuckduckbotData, duckduckbot.ShortName, duckduckbotFile, duckduckbot.FullName, duckduckbot.HostType, duckduckbot.SourceURL},
@@ -99,6 +102,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchGooglebot, syncGooglebotData, googlebot.ShortName, googlebotFile, googlebot.FullName, googlebot.HostType, googlebot.SourceURL},
 	{fetchGoogleSC, syncGoogleSCData, googlesc.ShortName, googlescFile, googlesc.FullName, googlesc.HostType, googlesc.SourceURL},
 	{fetchGoogleUTF, syncGoogleUTFData, googleutf.ShortName, googleutfFile, googleutf.FullName, googleutf.HostType, googleutf.SourceURL},
+	{fetchGreensnow, syncGreensnowData, greensnow.ShortName, greensnowFile, greensnow.FullName, greensnow.HostType, greensnow.SourceURL},
 	{fetchHetzner, syncHetznerData, hetzner.ShortName, hetznerFile, hetzner.FullName, hetzner.HostType, hetzner.SourceURL},
 	{fetchIBMCloud, syncIBMCloudData, ibmcloud.ShortName, ibmcloudFile, ibmcloud.FullName, ibmcloud.HostType, ibmcloud.SourceURL},
 	{fetchICloudPR, syncICloudPRData, icloudpr.ShortName, icloudprFile, icloudpr.FullName, icloudpr.HostType, icloudpr.SourceURL},

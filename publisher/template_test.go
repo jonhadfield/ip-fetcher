@@ -29,6 +29,8 @@ func TestGenerateReadMeContentIncludesRegisteredProviders(t *testing.T) {
 		{"openai", "openai.json", "OpenAI Bots"},
 		{"blocklistde", "blocklistde.txt", "Blocklist.de"},
 		{"cinsscore", "cinsscore.txt", "CINS Army List"},
+		{"cymru", "cymru.json", "Team Cymru Bogons"},
+		{"greensnow", "greensnow.txt", "GreenSnow"},
 		{"dshield", "dshield.txt", "DShield Recommended Block List"},
 		{"emergingthreats", "emergingthreats.txt", "Emerging Threats Compromised IPs"},
 		{"anthropic", "anthropic.json", "Anthropic Crawler Bots"},
