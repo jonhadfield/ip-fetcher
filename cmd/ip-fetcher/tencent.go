@@ -13,15 +13,16 @@ import (
 
 func tencentCmd() *cli.Command {
 	const (
-		providerName = "tencent"
-		fileName     = "prefixes.txt"
+		providerName  = "tencent"
+		fileName      = "prefixes.txt"
+		fileNameLines = "tencent-prefixes.txt"
 	)
 
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch Tencent Cloud prefixes",
 		Usage:     "Tencent Cloud",
-		UsageText: "ip-fetcher tencent {--stdout | --Path FILE}",
+		UsageText: "ip-fetcher tencent {--stdout | --Path FILE} [--lines]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 			return err
@@ -34,6 +35,10 @@ func tencentCmd() *cli.Command {
 			&cli.BoolFlag{
 				Name:  flagStdout,
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
+			},
+			&cli.BoolFlag{
+				Name:  formatLines,
+				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -57,26 +62,51 @@ func tencentCmd() *cli.Command {
 				gock.InterceptClient(h.Client.HTTPClient)
 			}
 
-			data, _, _, err := h.FetchData()
+			data, err := tencentData(c, &h)
 			if err != nil {
 				return err
 			}
 
-			var asnIPs tencent.Doc
-			if err = json.Unmarshal(data, &asnIPs); err != nil {
-				return fmt.Errorf("failed to unmarshal Tencent Cloud Data: %w", err)
-			}
-
-			asnPrefixes, err := json.MarshalIndent(asnIPs, "", "  ")
-			if err != nil {
-				return fmt.Errorf("failed to marshal Tencent Cloud Data: %w", err)
+			defaultName := fileName
+			if c.Bool(formatLines) {
+				defaultName = fileNameLines
 			}
 
 			return writeOutputs(path, stdout, SaveFileInput{
 				Provider:        providerName,
-				DefaultFileName: fileName,
-				Data:            asnPrefixes,
+				DefaultFileName: defaultName,
+				Data:            data,
 			})
 		},
 	}
+}
+
+// tencentData returns the newline separated prefixes when --lines is set, and the
+// indented json document otherwise.
+func tencentData(c *cli.Context, h *tencent.Tencent) ([]byte, error) {
+	if c.Bool(formatLines) {
+		doc, err := h.Fetch()
+		if err != nil {
+			return nil, err
+		}
+
+		return docToLines(doc)
+	}
+
+	raw, _, _, err := h.FetchData()
+	if err != nil {
+		return nil, err
+	}
+
+	var asnIPs tencent.Doc
+	if err = json.Unmarshal(raw, &asnIPs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal Tencent Cloud Data: %w", err)
+	}
+
+	data, err := json.MarshalIndent(asnIPs, "", "  ")
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal Tencent Cloud Data: %w", err)
+	}
+
+	return data, nil
 }

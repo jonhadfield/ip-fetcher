@@ -13,15 +13,16 @@ import (
 
 func ovhCmd() *cli.Command {
 	const (
-		providerName = "ovh"
-		fileName     = "prefixes.txt"
+		providerName  = "ovh"
+		fileName      = "prefixes.txt"
+		fileNameLines = "ovh-prefixes.txt"
 	)
 
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch OVH prefixes",
 		Usage:     "OVH",
-		UsageText: "ip-fetcher ovh {--stdout | --Path FILE}",
+		UsageText: "ip-fetcher ovh {--stdout | --Path FILE} [--lines]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 			return err
@@ -34,6 +35,10 @@ func ovhCmd() *cli.Command {
 			&cli.BoolFlag{
 				Name:  flagStdout,
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
+			},
+			&cli.BoolFlag{
+				Name:  formatLines,
+				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -55,26 +60,51 @@ func ovhCmd() *cli.Command {
 				gock.InterceptClient(h.Client.HTTPClient)
 			}
 
-			data, _, _, err := h.FetchData()
+			data, err := ovhData(c, &h)
 			if err != nil {
 				return err
 			}
 
-			var asnIPs ovh.Doc
-			if err = json.Unmarshal(data, &asnIPs); err != nil {
-				return fmt.Errorf("failed to unmarshal OVH Data: %w", err)
-			}
-
-			asnPrefixes, err := json.MarshalIndent(asnIPs, "", "  ")
-			if err != nil {
-				return fmt.Errorf("failed to marshal OVH Data: %w", err)
+			defaultName := fileName
+			if c.Bool(formatLines) {
+				defaultName = fileNameLines
 			}
 
 			return writeOutputs(path, stdout, SaveFileInput{
 				Provider:        providerName,
-				DefaultFileName: fileName,
-				Data:            asnPrefixes,
+				DefaultFileName: defaultName,
+				Data:            data,
 			})
 		},
 	}
+}
+
+// ovhData returns the newline separated prefixes when --lines is set, and the
+// indented json document otherwise.
+func ovhData(c *cli.Context, h *ovh.OVH) ([]byte, error) {
+	if c.Bool(formatLines) {
+		doc, err := h.Fetch()
+		if err != nil {
+			return nil, err
+		}
+
+		return docToLines(doc)
+	}
+
+	raw, _, _, err := h.FetchData()
+	if err != nil {
+		return nil, err
+	}
+
+	var asnIPs ovh.Doc
+	if err = json.Unmarshal(raw, &asnIPs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal OVH Data: %w", err)
+	}
+
+	data, err := json.MarshalIndent(asnIPs, "", "  ")
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal OVH Data: %w", err)
+	}
+
+	return data, nil
 }

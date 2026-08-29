@@ -1,9 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/netip"
 	"net/url"
+	"strings"
 
 	output2 "github.com/jonhadfield/ip-fetcher/internal/output"
 
@@ -14,8 +17,9 @@ import (
 
 func zscalerCmd() *cli.Command {
 	const (
-		providerName = "zscaler"
-		fileName     = "prefixes.txt"
+		providerName  = "zscaler"
+		fileName      = "prefixes.txt"
+		fileNameLines = "zscaler-prefixes.txt"
 	)
 
 	return &cli.Command{
@@ -35,6 +39,10 @@ func zscalerCmd() *cli.Command {
 			&cli.BoolFlag{
 				Name:  flagStdout,
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
+			},
+			&cli.BoolFlag{
+				Name:  formatLines,
+				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -56,6 +64,24 @@ func zscalerCmd() *cli.Command {
 				gock.InterceptClient(z.Client.HTTPClient)
 			}
 
+			if c.Bool(formatLines) {
+				var raw []byte
+				if raw, _, _, err = z.FetchData(); err != nil {
+					return err
+				}
+
+				var lines []byte
+				if lines, err = docToLines(zscalerPrefixes(raw)); err != nil {
+					return err
+				}
+
+				return writeOutputs(path, stdout, SaveFileInput{
+					Provider:        providerName,
+					DefaultFileName: fileNameLines,
+					Data:            lines,
+				})
+			}
+
 			data, _, _, err := z.FetchData()
 			if err != nil {
 				return err
@@ -74,4 +100,58 @@ func zscalerCmd() *cli.Command {
 			})
 		},
 	}
+}
+
+// zscalerPrefixes pulls the range values out of the zscaler document.
+//
+// zscaler.Doc carries every range as a string rather than a netip.Prefix, and
+// declares one field per city, so a reflective walk finds no prefixes and
+// silently drops any city the struct does not name. Walking the decoded json
+// avoids both problems.
+func zscalerPrefixes(raw []byte) []netip.Prefix {
+	var doc any
+	if err := json.Unmarshal(raw, &doc); err != nil {
+		return nil
+	}
+
+	var prefixes []netip.Prefix
+
+	collectZscalerRanges(doc, &prefixes)
+
+	return prefixes
+}
+
+// collectZscalerRanges walks the decoded document, gathering every "range".
+func collectZscalerRanges(v any, out *[]netip.Prefix) {
+	switch typed := v.(type) {
+	case map[string]any:
+		for key, value := range typed {
+			if key == "range" {
+				addZscalerRange(value, out)
+
+				continue
+			}
+
+			collectZscalerRanges(value, out)
+		}
+	case []any:
+		for _, item := range typed {
+			collectZscalerRanges(item, out)
+		}
+	}
+}
+
+// addZscalerRange appends value if it parses as a prefix.
+func addZscalerRange(value any, out *[]netip.Prefix) {
+	s, ok := value.(string)
+	if !ok {
+		return
+	}
+
+	prefix, err := netip.ParsePrefix(strings.TrimSpace(s))
+	if err != nil {
+		return
+	}
+
+	*out = append(*out, prefix)
 }
