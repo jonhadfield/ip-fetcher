@@ -25,6 +25,7 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://www.cloudflare.com/" target="_blank">Cloudflare</a>
 - <a href="https://contabo.com/" target="_blank">Contabo</a>
 - <a href="https://docs.datadoghq.com/api/latest/ip-ranges/" target="_blank">Datadog</a>
+- <a href="https://www.team-cymru.com/bogon-reference" target="_blank">Team Cymru Bogons</a> (unallocated and reserved prefixes)
 - <a href="https://www.digitalocean.com/" target="_blank">DigitalOcean</a>
 - <a href="https://www.dshield.org/" target="_blank">DShield</a> (SANS Internet Storm Center recommended block list)
 - <a href="https://duckduckgo.com/duckduckbot" target="_blank">DuckDuckBot</a>
@@ -39,6 +40,7 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://www.maxmind.com" target="_blank">MaxMind GeoIP</a>
 - <a href="https://azure.microsoft.com" target="_blank">Microsoft Azure</a>
 - <a href="https://www.akamai.com" target="_blank">Akamai</a>
+- <a href="https://greensnow.co/" target="_blank">GreenSnow</a> (hosts observed attacking sensors)
 - <a href="https://www.hetzner.com" target="_blank">Hetzner</a>
 - <a href="https://www.ibm.com/cloud" target="_blank">IBM Cloud</a>
 - <a href="https://www.imperva.com" target="_blank">Imperva</a>
