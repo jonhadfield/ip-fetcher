@@ -53,15 +53,22 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://docs.stripe.com/ips" target="_blank">Stripe</a>
 - <a href="https://www.tencentcloud.com/" target="_blank">Tencent Cloud</a>
 - <a href="https://uptimerobot.com/help/locations/" target="_blank">UptimeRobot</a>
-- <a href="https://platform.openai.com/docs/bots" target="_blank">OpenAI Bots</a> (GPTBot, OAI-SearchBot and ChatGPT-User)
+- <a href="https://platform.openai.com/docs/bots" target="_blank">OpenAI Bots</a> (GPTBot, OAI-SearchBot and ChatGPT-User) [^stale]
 - <a href="https://www.oracle.com/cloud/" target="_blank">Oracle Cloud Infrastructure</a>
 - <a href="https://support.apple.com/en-us/HT212614" target="_blank">iCloud Private Relay</a>
 - <a href="https://www.ovhcloud.com" target="_blank">OVHcloud</a>
-- <a href="https://www.perplexity.com/perplexitybot.json" target="_blank">PerplexityBot</a>
+- <a href="https://www.perplexity.com/perplexitybot.json" target="_blank">PerplexityBot</a> [^stale]
 - <a href="https://render.com/" target="_blank">Render</a>
 - <a href="https://www.vultr.com" target="_blank">Vultr</a>
 - <a href="https://www.zscaler.com" target="_blank">Zscaler</a>
 - <a href="https://github.com/jonhadfield/ip-fetcher" target="_blank">Custom URL</a>
+
+[^stale]: These feeds are still served and still parse, but their publishers
+have not regenerated them in a long time. As of 2026-08-29 the `creationTime`
+in the OpenAI document was 2025-10-30 and PerplexityBot's was 2025-02-07. The
+prefixes may no longer reflect the addresses those crawlers use, so treat them
+with caution when allowlisting. Each provider's `Doc.CreationTime` carries the
+value if you want to check it yourself.
 
 ## CLI
 
