@@ -87,7 +87,7 @@ func (a *AWS) FetchETag() (string, error) {
 		return "", nil
 	}
 
-	etag := outHeaders.Get("Etag")
+	etag := outHeaders.Get(web.ETagHeader)
 	if etag != "" && len(etag) > 2 {
 		TrimQuotes(&etag)
 	}
@@ -113,7 +113,7 @@ func (a *AWS) Fetch() (Doc, string, error) {
 		return Doc{}, "", err
 	}
 
-	etag := headers.Get("Etag")
+	etag := headers.Get(web.ETagHeader)
 	if etag != "" && len(etag) > 2 {
 		TrimQuotes(&etag)
 	}
