@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/jonhadfield/ip-fetcher/providers/azure"
 
@@ -208,4 +209,71 @@ func TestFetch(t *testing.T) {
 	require.Equal(t, "Public", prefixes.Cloud)
 	require.Equal(t, 232, prefixes.ChangeNumber)
 	require.Len(t, prefixes.Values, 2643)
+}
+
+// Snapshots are published on Mondays, and the previous week's file is still
+// served for a while, so the newest candidate must be tried first.
+func TestCandidateDatesAreMondaysNewestFirst(t *testing.T) {
+	// a Saturday
+	dates := azure.CandidateDates(time.Date(2026, time.August, 29, 12, 0, 0, 0, time.UTC))
+	require.Len(t, dates, 3)
+	require.Equal(t, "2026-08-24", dates[0].Format("2006-01-02"))
+	require.Equal(t, "2026-08-17", dates[1].Format("2006-01-02"))
+	require.Equal(t, "2026-08-10", dates[2].Format("2006-01-02"))
+
+	for _, d := range dates {
+		require.Equal(t, time.Monday, d.Weekday())
+	}
+}
+
+// on a Monday the search starts that same day, not the week before.
+func TestCandidateDatesOnMonday(t *testing.T) {
+	dates := azure.CandidateDates(time.Date(2026, time.August, 24, 9, 0, 0, 0, time.UTC))
+	require.Equal(t, "2026-08-24", dates[0].Format("2006-01-02"))
+}
+
+func TestFindDownloadURLTakesTheNewestHit(t *testing.T) {
+	defer gock.Off()
+
+	now := time.Date(2026, time.August, 29, 12, 0, 0, 0, time.UTC)
+
+	// newest missing, previous week present: the previous week must win, and
+	// only after the newer one has been ruled out.
+	newest := fmt.Sprintf(azure.DatedURLTemplate, "20260824")
+	previous := fmt.Sprintf(azure.DatedURLTemplate, "20260817")
+
+	for raw, code := range map[string]int{newest: http.StatusNotFound, previous: http.StatusOK} {
+		u, err := url.Parse(raw)
+		require.NoError(t, err)
+
+		gock.New(fmt.Sprintf("%s://%s", u.Scheme, u.Host)).
+			Head(u.Path).
+			Reply(code)
+	}
+
+	ac := azure.New()
+	gock.InterceptClient(ac.Client.HTTPClient)
+
+	require.Equal(t, previous, ac.FindDownloadURL(now))
+}
+
+// with nothing published, the caller is told so and can fall back.
+func TestFindDownloadURLNoneFound(t *testing.T) {
+	defer gock.Off()
+
+	now := time.Date(2026, time.August, 29, 12, 0, 0, 0, time.UTC)
+
+	for _, d := range []string{"20260824", "20260817", "20260810"} {
+		u, err := url.Parse(fmt.Sprintf(azure.DatedURLTemplate, d))
+		require.NoError(t, err)
+
+		gock.New(fmt.Sprintf("%s://%s", u.Scheme, u.Host)).
+			Head(u.Path).
+			Reply(http.StatusNotFound)
+	}
+
+	ac := azure.New()
+	gock.InterceptClient(ac.Client.HTTPClient)
+
+	require.Empty(t, ac.FindDownloadURL(now))
 }
