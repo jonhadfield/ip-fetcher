@@ -19,9 +19,11 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://ip-ranges.atlassian.com/" target="_blank">Atlassian</a>
 - <a href="https://www.bing.com/webmasters/help/which-crawlers-does-bing-use-8c184ec0" target="_blank">Bingbot</a>
 - <a href="https://www.blocklist.de/en/index.html" target="_blank">Blocklist.de</a>
+- <a href="https://betterstack.com/docs/uptime/ip-addresses/" target="_blank">Better Stack</a> (uptime check probes)
 - <a href="https://bunny.net/" target="_blank">Bunny.net</a>
 - <a href="https://www.cdn77.com/" target="_blank">CDN77</a>
 - <a href="https://cinsscore.com/" target="_blank">CINS Army List</a>
+- <a href="https://www.checklyhq.com/docs/monitoring/allowlisting/" target="_blank">Checkly</a> (monitoring probes)
 - <a href="https://www.cloudflare.com/" target="_blank">Cloudflare</a>
 - <a href="https://contabo.com/" target="_blank">Contabo</a>
 - <a href="https://docs.datadoghq.com/api/latest/ip-ranges/" target="_blank">Datadog</a>
@@ -44,22 +46,27 @@ Please raise an issue if you have any issues or suggestions for new providers.
 - <a href="https://www.hetzner.com" target="_blank">Hetzner</a>
 - <a href="https://www.ibm.com/cloud" target="_blank">IBM Cloud</a>
 - <a href="https://www.imperva.com" target="_blank">Imperva</a>
+- <a href="https://gcore.com/" target="_blank">Gcore CDN</a>
 - <a href="https://www.github.com" target="_blank">GitHub</a>
 - <a href="https://www.leaseweb.com/" target="_blank">Leaseweb</a>
 - <a href="https://www.linode.com" target="_blank">Linode</a>
 - <a href="https://www.m247.com/" target="_blank">M247</a>
 - <a href="https://www.scaleway.com/" target="_blank">Scaleway</a>
 - <a href="https://www.spamhaus.org/blocklists/do-not-route-or-peer/" target="_blank">Spamhaus DROP</a>
+- <a href="https://www.statuscake.com/" target="_blank">StatusCake</a> (monitoring probe locations)
 - <a href="https://docs.stripe.com/ips" target="_blank">Stripe</a>
 - <a href="https://www.tencentcloud.com/" target="_blank">Tencent Cloud</a>
 - <a href="https://uptimerobot.com/help/locations/" target="_blank">UptimeRobot</a>
 - <a href="https://platform.openai.com/docs/bots" target="_blank">OpenAI Bots</a> (GPTBot, OAI-SearchBot and ChatGPT-User) [^stale]
+- <a href="https://docs.newrelic.com/docs/synthetics/synthetic-monitoring/administration/synthetic-public-minion-ips/" target="_blank">New Relic Synthetics</a> (public monitor locations)
 - <a href="https://www.oracle.com/cloud/" target="_blank">Oracle Cloud Infrastructure</a>
 - <a href="https://support.apple.com/en-us/HT212614" target="_blank">iCloud Private Relay</a>
 - <a href="https://www.ovhcloud.com" target="_blank">OVHcloud</a>
 - <a href="https://www.perplexity.com/perplexitybot.json" target="_blank">PerplexityBot</a> [^stale]
+- <a href="https://www.pingdom.com/" target="_blank">Pingdom</a> (monitoring probe servers)
 - <a href="https://render.com/" target="_blank">Render</a>
 - <a href="https://www.vultr.com" target="_blank">Vultr</a>
+- <a href="https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0060548" target="_blank">Zoom</a>
 - <a href="https://www.zscaler.com" target="_blank">Zscaler</a>
 - <a href="https://github.com/jonhadfield/ip-fetcher" target="_blank">Custom URL</a>
 
