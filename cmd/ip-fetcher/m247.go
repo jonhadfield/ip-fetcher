@@ -14,15 +14,16 @@ import (
 
 func m247Cmd() *cli.Command {
 	const (
-		providerName = "m247"
-		fileName     = "prefixes.txt"
+		providerName  = "m247"
+		fileName      = "prefixes.txt"
+		fileNameLines = "m247-prefixes.txt"
 	)
 
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch M247 prefixes",
 		Usage:     "M247",
-		UsageText: "ip-fetcher m247 {--stdout | --Path FILE}",
+		UsageText: "ip-fetcher m247 {--stdout | --Path FILE} [--lines]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 			return err
@@ -35,6 +36,10 @@ func m247Cmd() *cli.Command {
 			&cli.BoolFlag{
 				Name:  flagStdout,
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
+			},
+			&cli.BoolFlag{
+				Name:  formatLines,
+				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -56,26 +61,51 @@ func m247Cmd() *cli.Command {
 				gock.InterceptClient(h.Client.HTTPClient)
 			}
 
-			data, _, _, err := h.FetchData()
+			data, err := m247Data(c, &h)
 			if err != nil {
 				return err
 			}
 
-			var asnIPs m247.Doc
-			if err = json.Unmarshal(data, &asnIPs); err != nil {
-				return fmt.Errorf("failed to unmarshal M247 Data: %w", err)
-			}
-
-			asnPrefixes, err := json.MarshalIndent(asnIPs, "", "  ")
-			if err != nil {
-				return fmt.Errorf("failed to marshal M247 Data: %w", err)
+			defaultName := fileName
+			if c.Bool(formatLines) {
+				defaultName = fileNameLines
 			}
 
 			return writeOutputs(path, stdout, SaveFileInput{
 				Provider:        providerName,
-				DefaultFileName: fileName,
-				Data:            asnPrefixes,
+				DefaultFileName: defaultName,
+				Data:            data,
 			})
 		},
 	}
+}
+
+// m247Data returns the newline separated prefixes when --lines is set, and the
+// indented json document otherwise.
+func m247Data(c *cli.Context, h *m247.M247) ([]byte, error) {
+	if c.Bool(formatLines) {
+		doc, err := h.Fetch()
+		if err != nil {
+			return nil, err
+		}
+
+		return docToLines(doc)
+	}
+
+	raw, _, _, err := h.FetchData()
+	if err != nil {
+		return nil, err
+	}
+
+	var asnIPs m247.Doc
+	if err = json.Unmarshal(raw, &asnIPs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal M247 Data: %w", err)
+	}
+
+	data, err := json.MarshalIndent(asnIPs, "", "  ")
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal M247 Data: %w", err)
+	}
+
+	return data, nil
 }

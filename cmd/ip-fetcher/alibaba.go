@@ -22,7 +22,7 @@ func alibabaCmd() *cli.Command {
 		Name:      providerName,
 		HelpName:  "- fetch Alibaba prefixes",
 		Usage:     "Alibaba",
-		UsageText: "ip-fetcher alibaba {--stdout | --Path FILE}",
+		UsageText: "ip-fetcher alibaba {--stdout | --Path FILE} [--lines]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 			return err
@@ -35,6 +35,10 @@ func alibabaCmd() *cli.Command {
 			&cli.BoolFlag{
 				Name:  flagStdout,
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
+			},
+			&cli.BoolFlag{
+				Name:  formatLines,
+				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -56,26 +60,51 @@ func alibabaCmd() *cli.Command {
 				gock.InterceptClient(h.Client.HTTPClient)
 			}
 
-			data, _, _, err := h.FetchData()
+			data, err := alibabaData(c, &h)
 			if err != nil {
 				return err
 			}
 
-			var asnIPs alibaba.Doc
-			if err = json.Unmarshal(data, &asnIPs); err != nil {
-				return fmt.Errorf("failed to unmarshal Alibaba Data: %w", err)
-			}
-
-			asnPrefixes, err := json.MarshalIndent(asnIPs, "", "  ")
-			if err != nil {
-				return fmt.Errorf("failed to marshal Alibaba Data: %w", err)
+			defaultName := fileName
+			if c.Bool(formatLines) {
+				defaultName = fileNameLines
 			}
 
 			return writeOutputs(path, stdout, SaveFileInput{
 				Provider:        providerName,
-				DefaultFileName: fileName,
-				Data:            asnPrefixes,
+				DefaultFileName: defaultName,
+				Data:            data,
 			})
 		},
 	}
+}
+
+// alibabaData returns the newline separated prefixes when --lines is set, and
+// the indented json document otherwise.
+func alibabaData(c *cli.Context, h *alibaba.Alibaba) ([]byte, error) {
+	if c.Bool(formatLines) {
+		doc, err := h.Fetch()
+		if err != nil {
+			return nil, err
+		}
+
+		return docToLines(doc)
+	}
+
+	raw, _, _, err := h.FetchData()
+	if err != nil {
+		return nil, err
+	}
+
+	var asnIPs alibaba.Doc
+	if err = json.Unmarshal(raw, &asnIPs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal Alibaba Data: %w", err)
+	}
+
+	data, err := json.MarshalIndent(asnIPs, "", "  ")
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal Alibaba Data: %w", err)
+	}
+
+	return data, nil
 }

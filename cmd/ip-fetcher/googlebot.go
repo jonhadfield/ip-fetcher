@@ -12,15 +12,16 @@ import (
 
 func googlebotCmd() *cli.Command {
 	const (
-		providerName = "googlebot"
-		fileName     = "googlebot.json"
+		providerName  = "googlebot"
+		fileName      = "googlebot.json"
+		fileNameLines = "googlebot-prefixes.txt"
 	)
 
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch Googlebot prefixes",
 		Usage:     "Google Web Crawlers (Desktop and Smartphone)",
-		UsageText: "ip-fetcher googlebot {--stdout | --Path FILE}",
+		UsageText: "ip-fetcher googlebot {--stdout | --Path FILE} [--lines]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 
@@ -34,6 +35,10 @@ func googlebotCmd() *cli.Command {
 			&cli.BoolFlag{
 				Name:  flagStdout,
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
+			},
+			&cli.BoolFlag{
+				Name:  formatLines,
+				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -55,14 +60,31 @@ func googlebotCmd() *cli.Command {
 				gock.InterceptClient(a.Client.HTTPClient)
 			}
 
-			data, _, _, err := a.FetchData()
-			if err != nil {
-				return err
+			var data []byte
+			if c.Bool(formatLines) {
+				var doc googlebot.Doc
+				if doc, err = a.Fetch(); err != nil {
+					return err
+				}
+
+				if data, err = docToLines(doc); err != nil {
+					return err
+				}
+			} else {
+				data, _, _, err = a.FetchData()
+				if err != nil {
+					return err
+				}
+			}
+
+			defaultName := fileName
+			if c.Bool(formatLines) {
+				defaultName = fileNameLines
 			}
 
 			return writeOutputs(path, stdout, SaveFileInput{
 				Provider:        providerName,
-				DefaultFileName: fileName,
+				DefaultFileName: defaultName,
 				Data:            data,
 			})
 		},

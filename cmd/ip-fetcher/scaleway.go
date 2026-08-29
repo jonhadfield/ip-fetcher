@@ -13,15 +13,16 @@ import (
 
 func scalewayCmd() *cli.Command {
 	const (
-		providerName = "scaleway"
-		fileName     = "prefixes.txt"
+		providerName  = "scaleway"
+		fileName      = "prefixes.txt"
+		fileNameLines = "scaleway-prefixes.txt"
 	)
 
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch Scaleway prefixes",
 		Usage:     "Scaleway",
-		UsageText: "ip-fetcher scaleway {--stdout | --Path FILE}",
+		UsageText: "ip-fetcher scaleway {--stdout | --Path FILE} [--lines]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 			return err
@@ -34,6 +35,10 @@ func scalewayCmd() *cli.Command {
 			&cli.BoolFlag{
 				Name:  flagStdout,
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
+			},
+			&cli.BoolFlag{
+				Name:  formatLines,
+				Usage: usageLinesOutput,
 			},
 		},
 		Action: func(c *cli.Context) error {
@@ -55,26 +60,51 @@ func scalewayCmd() *cli.Command {
 				gock.InterceptClient(h.Client.HTTPClient)
 			}
 
-			data, _, _, err := h.FetchData()
+			data, err := scalewayData(c, &h)
 			if err != nil {
 				return err
 			}
 
-			var asnIPs scaleway.Doc
-			if err = json.Unmarshal(data, &asnIPs); err != nil {
-				return fmt.Errorf("failed to unmarshal Scaleway Data: %w", err)
-			}
-
-			asnPrefixes, err := json.MarshalIndent(asnIPs, "", "  ")
-			if err != nil {
-				return fmt.Errorf("failed to marshal Scaleway Data: %w", err)
+			defaultName := fileName
+			if c.Bool(formatLines) {
+				defaultName = fileNameLines
 			}
 
 			return writeOutputs(path, stdout, SaveFileInput{
 				Provider:        providerName,
-				DefaultFileName: fileName,
-				Data:            asnPrefixes,
+				DefaultFileName: defaultName,
+				Data:            data,
 			})
 		},
 	}
+}
+
+// scalewayData returns the newline separated prefixes when --lines is set, and the
+// indented json document otherwise.
+func scalewayData(c *cli.Context, h *scaleway.Scaleway) ([]byte, error) {
+	if c.Bool(formatLines) {
+		doc, err := h.Fetch()
+		if err != nil {
+			return nil, err
+		}
+
+		return docToLines(doc)
+	}
+
+	raw, _, _, err := h.FetchData()
+	if err != nil {
+		return nil, err
+	}
+
+	var asnIPs scaleway.Doc
+	if err = json.Unmarshal(raw, &asnIPs); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal Scaleway Data: %w", err)
+	}
+
+	data, err := json.MarshalIndent(asnIPs, "", "  ")
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal Scaleway Data: %w", err)
+	}
+
+	return data, nil
 }

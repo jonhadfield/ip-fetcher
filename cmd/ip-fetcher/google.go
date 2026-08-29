@@ -11,8 +11,9 @@ import (
 
 func googleCmd() *cli.Command {
 	const (
-		providerName = "google"
-		fileName     = "goog.json"
+		providerName  = "google"
+		fileName      = "goog.json"
+		fileNameLines = "google-prefixes.txt"
 	)
 
 	return &cli.Command{
@@ -34,6 +35,10 @@ func googleCmd() *cli.Command {
 				Name:  flagStdout,
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
 			},
+			&cli.BoolFlag{
+				Name:  formatLines,
+				Usage: usageLinesOutput,
+			},
 		},
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
@@ -54,14 +59,31 @@ func googleCmd() *cli.Command {
 				gock.InterceptClient(a.Client.HTTPClient)
 			}
 
-			data, _, _, err := a.FetchData()
-			if err != nil {
-				return err
+			var data []byte
+			if c.Bool(formatLines) {
+				var doc google.Doc
+				if doc, err = a.Fetch(); err != nil {
+					return err
+				}
+
+				if data, err = docToLines(doc); err != nil {
+					return err
+				}
+			} else {
+				data, _, _, err = a.FetchData()
+				if err != nil {
+					return err
+				}
+			}
+
+			defaultName := fileName
+			if c.Bool(formatLines) {
+				defaultName = fileNameLines
 			}
 
 			return writeOutputs(path, stdout, SaveFileInput{
 				Provider:        providerName,
-				DefaultFileName: fileName,
+				DefaultFileName: defaultName,
 				Data:            data,
 			})
 		},
