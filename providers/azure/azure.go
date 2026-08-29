@@ -22,6 +22,22 @@ const (
 	InitialURL            = "https://www.microsoft.com/en-gb/download/details.aspx?id=56519"
 	WorkaroundDownloadURL = "https://download.microsoft.com/download/7/1/d/71d86715-5596-4529-9b13-da13a5de5b63/ServiceTags_Public_20260601.json"
 
+	// DatedURLTemplate builds a snapshot URL from a publication date. Microsoft
+	// names each snapshot ServiceTags_Public_YYYYMMDD.json under a stable path.
+	DatedURLTemplate = "https://download.microsoft.com/download/7/1/d/71d86715-5596-4529-9b13-da13a5de5b63/ServiceTags_Public_%s.json"
+
+	// dateLayout matches the date in DatedURLTemplate.
+	dateLayout = "20060102"
+
+	// weeksToProbe bounds how far back FindDownloadURL looks. Microsoft
+	// publishes weekly and keeps roughly a fortnight of snapshots, so three
+	// covers the retention window with margin while keeping the worst case,
+	// where every probe misses, short enough to fall back quickly.
+	weeksToProbe = 3
+
+	// daysPerWeek is the snapshot cadence.
+	daysPerWeek = 7
+
 	errFailedToDownload = "failed to retrieve azure prefixes initial page"
 )
 
@@ -127,17 +143,69 @@ func ParseDownloadURL(body string) string {
 	return ""
 }
 
+// CandidateDates returns the snapshot publication dates to try, newest first.
+// Microsoft publishes on Mondays, so the search starts at the most recent one.
+//
+// Order matters: the previous week's snapshot is still served for a while, so
+// probing oldest first would happily return stale prefixes.
+func CandidateDates(now time.Time) []time.Time {
+	day := now.UTC()
+
+	offset := (int(day.Weekday()) - int(time.Monday) + daysPerWeek) % daysPerWeek
+	monday := day.AddDate(0, 0, -offset)
+
+	dates := make([]time.Time, 0, weeksToProbe)
+	for i := range weeksToProbe {
+		dates = append(dates, monday.AddDate(0, 0, -daysPerWeek*i))
+	}
+
+	return dates
+}
+
+// FindDownloadURL locates the current snapshot by asking the file host for each
+// candidate name directly, returning an empty string if none answers.
+//
+// This exists to avoid GetDownloadURL, which scrapes the download page and
+// needs cycletls to do it: that costs around ten seconds, against roughly fifty
+// milliseconds for a HEAD here. Only the download page demands a spoofed TLS
+// fingerprint; the file host itself does not.
+func (a *Azure) FindDownloadURL(now time.Time) string {
+	probe := a.probeClient()
+
+	for _, date := range CandidateDates(now) {
+		url := fmt.Sprintf(DatedURLTemplate, date.Format(dateLayout))
+
+		_, _, status, err := web.Request(probe, url, http.MethodHead, nil, nil, web.ShortRequestTimeout)
+		if err == nil && status == http.StatusOK {
+			return url
+		}
+	}
+
+	return ""
+}
+
+// probeClient returns a client that does not retry, sharing the underlying
+// transport so tests intercepting a.Client see the probes too.
+//
+// A missing snapshot is an answer, not a failure worth retrying: with the
+// default policy a probe that cannot connect costs several seconds of backoff
+// each, and three of those would delay the fallback longer than the scrape it
+// is meant to avoid.
+func (a *Azure) probeClient() *retryablehttp.Client {
+	probe := retryablehttp.NewClient()
+	probe.RetryMax = 0
+	probe.Logger = nil
+
+	if a.Client != nil {
+		probe.HTTPClient = a.Client.HTTPClient
+	}
+
+	return probe
+}
+
 func (a *Azure) FetchData() ([]byte, http.Header, int, error) {
 	if a.DownloadURL == "" {
-		// Microsoft rotates the dated snapshot URL on roughly a weekly cadence.
-		// Scrape the download page for the current URL and fall back to the
-		// last-known snapshot if discovery fails.
-		discoveredURL, err := a.GetDownloadURL()
-		if err != nil || discoveredURL == "" {
-			a.DownloadURL = WorkaroundDownloadURL
-		} else {
-			a.DownloadURL = discoveredURL
-		}
+		a.DownloadURL = a.resolveDownloadURL()
 	}
 
 	data, headers, status, err := web.Request(
@@ -191,4 +259,22 @@ type Properties struct {
 	SystemService   string   `json:"systemService"`
 	AddressPrefixes []string `json:"addressPrefixes"`
 	NetworkFeatures []string `json:"networkFeatures"`
+}
+
+// resolveDownloadURL finds the current snapshot, cheapest option first.
+//
+// Microsoft rotates the dated snapshot weekly. Probing the names directly is
+// fast; scraping the download page is the fallback for a naming or path change,
+// and the pinned snapshot is the last resort.
+func (a *Azure) resolveDownloadURL() string {
+	if url := a.FindDownloadURL(time.Now()); url != "" {
+		return url
+	}
+
+	discoveredURL, err := a.GetDownloadURL()
+	if err != nil || discoveredURL == "" {
+		return WorkaroundDownloadURL
+	}
+
+	return discoveredURL
 }
