@@ -38,6 +38,19 @@ jobs:
       run: echo "TAG=$(git describe --tags)" >> $GITHUB_ENV
 
     -
+      name: determine image tags
+      # Only move :latest for final releases. A semver prerelease (v0.0.28-rc1)
+      # contains a hyphen; a final release (v0.0.28) does not.
+      run: |
+        TAGS="${{ github.repository }}:${TAG},ghcr.io/${{ github.repository }}:${TAG}"
+        if [[ "${{ github.ref_name }}" != *-* ]]; then
+          TAGS="${TAGS},${{ github.repository }}:latest,ghcr.io/${{ github.repository }}:latest"
+        else
+          echo "::notice::prerelease ${{ github.ref_name }} - not publishing :latest"
+        fi
+        echo "TAGS=${TAGS}" >> $GITHUB_ENV
+
+    -
       name: build image
       uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7
       with:
@@ -45,16 +58,13 @@ jobs:
         file: ./Dockerfile
         build-args: TAG=${{ env.TAG }}
         push: false
-        tags: |
-          ${{ github.repository }}:latest
-          ${{ github.repository }}:${{ env.TAG }}
-          ghcr.io/${{ github.repository }}:latest
-          ghcr.io/${{ github.repository }}:${{ env.TAG }}
+        tags: ${{ env.TAGS }}
 
     - name: trivy image scan
       uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
       with:
-        image-ref: ${{ github.repository }}:latest
+        # the versioned tag is always built; :latest is not, on prereleases
+        image-ref: ${{ github.repository }}:${{ env.TAG }}
         exit-code: 0
         severity: UNKNOWN,LOW,MEDIUM
 
@@ -66,11 +76,7 @@ jobs:
         file: ./Dockerfile
         build-args: TAG=${{ env.TAG }}
         push: true
-        tags: |
-          ${{ github.repository }}:latest
-          ${{ github.repository }}:${{ env.TAG }}
-          ghcr.io/${{ github.repository }}:latest
-          ghcr.io/${{ github.repository }}:${{ env.TAG }}
+        tags: ${{ env.TAGS }}
 
   goreleaser:
     runs-on: ubuntu-latest
@@ -95,3 +101,10 @@ jobs:
           args: release --clean -f goreleaser.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # macOS signing and notarization. Absent secrets resolve to empty
+          # strings, which disables the notarize step rather than failing it.
+          MACOS_SIGN_P12: ${{ secrets.MACOS_SIGN_P12 }}
+          MACOS_SIGN_PASSWORD: ${{ secrets.MACOS_SIGN_PASSWORD }}
+          MACOS_NOTARY_ISSUER_ID: ${{ secrets.MACOS_NOTARY_ISSUER_ID }}
+          MACOS_NOTARY_KEY_ID: ${{ secrets.MACOS_NOTARY_KEY_ID }}
+          MACOS_NOTARY_KEY: ${{ secrets.MACOS_NOTARY_KEY }}
