@@ -38,6 +38,27 @@ builds:
     ldflags:
       - "-s -w -X main.version={{ .Version }} -X main.sha={{ .ShortCommit }} -X main.buildDate={{ .Date }} -X main.tag={{ .Tag }}"
 
+# Sign and notarize the darwin binaries so macOS Gatekeeper does not warn on
+# first run. Uses goreleaser's cross-platform (quill) implementation, which
+# needs no macOS runner. The enabled guard keeps snapshot and fork builds
+# working when the secrets are absent. Both the certificate and the notary key
+# are required, since signing without usable notary credentials would fail the
+# release outright: a half-configured state must stay disabled.
+notarize:
+  macos:
+    - enabled: '{{ and (isEnvSet "MACOS_SIGN_P12") (isEnvSet "MACOS_NOTARY_KEY") }}'
+      ids:
+        - ip-fetcher
+      sign:
+        certificate: "{{ .Env.MACOS_SIGN_P12 }}"
+        password: "{{ .Env.MACOS_SIGN_PASSWORD }}"
+      notarize:
+        issuer_id: "{{ .Env.MACOS_NOTARY_ISSUER_ID }}"
+        key_id: "{{ .Env.MACOS_NOTARY_KEY_ID }}"
+        key: "{{ .Env.MACOS_NOTARY_KEY }}"
+        wait: true
+        timeout: 20m
+
 archives:
   - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
     ids:
