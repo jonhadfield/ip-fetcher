@@ -101,6 +101,8 @@ jobs:
           args: release --clean -f goreleaser.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # the default token cannot write to the separate tap repository
+          TAP_GITHUB_TOKEN: ${{ secrets.TAP_GITHUB_TOKEN }}
           # macOS signing and notarization. Absent secrets resolve to empty
           # strings, which disables the notarize step rather than failing it.
           MACOS_SIGN_P12: ${{ secrets.MACOS_SIGN_P12 }}
