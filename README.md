@@ -81,12 +81,28 @@ value if you want to check it yourself.
 
 ### install
 
-Download the latest release [here](https://github.com/jonhadfield/ip-fetcher/releases) and then install:
+On macOS and linux, using [homebrew](https://brew.sh):
+
+```bash
+brew install jonhadfield/tap/ip-fetcher
+```
+
+Otherwise, download the latest release [here](https://github.com/jonhadfield/ip-fetcher/releases) and then install:
 
 ```bash
 install <ip-fetcher binary> /usr/local/bin/ip-fetcher
 ```
 _use: `sudo install` if on linux_
+
+On macOS, a binary downloaded through a browser is quarantined, and Gatekeeper
+will refuse to run it. The darwin binaries are signed and notarized, but a
+notarization ticket cannot be stapled into a bare executable, so macOS cannot
+verify it offline. Either install via homebrew, which handles this, or clear
+the flag manually:
+
+```bash
+xattr -d com.apple.quarantine /usr/local/bin/ip-fetcher
+```
 
 ### run
 

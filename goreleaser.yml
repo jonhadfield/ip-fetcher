@@ -72,6 +72,26 @@ archives:
     files:
       - none*
 
+
+homebrew_casks:
+  - name: ip-fetcher
+    binaries: [ip-fetcher]
+    repository:
+      owner: jonhadfield
+      name: homebrew-tap
+      token: "{{ .Env.TAP_GITHUB_TOKEN }}"
+    homepage: https://github.com/jonhadfield/ip-fetcher
+    description: A go library and CLI to fetch IP ranges from popular online sources
+    hooks:
+      post:
+        # The darwin binaries are signed and notarized, but a notarization
+        # ticket cannot be stapled into a bare Mach-O executable, so Gatekeeper
+        # reports "Notary Ticket Missing" and blocks first run. Casks set the
+        # quarantine flag on download, so clear it here.
+        install: |
+          if system_command("/usr/bin/xattr", args: ["-h"]).exit_status == 0
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/ip-fetcher"]
+          end
 release:
   github:
     owner: jonhadfield
