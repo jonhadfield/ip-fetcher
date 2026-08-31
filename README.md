@@ -95,6 +95,12 @@ On macOS and linux, using [homebrew](https://brew.sh):
 brew install jonhadfield/tap/ip-fetcher
 ```
 
+On macOS you can also use the signed installer — `ip-fetcher_<version>_macos.pkg`
+on the [latest release](https://github.com/jonhadfield/ip-fetcher/releases/latest).
+Open it and it puts `ip-fetcher` in `/usr/local/bin`. The package is notarized
+with a stapled ticket, so it installs with no Gatekeeper warning and nothing
+needs clearing afterwards.
+
 Otherwise, download the latest release [here](https://github.com/jonhadfield/ip-fetcher/releases) and then install:
 
 ```bash
@@ -105,8 +111,8 @@ _use: `sudo install` if on linux_
 On macOS, a binary downloaded through a browser is quarantined, and Gatekeeper
 will refuse to run it. The darwin binaries are signed and notarized, but a
 notarization ticket cannot be stapled into a bare executable, so macOS cannot
-verify it offline. Either install via homebrew, which handles this, or clear
-the flag manually:
+verify it offline. Homebrew and the `.pkg` above both handle this; if you took
+a tarball instead, clear the flag manually:
 
 ```bash
 xattr -d com.apple.quarantine /usr/local/bin/ip-fetcher
