@@ -95,11 +95,16 @@ On macOS and linux, using [homebrew](https://brew.sh):
 brew install jonhadfield/tap/ip-fetcher
 ```
 
-On macOS you can also use the signed installer — `ip-fetcher_<version>_macos.pkg`
-on the [latest release](https://github.com/jonhadfield/ip-fetcher/releases/latest).
-Open it and it puts `ip-fetcher` in `/usr/local/bin`. The package is notarized
-with a stapled ticket, so it installs with no Gatekeeper warning and nothing
-needs clearing afterwards.
+On macOS you can also use the signed installer:
+
+```bash
+curl -fLO https://github.com/jonhadfield/ip-fetcher/releases/latest/download/ip-fetcher_macos.pkg
+sudo installer -pkg ip-fetcher_macos.pkg -target /
+```
+
+That puts `ip-fetcher` in `/usr/local/bin`. The package is notarized with a
+stapled ticket, so it installs with no Gatekeeper warning and nothing needs
+clearing afterwards. Double-clicking the `.pkg` works too.
 
 Otherwise, download the latest release [here](https://github.com/jonhadfield/ip-fetcher/releases) and then install:
 

@@ -193,7 +193,7 @@ jobs:
           xcrun stapler validate "$WORK/ip-fetcher.pkg"
           spctl -a -vvv -t install "$WORK/ip-fetcher.pkg"
 
-          PKG="$WORK/ip-fetcher_${VERSION}_macos.pkg"
+          PKG="$WORK/ip-fetcher_macos.pkg"
           mv "$WORK/ip-fetcher.pkg" "$PKG"
           gh release upload "$TAG" "$PKG" --repo "$GITHUB_REPOSITORY" --clobber
 
@@ -205,13 +205,13 @@ jobs:
           gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern '*.pkg' --dir "$VERIFY" --clobber
 
           BUILT_SHA="$(shasum -a 256 "$PKG" | awk '{print $1}')"
-          PUBLISHED_SHA="$(shasum -a 256 "$VERIFY/ip-fetcher_${VERSION}_macos.pkg" | awk '{print $1}')"
+          PUBLISHED_SHA="$(shasum -a 256 "$VERIFY/ip-fetcher_macos.pkg" | awk '{print $1}')"
           if [ "$BUILT_SHA" != "$PUBLISHED_SHA" ]; then
             echo "::error::Published installer differs from the one built and stapled here. built=$BUILT_SHA published=$PUBLISHED_SHA"
             exit 1
           fi
           echo "Published sha256 matches the stapled build: $PUBLISHED_SHA"
 
-          xcrun stapler validate "$VERIFY/ip-fetcher_${VERSION}_macos.pkg"
-          spctl -a -vvv -t install "$VERIFY/ip-fetcher_${VERSION}_macos.pkg"
+          xcrun stapler validate "$VERIFY/ip-fetcher_macos.pkg"
+          spctl -a -vvv -t install "$VERIFY/ip-fetcher_macos.pkg"
           echo "Published installer verified: ticket stapled and accepted by Gatekeeper."
