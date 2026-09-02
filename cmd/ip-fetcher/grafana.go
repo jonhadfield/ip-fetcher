@@ -19,29 +19,12 @@ func grafanaCmd() *cli.Command {
 	)
 
 	return &cli.Command{
-		Name:      providerName,
-		HelpName:  "- fetch Grafana synthetic monitoring probe prefixes",
-		Usage:     "Grafana Synthetic Monitoring (public probes)",
-		UsageText: "ip-fetcher grafana {--stdout | --Path FILE} [--lines]",
-		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
-			_ = cli.ShowSubcommandHelp(cCtx)
-
-			return err
-		},
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  flagPath,
-				Usage: usageWhereToSaveFile, Aliases: []string{"p"},
-			},
-			&cli.BoolFlag{
-				Name:  flagStdout,
-				Usage: usageWriteToStdout, Aliases: []string{"s"},
-			},
-			&cli.BoolFlag{
-				Name:  formatLines,
-				Usage: usageLinesOutput,
-			},
-		},
+		Name:         providerName,
+		HelpName:     "- fetch Grafana synthetic monitoring probe prefixes",
+		Usage:        "Grafana Synthetic Monitoring (public probes)",
+		UsageText:    "ip-fetcher grafana {--stdout | --Path FILE} [--lines]",
+		OnUsageError: onUsageError,
+		Flags:        providerFlags(),
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
 			if err != nil {
@@ -62,38 +45,12 @@ func grafanaCmd() *cli.Command {
 				gock.InterceptClient(p.Client.HTTPClient)
 			}
 
-			data, err := grafanaData(c, &p)
+			data, err := providerData(c, p.FetchData, func() (any, error) { return p.Fetch() })
 			if err != nil {
 				return err
 			}
 
-			defaultName := fileNameData
-			if c.Bool(formatLines) {
-				defaultName = fileNameLines
-			}
-
-			return writeOutputs(path, stdout, SaveFileInput{
-				Provider:        providerName,
-				DefaultFileName: defaultName,
-				Data:            data,
-			})
+			return writeProviderOutputs(c, path, stdout, providerName, fileNameData, fileNameLines, data)
 		},
 	}
-}
-
-// grafanaData returns newline separated prefixes when --lines is set, and the
-// upstream document otherwise.
-func grafanaData(c *cli.Context, p *grafana.Grafana) ([]byte, error) {
-	if c.Bool(formatLines) {
-		doc, err := p.Fetch()
-		if err != nil {
-			return nil, err
-		}
-
-		return docToLines(doc)
-	}
-
-	data, _, _, err := p.FetchData()
-
-	return data, err
 }
