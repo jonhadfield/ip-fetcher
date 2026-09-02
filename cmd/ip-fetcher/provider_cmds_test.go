@@ -9,9 +9,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// the five monitoring providers added together share one command shape, so a
-// single table covers saving, stdout and --lines for each of them.
-func TestMonitoringProviderCmds(t *testing.T) {
+// the monitoring and scanner providers added together share one command shape,
+// so a single table covers saving, stdout and --lines for each of them.
+func TestProviderCmds(t *testing.T) {
 	cases := []struct {
 		provider  string
 		mockEnv   string
@@ -24,6 +24,8 @@ func TestMonitoringProviderCmds(t *testing.T) {
 		{"site24x7", "IP_FETCHER_MOCK_SITE24X7", "site24x7.json", "site24x7-prefixes.txt", "37.221.111.107"},
 		{"updown", "IP_FETCHER_MOCK_UPDOWN", "updown.json", "updown-prefixes.txt", "45.32.74.41"},
 		{"uptrends", "IP_FETCHER_MOCK_UPTRENDS", "uptrends.json", "uptrends-prefixes.txt", "101.201.208.194"},
+		{"tenable", "IP_FETCHER_MOCK_TENABLE", "tenable.json", "tenable-prefixes.txt", "13.115.104.128"},
+		{"detectify", "IP_FETCHER_MOCK_DETECTIFY", "detectify.txt", "detectify-prefixes.txt", "52.17.98.131"},
 	}
 
 	for _, tc := range cases {
