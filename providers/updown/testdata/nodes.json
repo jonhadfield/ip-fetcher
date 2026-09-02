@@ -1,0 +1,101 @@
+{
+    "lan": {
+        "ip": "45.32.74.41",
+        "ip6": "2001:19f0:6001:2c6::1",
+        "city": "Los Angeles",
+        "country": "US",
+        "country_code": "us",
+        "lat": 34.0729,
+        "lng": -118.2606
+    },
+    "mia": {
+        "ip": "104.238.136.194",
+        "ip6": "2001:19f0:9002:11a::1",
+        "city": "Miami",
+        "country": "US",
+        "country_code": "us",
+        "lat": 25.8124,
+        "lng": -80.2401
+    },
+    "tor": {
+        "ip": "172.105.96.222",
+        "ip6": "2600:3c04:e001:37f::1",
+        "city": "Toronto",
+        "country": "Canada",
+        "country_code": "ca",
+        "lat": 43.64869,
+        "lng": -79.38544
+    },
+    "rbx": {
+        "ip": "91.121.222.175",
+        "ip6": "2001:41d0:2:85af::1",
+        "city": "Roubaix",
+        "country": "France",
+        "country_code": "fr",
+        "lat": 50.6871,
+        "lng": 3.1773
+    },
+    "fra": {
+        "ip": "104.238.159.87",
+        "ip6": "2001:19f0:6c01:145::1",
+        "city": "Frankfurt",
+        "country": "Germany",
+        "country_code": "de",
+        "lat": 50.1137,
+        "lng": 8.7119
+    },
+    "cap": {
+        "ip": "102.212.60.78",
+        "ip6": "2c0f:c40:4003:4::2",
+        "city": "Cape Town",
+        "country": "South Africa",
+        "country_code": "za",
+        "lat": -33.91909,
+        "lng": 18.42198
+    },
+    "hel": {
+        "ip": "135.181.102.135",
+        "ip6": "2a01:4f9:c010:d5f9::1",
+        "city": "Helsinki",
+        "country": "Finland",
+        "country_code": "fi",
+        "lat": 60.17116,
+        "lng": 24.93265
+    },
+    "sin": {
+        "ip": "45.32.107.181",
+        "ip6": "2001:19f0:4400:402e::1",
+        "city": "Singapore",
+        "country": "Singapore",
+        "country_code": "sg",
+        "lat": 1.2855,
+        "lng": 103.8565
+    },
+    "tok": {
+        "ip": "45.76.104.117",
+        "ip6": "2001:19f0:7001:45a::1",
+        "city": "Tokyo",
+        "country": "Japan",
+        "country_code": "jp",
+        "lat": 35.5833,
+        "lng": 139.7483
+    },
+    "syd": {
+        "ip": "45.63.29.207",
+        "ip6": "2001:19f0:5801:1d8::1",
+        "city": "Sydney",
+        "country": "Australia",
+        "country_code": "au",
+        "lat": -33.9032,
+        "lng": 150.9677
+    },
+    "fal": {
+        "ip": "178.63.21.176",
+        "ip6": "2a01:4f8:141:441a::2",
+        "city": "Falkenstein",
+        "country": "Germany",
+        "country_code": "de",
+        "lat": 50.47914,
+        "lng": -12.33547
+    }
+}
