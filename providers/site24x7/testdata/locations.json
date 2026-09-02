@@ -1,0 +1,88 @@
+{
+ "IP_Address_View": [
+  {
+   "IPv6_Address_External": "2606:6680:6:1::9379:657",
+   "ID": "321863000033960023",
+   "City": "Denver",
+   "Place": "US",
+   "external_ip": "37.221.111.107"
+  },
+  {
+   "IPv6_Address_External": "2800:ba0:18:b1::5303",
+   "ID": "321863000033960011",
+   "City": "Quito",
+   "Place": "Ecuador",
+   "external_ip": "179.49.5.66"
+  },
+  {
+   "IPv6_Address_External": "2800:ba0:30:b1::5304",
+   "ID": "321863000033960007",
+   "City": "Guatemala City",
+   "Place": "Guatemala",
+   "external_ip": "170.80.111.63"
+  },
+  {
+   "IPv6_Address_External": "2001:1548:7999::100",
+   "ID": "321863000033942021",
+   "City": "Athens",
+   "Place": "Greece",
+   "external_ip": "78.108.40.237"
+  },
+  {
+   "IPv6_Address_External": "2600:3c0c::f03c:94ff:fef8:721e ",
+   "ID": "321863000033928031",
+   "City": "Jakarta",
+   "Place": "Indonesia",
+   "external_ip": "172.232.251.24"
+  },
+  {
+   "IPv6_Address_External": "",
+   "ID": "321863000024139007",
+   "City": "Amsterdam",
+   "Place": "Netherlands",
+   "external_ip": "185.230.212.0/23"
+  },
+  {
+   "IPv6_Address_External": "",
+   "ID": "321863000024139003",
+   "City": "Amsterdam",
+   "Place": "Netherlands",
+   "external_ip": "31.186.243.0/24"
+  },
+  {
+   "IPv6_Address_External": "",
+   "ID": "321863000033960027",
+   "City": "Qingdao",
+   "Place": "China",
+   "external_ip": "47.104.233.122"
+  },
+  {
+   "IPv6_Address_External": "",
+   "ID": "321863000033960019",
+   "City": "Denver",
+   "Place": "US",
+   "external_ip": "139.64.165.207"
+  },
+  {
+   "IPv6_Address_External": "",
+   "ID": "321863000033960015",
+   "City": "Cape Town",
+   "Place": "South Africa",
+   "external_ip": "13.245.78.188"
+  },
+  {
+   "IPv6_Address_External": "",
+   "ID": "321863000033960003",
+   "City": "Qingdao",
+   "Place": "China",
+   "external_ip": "47.104.236.105"
+  },
+  {
+   "IPv6_Address_External": "",
+   "ID": "321863000033942041",
+   "City": "Riyadh",
+   "Place": "Saudi Arabia",
+   "external_ip": "185.230.209.114"
+  }
+ ]
+}

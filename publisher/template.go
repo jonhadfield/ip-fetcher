@@ -53,6 +53,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/googlebot"
 	"github.com/jonhadfield/ip-fetcher/providers/googlesc"
 	"github.com/jonhadfield/ip-fetcher/providers/googleutf"
+	"github.com/jonhadfield/ip-fetcher/providers/grafana"
 	"github.com/jonhadfield/ip-fetcher/providers/icloudpr"
 	"github.com/jonhadfield/ip-fetcher/providers/imperva"
 	"github.com/jonhadfield/ip-fetcher/providers/leaseweb"
@@ -62,10 +63,14 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/perplexitybot"
 	"github.com/jonhadfield/ip-fetcher/providers/pingdom"
 	"github.com/jonhadfield/ip-fetcher/providers/render"
+	"github.com/jonhadfield/ip-fetcher/providers/sentry"
+	"github.com/jonhadfield/ip-fetcher/providers/site24x7"
 	"github.com/jonhadfield/ip-fetcher/providers/spamhaus"
 	"github.com/jonhadfield/ip-fetcher/providers/statuscake"
 	"github.com/jonhadfield/ip-fetcher/providers/stripe"
+	"github.com/jonhadfield/ip-fetcher/providers/updown"
 	"github.com/jonhadfield/ip-fetcher/providers/uptimerobot"
+	"github.com/jonhadfield/ip-fetcher/providers/uptrends"
 )
 
 //go:embed README.template
@@ -112,6 +117,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchGooglebot, syncGooglebotData, googlebot.ShortName, googlebotFile, googlebot.FullName, googlebot.HostType, googlebot.SourceURL},
 	{fetchGoogleSC, syncGoogleSCData, googlesc.ShortName, googlescFile, googlesc.FullName, googlesc.HostType, googlesc.SourceURL},
 	{fetchGoogleUTF, syncGoogleUTFData, googleutf.ShortName, googleutfFile, googleutf.FullName, googleutf.HostType, googleutf.SourceURL},
+	{fetchGrafana, syncGrafanaData, grafana.ShortName, grafanaFile, grafana.FullName, grafana.HostType, grafana.SourceURL},
 	{fetchGreensnow, syncGreensnowData, greensnow.ShortName, greensnowFile, greensnow.FullName, greensnow.HostType, greensnow.SourceURL},
 	{fetchHetzner, syncHetznerData, hetzner.ShortName, hetznerFile, hetzner.FullName, hetzner.HostType, hetzner.SourceURL},
 	{fetchIBMCloud, syncIBMCloudData, ibmcloud.ShortName, ibmcloudFile, ibmcloud.FullName, ibmcloud.HostType, ibmcloud.SourceURL},
@@ -128,11 +134,15 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchPerplexitybot, syncPerplexitybotData, perplexitybot.ShortName, perplexitybotFile, perplexitybot.FullName, perplexitybot.HostType, perplexitybot.SourceURL},
 	{fetchRender, syncRenderData, render.ShortName, renderFile, render.FullName, render.HostType, render.SourceURL},
 	{fetchScaleway, syncScalewayData, scaleway.ShortName, scalewayFile, scaleway.FullName, scaleway.HostType, scaleway.SourceURL},
+	{fetchSentry, syncSentryData, sentry.ShortName, sentryFile, sentry.FullName, sentry.HostType, sentry.SourceURL},
+	{fetchSite24x7, syncSite24x7Data, site24x7.ShortName, site24x7File, site24x7.FullName, site24x7.HostType, site24x7.SourceURL},
 	{fetchSpamhaus, syncSpamhausData, spamhaus.ShortName, spamhausFile, spamhaus.FullName, spamhaus.HostType, spamhaus.SourceURL},
 	{fetchStatuscake, syncStatuscakeData, statuscake.ShortName, statuscakeFile, statuscake.FullName, statuscake.HostType, statuscake.SourceURL},
 	{fetchStripe, syncStripeData, stripe.ShortName, stripeFile, stripe.FullName, stripe.HostType, stripe.SourceURL},
 	{fetchTencent, syncTencentData, tencent.ShortName, tencentFile, tencent.FullName, tencent.HostType, tencent.SourceURL},
+	{fetchUpdown, syncUpdownData, updown.ShortName, updownFile, updown.FullName, updown.HostType, updown.SourceURL},
 	{fetchUptimerobot, syncUptimerobotData, uptimerobot.ShortName, uptimerobotFile, uptimerobot.FullName, uptimerobot.HostType, uptimerobot.SourceURL},
+	{fetchUptrends, syncUptrendsData, uptrends.ShortName, uptrendsFile, uptrends.FullName, uptrends.HostType, uptrends.SourceURL},
 	{fetchVultr, syncVultrData, vultr.ShortName, vultrFile, vultr.FullName, vultr.HostType, vultr.SourceURL},
 	{fetchZoom, syncZoomData, zoom.ShortName, zoomFile, zoom.FullName, zoom.HostType, zoom.SourceURL},
 	{fetchZscaler, syncZscalerData, zscaler.ShortName, zscalerFile, zscaler.FullName, zscaler.HostType, zscaler.SourceURL},

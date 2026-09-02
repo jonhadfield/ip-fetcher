@@ -46,6 +46,11 @@ func TestGenerateReadMeContentIncludesRegisteredProviders(t *testing.T) {
 		{"perplexitybot", "perplexitybot.json", "PerplexityBot"},
 		{"spamhaus", "spamhaus.json", "Spamhaus DROP"},
 		{"uptimerobot", "uptimerobot.txt", "UptimeRobot"},
+		{"uptrends", "uptrends.json", "Uptrends"},
+		{"site24x7", "site24x7.json", "Site24x7"},
+		{"grafana", "grafana.json", "Grafana Synthetic Monitoring"},
+		{"sentry", "sentry.txt", "Sentry Uptime"},
+		{"updown", "updown.json", "updown.io"},
 	}
 
 	for _, tc := range cases {
