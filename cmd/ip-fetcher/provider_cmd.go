@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/urfave/cli/v2"
+	"gopkg.in/h2non/gock.v1"
 )
 
 // The helpers here hold the parts every provider command repeats: the same
@@ -29,6 +32,74 @@ func providerFlags() []cli.Flag {
 		&cli.BoolFlag{
 			Name:  formatLines,
 			Usage: usageLinesOutput,
+		},
+	}
+}
+
+// mockSource serves one of a provider's URLs from a testdata file, so the CLI
+// tests can exercise a command without reaching the network.
+type mockSource struct {
+	url  string
+	file string
+}
+
+// providerSpec describes a provider command: what it is called, what it writes,
+// and how to fetch it.
+type providerSpec struct {
+	name      string
+	helpName  string
+	usage     string
+	dataFile  string
+	linesFile string
+	// mockEnv names the variable that serves the provider from its testdata.
+	mockEnv string
+	mocks   []mockSource
+	// newProvider returns the two fetches and the client the mocks intercept.
+	newProvider func() (
+		fetchData func() ([]byte, http.Header, int, error),
+		fetchDoc func() (any, error),
+		client *http.Client,
+	)
+}
+
+// providerCommand builds the command for a provider that needs nothing beyond
+// fetching its document and writing it out.
+func providerCommand(spec providerSpec) *cli.Command {
+	return &cli.Command{
+		Name:         spec.name,
+		HelpName:     "- fetch " + spec.helpName,
+		Usage:        spec.usage,
+		UsageText:    fmt.Sprintf("ip-fetcher %s {--stdout | --Path FILE} [--lines]", spec.name),
+		OnUsageError: onUsageError,
+		Flags:        providerFlags(),
+		Action: func(c *cli.Context) error {
+			path, stdout, err := resolveOutputTargets(c)
+			if err != nil {
+				return err
+			}
+
+			fetchData, fetchDoc, client := spec.newProvider()
+
+			if isEnvEnabled(spec.mockEnv) {
+				defer gock.Off()
+
+				for _, m := range spec.mocks {
+					u, _ := url.Parse(m.url)
+					gock.New(fmt.Sprintf("%s://%s", u.Scheme, u.Host)).
+						Get(u.Path).
+						Reply(http.StatusOK).
+						File(m.file)
+				}
+
+				gock.InterceptClient(client)
+			}
+
+			data, err := providerData(c, fetchData, fetchDoc)
+			if err != nil {
+				return err
+			}
+
+			return writeProviderOutputs(c, path, stdout, spec.name, spec.dataFile, spec.linesFile, data)
 		},
 	}
 }

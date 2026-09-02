@@ -10,7 +10,6 @@ import (
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/jonhadfield/ip-fetcher/internal/iplist"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -48,10 +47,7 @@ type checkpointList struct {
 
 // RawDoc is the combined representation of the two upstream responses, so both
 // families are stored in a single re-processable file.
-type RawDoc struct {
-	IPv4 []string `json:"ipv4"`
-	IPv6 []string `json:"ipv6"`
-}
+type RawDoc = iplist.Families
 
 type Doc struct {
 	IPv4Prefixes []netip.Prefix `json:"ipv4_prefixes" yaml:"ipv4_prefixes"`
@@ -98,7 +94,7 @@ func (u *Uptrends) FetchData() ([]byte, http.Header, int, error) {
 		return nil, headers, v6Status, err
 	}
 
-	combined, err := json.MarshalIndent(RawDoc{IPv4: v4, IPv6: v6}, "", " ")
+	combined, err := iplist.MarshalFamilies(v4, v6)
 	if err != nil {
 		return nil, headers, status, err
 	}
@@ -116,36 +112,10 @@ func (u *Uptrends) Fetch() (Doc, error) {
 }
 
 func ProcessData(data []byte) (Doc, error) {
-	var rawDoc RawDoc
-	if err := json.Unmarshal(data, &rawDoc); err != nil {
+	ipv4, ipv6, err := iplist.ParseFamilies(ShortName, data)
+	if err != nil {
 		return Doc{}, err
 	}
 
-	return Doc{
-		IPv4Prefixes: castPrefixes(rawDoc.IPv4),
-		IPv6Prefixes: castPrefixes(rawDoc.IPv6),
-	}, nil
-}
-
-// castPrefixes turns the bare addresses the checkpoint endpoints return into
-// host prefixes, tolerating a prefix should one ever appear.
-func castPrefixes(in []string) []netip.Prefix {
-	prefixes := make([]netip.Prefix, 0, len(in))
-
-	for _, entry := range in {
-		prefix, ok := iplist.ToPrefix(entry)
-		if !ok {
-			logrus.Warnf("failed to parse uptrends address: %s", entry)
-
-			continue
-		}
-
-		prefixes = append(prefixes, prefix)
-	}
-
-	if len(prefixes) == 0 {
-		return nil
-	}
-
-	return prefixes
+	return Doc{IPv4Prefixes: ipv4, IPv6Prefixes: ipv6}, nil
 }
