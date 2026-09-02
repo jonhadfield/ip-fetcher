@@ -18,6 +18,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/greensnow"
 	"github.com/jonhadfield/ip-fetcher/providers/hetzner"
 	"github.com/jonhadfield/ip-fetcher/providers/ibmcloud"
+	"github.com/jonhadfield/ip-fetcher/providers/tenable"
 	"github.com/jonhadfield/ip-fetcher/providers/tencent"
 	"github.com/jonhadfield/ip-fetcher/providers/zoom"
 	"github.com/jonhadfield/ip-fetcher/providers/zscaler"
@@ -41,6 +42,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/contabo"
 	"github.com/jonhadfield/ip-fetcher/providers/cymru"
 	"github.com/jonhadfield/ip-fetcher/providers/datadog"
+	"github.com/jonhadfield/ip-fetcher/providers/detectify"
 	"github.com/jonhadfield/ip-fetcher/providers/dshield"
 	"github.com/jonhadfield/ip-fetcher/providers/duckduckbot"
 	"github.com/jonhadfield/ip-fetcher/providers/emergingthreats"
@@ -105,6 +107,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchContabo, syncContaboData, contabo.ShortName, contaboFile, contabo.FullName, contabo.HostType, contabo.SourceURL},
 	{fetchCymru, syncCymruData, cymru.ShortName, cymruFile, cymru.FullName, cymru.HostType, cymru.SourceURL},
 	{fetchDatadog, syncDatadogData, datadog.ShortName, datadogFile, datadog.FullName, datadog.HostType, datadog.SourceURL},
+	{fetchDetectify, syncDetectifyData, detectify.ShortName, detectifyFile, detectify.FullName, detectify.HostType, detectify.SourceURL},
 	{fetchDshield, syncDshieldData, dshield.ShortName, dshieldFile, dshield.FullName, dshield.HostType, dshield.SourceURL},
 	{fetchDuckduckbot, syncDuckduckbotData, duckduckbot.ShortName, duckduckbotFile, duckduckbot.FullName, duckduckbot.HostType, duckduckbot.SourceURL},
 	{fetchEmergingthreats, syncEmergingthreatsData, emergingthreats.ShortName, emergingthreatsFile, emergingthreats.FullName, emergingthreats.HostType, emergingthreats.SourceURL},
@@ -139,6 +142,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchSpamhaus, syncSpamhausData, spamhaus.ShortName, spamhausFile, spamhaus.FullName, spamhaus.HostType, spamhaus.SourceURL},
 	{fetchStatuscake, syncStatuscakeData, statuscake.ShortName, statuscakeFile, statuscake.FullName, statuscake.HostType, statuscake.SourceURL},
 	{fetchStripe, syncStripeData, stripe.ShortName, stripeFile, stripe.FullName, stripe.HostType, stripe.SourceURL},
+	{fetchTenable, syncTenableData, tenable.ShortName, tenableFile, tenable.FullName, tenable.HostType, tenable.SourceURL},
 	{fetchTencent, syncTencentData, tencent.ShortName, tencentFile, tencent.FullName, tencent.HostType, tencent.SourceURL},
 	{fetchUpdown, syncUpdownData, updown.ShortName, updownFile, updown.FullName, updown.HostType, updown.SourceURL},
 	{fetchUptimerobot, syncUptimerobotData, uptimerobot.ShortName, uptimerobotFile, uptimerobot.FullName, uptimerobot.HostType, uptimerobot.SourceURL},

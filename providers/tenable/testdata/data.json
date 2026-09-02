@@ -1,0 +1,91 @@
+{
+    "syncToken": "1774955404.950218",
+    "createDate": "2026-03-31 11:10:04.950218+00:00",
+    "additionalInfo": "Please add *.cloud.tenable.com with the wildcard character (*) to allow cloud.tenable.com and all subdomains, such as sensor.cloud.tenable.com",
+    "prefixes": [
+        {
+            "ip_prefix": "13.115.104.128/25",
+            "region": "ap-northeast-1",
+            "network_border_group": "ap-northeast-1",
+            "service": "tenable-scanners",
+            "sensor_group": "AP Tokyo Cloud Scanners, APAC Cloud Scanners"
+        },
+        {
+            "ip_prefix": "35.73.219.128/25",
+            "region": "ap-northeast-1",
+            "network_border_group": "ap-northeast-1",
+            "service": "tenable-scanners",
+            "sensor_group": "AP Tokyo Cloud Scanners, APAC Cloud Scanners"
+        },
+        {
+            "ip_prefix": "13.213.79.0/24",
+            "region": "ap-southeast-1",
+            "network_border_group": "ap-southeast-1",
+            "service": "tenable-scanners",
+            "sensor_group": "AP Singapore Cloud Scanners, APAC Cloud Scanners"
+        },
+        {
+            "ip_prefix": "18.139.204.0/25",
+            "region": "ap-southeast-1",
+            "network_border_group": "ap-southeast-1",
+            "service": "tenable-scanners",
+            "sensor_group": "AP Singapore Cloud Scanners, APAC Cloud Scanners"
+        }
+    ],
+    "ipv6_prefixes": [
+        {
+            "ipv6_prefix": "2406:da14:e76:5b00::/56",
+            "region": "ap-northeast-1",
+            "network_border_group": "ap-northeast-1",
+            "service": "tenable-scanners",
+            "sensor_group": "AP Tokyo Cloud Scanners, APAC Cloud Scanners"
+        },
+        {
+            "ipv6_prefix": "2406:da18:844:7100::/56",
+            "region": "ap-southeast-1",
+            "network_border_group": "ap-southeast-1",
+            "service": "tenable-scanners",
+            "sensor_group": "AP Singapore Cloud Scanners, APAC Cloud Scanners"
+        },
+        {
+            "ipv6_prefix": "2406:da1c:20f:2f00::/56",
+            "region": "ap-southeast-2",
+            "network_border_group": "ap-southeast-2",
+            "service": "tenable-scanners",
+            "sensor_group": "AP Sydney Cloud Scanners, APAC Cloud Scanners"
+        }
+    ],
+    "additionalFedRAMPInfo": "Please add *.fedcloud.tenable.com with the wildcard character (*) to allow fedcloud.tenable.com and all subdomains, such as gov01.fedcloud.tenable.com",
+    "fedramp_prefixes": [
+        {
+            "ip_prefix": "52.61.37.84/32",
+            "region": "static",
+            "network_border_group": "static",
+            "service": "tenable-scanners",
+            "sensor_group": "tenable.io"
+        },
+        {
+            "ip_prefix": "15.200.117.191/32",
+            "region": "static",
+            "network_border_group": "static",
+            "service": "tenable-scanners",
+            "sensor_group": "tenable.io"
+        }
+    ],
+    "fedramp_ipv6_prefixes": [
+        {
+            "ipv6_prefix": "2606:4700:78::120:0:1200/128",
+            "region": "static",
+            "network_border_group": "static",
+            "service": "tenable-scanners",
+            "sensor_group": "tenable.io"
+        },
+        {
+            "ipv6_prefix": "2606:4700:78::120:0:1201/128",
+            "region": "static",
+            "network_border_group": "static",
+            "service": "tenable-scanners",
+            "sensor_group": "tenable.io"
+        }
+    ]
+}
