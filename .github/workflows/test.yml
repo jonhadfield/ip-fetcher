@@ -16,7 +16,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7
         with:
-          go-version: '1.25'
+          go-version: '1.26'
       - name: go test
         run: go test -covermode=atomic -coverprofile=coverage.txt -timeout=600s ./...
       - name: coverage
@@ -41,7 +41,7 @@ jobs:
       - name: govulncheck
         uses: golang/govulncheck-action@032d45514ae346b1db93c04b0c90b841c370344f # v1
         with:
-          go-version-input: '1.25'
+          go-version-input: '1.26'
           go-package: ./...
 
   # A separate job, not a step in `test`: SONAR_TOKEN is unavailable to
