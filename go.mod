@@ -2,6 +2,8 @@ module github.com/jonhadfield/ip-fetcher
 
 go 1.26.0
 
+toolchain go1.26.8
+
 require (
 	github.com/Danny-Dasilva/CycleTLS/cycletls v1.0.30
 	github.com/agiledragon/gomonkey/v2 v2.14.2
