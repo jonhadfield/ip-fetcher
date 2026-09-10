@@ -1,0 +1,75 @@
+[
+  {
+    "id": 1,
+    "serviceArea": "Exchange",
+    "serviceAreaDisplayName": "Exchange Online",
+    "urls": [
+      "outlook.cloud.microsoft",
+      "outlook.office.com",
+      "outlook.office365.com"
+    ],
+    "ips": [
+      "13.107.6.152/31",
+      "13.107.18.10/31",
+      "13.107.128.0/22",
+      "2603:1006::/40",
+      "2603:1016::/36"
+    ],
+    "tcpPorts": "80,443",
+    "expressRoute": true,
+    "category": "Optimize",
+    "required": true
+  },
+  {
+    "id": 31,
+    "serviceArea": "SharePoint",
+    "serviceAreaDisplayName": "SharePoint Online and OneDrive for Business",
+    "urls": [
+      "*.sharepoint.com"
+    ],
+    "ips": [
+      "13.107.136.0/22",
+      "40.108.128.0/17",
+      "2620:1ec:8f8::/46",
+      "2a01:111:f402::/48"
+    ],
+    "tcpPorts": "80,443",
+    "expressRoute": true,
+    "category": "Optimize",
+    "required": true
+  },
+  {
+    "id": 11,
+    "serviceArea": "Skype",
+    "serviceAreaDisplayName": "Microsoft Teams",
+    "urls": [
+      "teams.cloud.microsoft",
+      "teams.microsoft.com"
+    ],
+    "ips": [
+      "13.107.64.0/18",
+      "52.112.0.0/14",
+      "2603:1027::/48"
+    ],
+    "tcpPorts": "80,443",
+    "udpPorts": "3478,3479,3480,3481",
+    "expressRoute": true,
+    "category": "Optimize",
+    "required": true,
+    "notes": "Teams media traffic"
+  },
+  {
+    "id": 46,
+    "serviceArea": "Common",
+    "serviceAreaDisplayName": "Microsoft 365 Common and Office Online",
+    "urls": [
+      "*.office.com",
+      "www.microsoft365.com"
+    ],
+    "tcpPorts": "80,443",
+    "expressRoute": false,
+    "category": "Default",
+    "required": true,
+    "notes": "published as urls only, so carries no prefixes"
+  }
+]

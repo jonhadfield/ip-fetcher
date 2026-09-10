@@ -12,6 +12,7 @@ import (
 
 	"github.com/jonhadfield/ip-fetcher/providers/akamai"
 	"github.com/jonhadfield/ip-fetcher/providers/alibaba"
+	"github.com/jonhadfield/ip-fetcher/providers/okta"
 	"github.com/jonhadfield/ip-fetcher/providers/openai"
 	"github.com/jonhadfield/ip-fetcher/providers/ovh"
 
@@ -20,6 +21,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/ibmcloud"
 	"github.com/jonhadfield/ip-fetcher/providers/tenable"
 	"github.com/jonhadfield/ip-fetcher/providers/tencent"
+	"github.com/jonhadfield/ip-fetcher/providers/tor"
 	"github.com/jonhadfield/ip-fetcher/providers/zoom"
 	"github.com/jonhadfield/ip-fetcher/providers/zscaler"
 
@@ -47,6 +49,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/duckduckbot"
 	"github.com/jonhadfield/ip-fetcher/providers/emergingthreats"
 	"github.com/jonhadfield/ip-fetcher/providers/fastly"
+	"github.com/jonhadfield/ip-fetcher/providers/feodo"
 	"github.com/jonhadfield/ip-fetcher/providers/flyio"
 	"github.com/jonhadfield/ip-fetcher/providers/gcore"
 	"github.com/jonhadfield/ip-fetcher/providers/gcp"
@@ -60,6 +63,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/imperva"
 	"github.com/jonhadfield/ip-fetcher/providers/leaseweb"
 	"github.com/jonhadfield/ip-fetcher/providers/linode"
+	"github.com/jonhadfield/ip-fetcher/providers/m365"
 	"github.com/jonhadfield/ip-fetcher/providers/newrelic"
 	"github.com/jonhadfield/ip-fetcher/providers/oci"
 	"github.com/jonhadfield/ip-fetcher/providers/perplexitybot"
@@ -112,6 +116,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchDuckduckbot, syncDuckduckbotData, duckduckbot.ShortName, duckduckbotFile, duckduckbot.FullName, duckduckbot.HostType, duckduckbot.SourceURL},
 	{fetchEmergingthreats, syncEmergingthreatsData, emergingthreats.ShortName, emergingthreatsFile, emergingthreats.FullName, emergingthreats.HostType, emergingthreats.SourceURL},
 	{fetchFastly, syncFastlyData, fastly.ShortName, fastlyFile, fastly.FullName, fastly.HostType, fastly.SourceURL},
+	{fetchFeodo, syncFeodoData, feodo.ShortName, feodoFile, feodo.FullName, feodo.HostType, feodo.SourceURL},
 	{fetchFlyio, syncFlyioData, flyio.ShortName, flyioFile, flyio.FullName, flyio.HostType, flyio.SourceURL},
 	{fetchGCP, syncGCPData, gcp.ShortName, gcpFile, gcp.FullName, gcp.HostType, gcp.SourceURL},
 	{fetchGcore, syncGcoreData, gcore.ShortName, gcoreFile, gcore.FullName, gcore.HostType, gcore.SourceURL},
@@ -129,8 +134,10 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchLeaseweb, syncLeasewebData, leaseweb.ShortName, leasewebFile, leaseweb.FullName, leaseweb.HostType, leaseweb.SourceURL},
 	{fetchLinode, syncLinodeData, linode.ShortName, linodeFile, linode.FullName, linode.HostType, linode.SourceURL},
 	{fetchM247, syncM247Data, m247.ShortName, m247File, m247.FullName, m247.HostType, m247.SourceURL},
+	{fetchM365, syncM365Data, m365.ShortName, m365File, m365.FullName, m365.HostType, m365.SourceURL},
 	{fetchNewrelic, syncNewrelicData, newrelic.ShortName, newrelicFile, newrelic.FullName, newrelic.HostType, newrelic.SourceURL},
 	{fetchOCI, syncOCIData, oci.ShortName, ociFile, oci.FullName, oci.HostType, oci.SourceURL},
+	{fetchOkta, syncOktaData, okta.ShortName, oktaFile, okta.FullName, okta.HostType, okta.SourceURL},
 	{fetchOpenAI, syncOpenAIData, openai.ShortName, openaiFile, openai.FullName, openai.HostType, openai.SourceURL},
 	{fetchOVH, syncOVHData, ovh.ShortName, ovhFile, ovh.FullName, ovh.HostType, ovh.SourceURL},
 	{fetchPingdom, syncPingdomData, pingdom.ShortName, pingdomFile, pingdom.FullName, pingdom.HostType, pingdom.SourceURL},
@@ -144,6 +151,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchStripe, syncStripeData, stripe.ShortName, stripeFile, stripe.FullName, stripe.HostType, stripe.SourceURL},
 	{fetchTenable, syncTenableData, tenable.ShortName, tenableFile, tenable.FullName, tenable.HostType, tenable.SourceURL},
 	{fetchTencent, syncTencentData, tencent.ShortName, tencentFile, tencent.FullName, tencent.HostType, tencent.SourceURL},
+	{fetchTor, syncTorData, tor.ShortName, torFile, tor.FullName, tor.HostType, tor.SourceURL},
 	{fetchUpdown, syncUpdownData, updown.ShortName, updownFile, updown.FullName, updown.HostType, updown.SourceURL},
 	{fetchUptimerobot, syncUptimerobotData, uptimerobot.ShortName, uptimerobotFile, uptimerobot.FullName, uptimerobot.HostType, uptimerobot.SourceURL},
 	{fetchUptrends, syncUptrendsData, uptrends.ShortName, uptrendsFile, uptrends.FullName, uptrends.HostType, uptrends.SourceURL},
