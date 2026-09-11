@@ -53,6 +53,10 @@ func TestGenerateReadMeContentIncludesRegisteredProviders(t *testing.T) {
 		{"updown", "updown.json", "updown.io"},
 		{"tenable", "tenable.json", "Tenable Cloud Scanners"},
 		{"detectify", "detectify.txt", "Detectify"},
+		{"tor", "tor.txt", "Tor Exit Nodes"},
+		{"feodo", "feodo.txt", "abuse.ch Feodo Tracker"},
+		{"okta", "okta.json", "Okta"},
+		{"m365", "m365.json", "Microsoft 365"},
 	}
 
 	for _, tc := range cases {

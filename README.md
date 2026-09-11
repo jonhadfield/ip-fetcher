@@ -17,7 +17,7 @@ Please raise an issue if you have any issues or suggestions for new providers.
 
 ## supported providers
 
-66 sources:
+70 sources:
 
 | Category | Providers |
 | --- | --- |
@@ -26,15 +26,16 @@ Please raise an issue if you have any issues or suggestions for new providers.
 | **Crawler bots** | [AhrefsBot](https://api.ahrefs.com/v3/public/crawler-ip-ranges) · [Anthropic Crawler Bots](https://claude.com/crawling/bots.json) (ClaudeBot, Claude-User, Claude-SearchBot) · [Applebot](https://support.apple.com/en-us/119829) · [Bingbot](https://www.bing.com/webmasters/help/which-crawlers-does-bing-use-8c184ec0) · [DuckDuckBot](https://duckduckgo.com/duckduckbot) · [Googlebot](https://developers.google.com/search/docs/crawling-indexing/googlebot) · [Google Special Crawlers](https://developers.google.com/search/docs/crawling-indexing/verifying-googlebot) · [Google User-Triggered Fetchers](https://developers.google.com/search/docs/crawling-indexing/verifying-googlebot) · [OpenAI Bots](https://platform.openai.com/docs/bots) (GPTBot, OAI-SearchBot, ChatGPT-User)[^stale] · [PerplexityBot](https://www.perplexity.com/perplexitybot.json)[^stale] |
 | **Uptime & monitoring** | [Better Stack](https://betterstack.com/docs/uptime/ip-addresses/) · [Checkly](https://www.checklyhq.com/docs/monitoring/allowlisting/) · [Datadog](https://docs.datadoghq.com/api/latest/ip-ranges/) · [Grafana Synthetic Monitoring](https://grafana.com/docs/grafana-cloud/testing/synthetic-monitoring/create-checks/public-probes/) · [New Relic Synthetics](https://docs.newrelic.com/docs/synthetics/synthetic-monitoring/administration/synthetic-public-minion-ips/) · [Pingdom](https://www.pingdom.com/) · [Sentry Uptime](https://docs.sentry.io/security-legal-pii/security/ip-ranges/) · [Site24x7](https://www.site24x7.com/multi-location-web-site-monitoring.html) · [StatusCake](https://www.statuscake.com/) · [updown.io](https://updown.io/api) · [UptimeRobot](https://uptimerobot.com/help/locations/) · [Uptrends](https://www.uptrends.com/support/kb/account/ip-addresses-for-whitelisting) |
 | **Vulnerability scanners** | [Detectify](https://docs.detectify.com/network-setup/scanner-ip-addresses) · [Tenable Cloud Scanners](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/CloudSensors.htm)[^stale] |
-| **Threat intelligence** | [AbuseIPDB](https://www.abuseipdb.com/) · [Blocklist.de](https://www.blocklist.de/en/index.html) · [CINS Army List](https://cinsscore.com/) · [DShield](https://www.dshield.org/) · [Emerging Threats](https://rules.emergingthreats.net/blockrules/) · [GreenSnow](https://greensnow.co/) · [Spamhaus DROP](https://www.spamhaus.org/blocklists/do-not-route-or-peer/) · [Team Cymru Bogons](https://www.team-cymru.com/bogon-reference) |
-| **Other services** | [Atlassian](https://ip-ranges.atlassian.com/) · [GitHub](https://www.github.com) · [Google](https://www.google.com/) · [iCloud Private Relay](https://support.apple.com/en-us/HT212614) · [MaxMind GeoIP](https://www.maxmind.com) · [Stripe](https://docs.stripe.com/ips) · [Zoom](https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0060548) |
+| **Threat intelligence** | [abuse.ch Feodo Tracker](https://feodotracker.abuse.ch/blocklist/) · [AbuseIPDB](https://www.abuseipdb.com/) · [Blocklist.de](https://www.blocklist.de/en/index.html) · [CINS Army List](https://cinsscore.com/) · [DShield](https://www.dshield.org/) · [Emerging Threats](https://rules.emergingthreats.net/blockrules/) · [GreenSnow](https://greensnow.co/) · [Spamhaus DROP](https://www.spamhaus.org/blocklists/do-not-route-or-peer/) · [Team Cymru Bogons](https://www.team-cymru.com/bogon-reference) |
+| **Anonymising networks** | [iCloud Private Relay](https://support.apple.com/en-us/HT212614) · [Tor Exit Nodes](https://check.torproject.org/) |
+| **Other services** | [Atlassian](https://ip-ranges.atlassian.com/) · [GitHub](https://www.github.com) · [Google](https://www.google.com/) · [MaxMind GeoIP](https://www.maxmind.com) · [Microsoft 365](https://learn.microsoft.com/en-us/microsoft-365/enterprise/microsoft-365-ip-web-service) · [Okta](https://help.okta.com/en-us/content/topics/security/ip-address-allow-listing.htm) · [Stripe](https://docs.stripe.com/ips) · [Zoom](https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0060548) |
 
 Plus a **Custom URL** source, for any list not covered above.
 
 [^stale]: These feeds are still served and still parse, but their publishers
 have not regenerated them recently. As of 2026-08-29 the `creationTime` in the
 OpenAI document was 2025-10-30 and PerplexityBot's was 2025-02-07, and as of
-2026-09-02 Tenable's `createDate` was 2026-03-31 - a much shorter gap than the
+2026-09-02 Tenable's `createDate` was 2026-03-31 — a much shorter gap than the
 crawler feeds, and a scanner list changes less often, but still worth a look
 before relying on it. The prefixes may no longer reflect the addresses those
 services use, so treat them with caution when allowlisting. Each provider

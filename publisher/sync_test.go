@@ -92,6 +92,10 @@ func TestSyncProviderDataWritesProviderFile(t *testing.T) {
 		{"uptrends", syncUptrendsData, uptrendsFile},
 		{"tenable", syncTenableData, tenableFile},
 		{"detectify", syncDetectifyData, detectifyFile},
+		{"tor", syncTorData, torFile},
+		{"feodo", syncFeodoData, feodoFile},
+		{"okta", syncOktaData, oktaFile},
+		{"m365", syncM365Data, m365File},
 	}
 
 	for _, tc := range cases {
