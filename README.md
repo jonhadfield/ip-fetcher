@@ -95,10 +95,10 @@ for a provider's options.
 | ------ | ----------- |
 | `--stdout`, `-s` | write the prefixes to stdout |
 | `--Path`, `-p` | write the prefixes to this path; if it is an existing directory then a provider specific default filename is used |
-| `--format`, `-f` | output format, on providers that support it: `json` (default), `yaml`, `lines`, `csv` |
-| `--lines` | shorthand for `--format lines` (newline separated prefixes) |
+| `--format`, `-f` | output format, on the nine providers that offer it: `json` (default), `yaml`, `lines`, `csv` |
+| `--lines` | newline separated prefixes; offered by every provider except `abuseipdb`, `akamai`, `cloudflare`, `geoip`, `github` and `url` |
 
-At least one of `--stdout` and `--Path` must be given.
+At least one of `--stdout` and `--Path` must be given. Run `ip-fetcher <provider> --help` for the options a given provider takes.
 
 #### examples
 
