@@ -62,10 +62,17 @@ func (p *Publisher) Run() error {
 	fs := memfs.New()
 	storer := memory.NewStorage()
 
+	// Depth 1: we only ever add a commit on top of the current tip, so the
+	// history is dead weight - and with memory.NewStorage it is dead weight held
+	// in RAM. Measured against the real publish target (6653 commits, 18MiB of
+	// history), a full clone holds 2718MiB of heap against 70MiB for a shallow
+	// one. That 2.7GiB was OOM-killing the publisher under a container memory
+	// limit. Pushing from a shallow clone is verified to leave remote history
+	// intact.
 	repo, err := git.Clone(storer, fs, &git.CloneOptions{Auth: &http.BasicAuth{
 		Username: "-",
 		Password: p.GitHubToken,
-	}, URL: p.GitHubRepoURL})
+	}, URL: p.GitHubRepoURL, Depth: 1})
 	if err != nil {
 		return fmt.Errorf("failed to clone repo: %w", err)
 	}
