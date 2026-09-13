@@ -96,9 +96,14 @@ for a provider's options.
 | `--stdout`, `-s` | write the prefixes to stdout |
 | `--Path`, `-p` | write the prefixes to this path; if it is an existing directory then a provider specific default filename is used |
 | `--format`, `-f` | output format, on the nine providers that offer it: `json` (default), `yaml`, `lines`, `csv` |
-| `--lines` | newline separated prefixes; offered by every provider except `abuseipdb`, `akamai`, `cloudflare`, `geoip`, `github` and `url` |
+| `--lines` | newline separated prefixes, where offered |
 
-At least one of `--stdout` and `--Path` must be given. Run `ip-fetcher <provider> --help` for the options a given provider takes.
+At least one of `--stdout` and `--Path` must be given.
+
+`--format` is offered by nine providers: atlassian, bunny, cdn77, datadog,
+fastly, gcp, geoip, imperva and stripe. `--lines` is offered by every provider
+except abuseipdb, akamai, cloudflare, geoip, github and url. Run
+`ip-fetcher <provider> --help` to see what a given provider takes.
 
 #### examples
 
