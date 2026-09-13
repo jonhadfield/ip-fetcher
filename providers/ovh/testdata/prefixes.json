@@ -1,47 +1,17 @@
 {
   "status": "ok",
-  "status_message": "Query was successful",
+  "status_code": 200,
   "data": {
-    "ipv4_prefixes": [
+    "prefixes": [
       {
-        "prefix": "192.0.2.0/24",
-        "ip": "192.0.2.0",
-        "cidr": 16,
-        "roa_status": "Valid",
-        "name": "DE-HETZNER-20120425",
-        "description": "Hetzner Online GmbH",
-        "country_code": "DE",
-        "parent": {
-          "prefix": "192.0.2.0/24",
-          "ip": "192.0.2.0",
-          "cidr": 16,
-          "rir_name": "RIPE",
-          "allocation_status": "unknown"
-        }
+        "prefix": "192.0.2.0/24"
+      },
+      {
+        "prefix": "2001:db8::/32"
       }
     ],
-    "ipv6_prefixes": [
-      {
-        "prefix": "2001:db8::/32",
-        "ip": "2001:db8::",
-        "cidr": 32,
-        "roa_status": "Valid",
-        "name": null,
-        "description": null,
-        "country_code": null,
-        "parent": {
-          "prefix": null,
-          "ip": null,
-          "cidr": null,
-          "rir_name": null,
-          "allocation_status": "unknown"
-        }
-      }
-    ]
-  },
-  "@meta": {
-    "time_zone": "UTC",
-    "api_version": 1,
-    "execution_time": "53.15 ms"
+    "query_starttime": "2026-09-13T00:00:00",
+    "query_endtime": "2026-09-13T08:00:00",
+    "resource": ""
   }
 }
