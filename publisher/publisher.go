@@ -20,6 +20,10 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+// maxConcurrentFetches caps how many provider downloads are in flight at once.
+// It bounds peak memory rather than throughput: see the comment in Run.
+const maxConcurrentFetches = 4
+
 type Publisher struct {
 	GitHubToken   string
 	GitHubRepoURL string
@@ -79,7 +83,13 @@ func (p *Publisher) Run() error {
 
 	results := make([]fetchResult, len(providers))
 
+	// Cap concurrent fetches. Every result is retained in results until the
+	// sequential sync phase below, so an unbounded fan-out holds all 61 provider
+	// payloads in memory at once, on top of the in-memory git clone. That peak
+	// exceeded 1GiB and was OOM-killing the publisher in Kubernetes. Fetches are
+	// I/O-bound, so a small budget costs little wall-clock time.
 	var g errgroup.Group
+	g.SetLimit(maxConcurrentFetches)
 
 	for i, provider := range providers {
 		g.Go(func() error {
