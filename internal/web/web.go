@@ -50,6 +50,9 @@ const (
 
 func NewHTTPClient() *retryablehttp.Client {
 	rc := &http.Client{Transport: &http.Transport{
+		// Honour HTTPS_PROXY, HTTP_PROXY and NO_PROXY (and their lowercase
+		// forms). A hand-built Transport uses no proxy unless told to.
+		Proxy:               http.ProxyFromEnvironment,
 		MaxIdleConns:        defaultMaxIdleConns,
 		MaxIdleConnsPerHost: defaultMaxConnsPerHost,
 		IdleConnTimeout:     defaultIdleConnTimeout,

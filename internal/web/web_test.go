@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"reflect"
 	"testing"
 	"time"
 
@@ -264,6 +265,18 @@ func TestHTTPGet(t *testing.T) {
 	require.Equal(t, http.StatusOK, status)
 	require.Equal(t, "hello world", string(b))
 	require.Equal(t, "World", headers.Get("Hello"))
+}
+
+// TestNewHTTPClientHonoursProxyEnv compares the Proxy func itself rather than
+// what it returns: net/http reads the proxy variables once per process, so
+// setting HTTPS_PROXY inside a test cannot be relied on to take effect.
+func TestNewHTTPClientHonoursProxyEnv(t *testing.T) {
+	c := web.NewHTTPClient()
+
+	tr, ok := c.HTTPClient.Transport.(*http.Transport)
+	require.True(t, ok)
+	require.NotNil(t, tr.Proxy)
+	require.Equal(t, reflect.ValueOf(http.ProxyFromEnvironment).Pointer(), reflect.ValueOf(tr.Proxy).Pointer())
 }
 
 func TestMaskSecrets(t *testing.T) {
