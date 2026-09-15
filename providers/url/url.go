@@ -78,48 +78,9 @@ type HTTPFile struct {
 	Debug  bool
 }
 
+// FetchPrefixesAsText is FetchPrefixes with the prefixes rendered as strings.
 func (c *Client) FetchPrefixesAsText(requests []Request) ([]string, error) {
-	if c.Debug {
-		logrus.SetLevel(logrus.DebugLevel)
-	}
-
-	results := make([]URLResponse, len(requests))
-
-	var mu sync.Mutex
-	var fetchErrors []string
-
-	var g errgroup.Group
-
-	for i, req := range requests {
-		g.Go(func() error {
-			response, err := c.get(req.URL, req.Header)
-			if err != nil {
-				mu.Lock()
-				fetchErrors = append(fetchErrors, err.Error())
-				mu.Unlock()
-
-				logrus.Debugf("%s | %s", pflog.GetFunctionName(), err.Error())
-
-				return nil //nolint:nilerr
-			}
-
-			results[i] = response
-
-			return nil
-		})
-	}
-
-	_ = g.Wait()
-
-	// Filter out zero-value responses (failed fetches)
-	var responses []URLResponse
-	for _, r := range results {
-		if r.Data != nil {
-			responses = append(responses, r)
-		}
-	}
-
-	pum, err := GetPrefixURLMapFromURLResponses(&responses)
+	pum, err := c.FetchPrefixes(requests)
 	if err != nil {
 		return nil, err
 	}
@@ -167,12 +128,19 @@ func (c *Client) FetchPrefixes(requests []Request) (map[netip.Prefix][]string, e
 
 	results := make([]URLResponse, len(requests))
 
+	var mu sync.Mutex
+	var fetchErrors []error
+
 	var g errgroup.Group
 
 	for i, req := range requests {
 		g.Go(func() error {
 			response, err := c.get(req.URL, req.Header)
 			if err != nil {
+				mu.Lock()
+				fetchErrors = append(fetchErrors, err)
+				mu.Unlock()
+
 				logrus.Debugf("%s | %s", pflog.GetFunctionName(), err.Error())
 
 				return nil //nolint:nilerr
@@ -192,6 +160,10 @@ func (c *Client) FetchPrefixes(requests []Request) (map[netip.Prefix][]string, e
 		if r.Data != nil {
 			responses = append(responses, r)
 		}
+	}
+
+	if len(responses) == 0 && len(fetchErrors) > 0 {
+		return nil, noResponsesError(fetchErrors)
 	}
 
 	prefixes, err := GetPrefixURLMapFromURLResponses(&responses)
@@ -301,6 +273,13 @@ func ReadRawPrefixesFromURLResponse(response URLResponse) ([]netip.Prefix, error
 	return prefixes, err
 }
 
+// noResponsesError reports that every fetch failed, carrying why. A partial
+// failure still returns the prefixes that were fetched, so this is only for
+// the case with nothing to return, where the reasons are all a caller has.
+func noResponsesError(fetchErrors []error) error {
+	return fmt.Errorf("no responses: %w", errors.Join(fetchErrors...))
+}
+
 func GetPrefixURLMapFromURLResponses(responses *[]URLResponse) (map[netip.Prefix][]string, error) {
 	funcName := pflog.GetFunctionName()
 
@@ -352,19 +331,22 @@ func (c *Client) get(url *url.URL, header http.Header) (URLResponse, error) {
 		nil,
 		web.DefaultRequestTimeout,
 	)
+	// A request that fails before any response arrives - a proxy, TLS or DNS
+	// failure - has no status, so report the error itself; checking only the
+	// status turned every one of them into "status: 0".
 	if err != nil {
-		logrus.Debug(err.Error())
+		return URLResponse{}, fmt.Errorf("failed to get %s: %w", url.String(), err)
 	}
 
 	if status < http.StatusOK || status >= http.StatusMultipleChoices {
-		return URLResponse{}, fmt.Errorf("failed to get: %s status: %d", url.String(), status)
+		return URLResponse{}, fmt.Errorf("failed to get %s: status %d", url.String(), status)
 	}
 
 	return URLResponse{
 		url:    url.String(),
 		Data:   data,
 		status: status,
-	}, err
+	}, nil
 }
 
 func FetchURLResponse(client *retryablehttp.Client, url string) (URLResponse, error) {
