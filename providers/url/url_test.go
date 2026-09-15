@@ -90,3 +90,65 @@ func TestFetchUrlsWithFailedRequest(t *testing.T) {
 	require.Error(t, err)
 	require.Empty(t, responses)
 }
+
+// TestFetchPrefixesReportsWhyEveryFetchFailed covers a request that fails
+// before any response arrives, which used to surface only as "no responses"
+// with the cause, here a refused connection, logged at debug and dropped.
+func TestFetchPrefixesReportsWhyEveryFetchFailed(t *testing.T) {
+	u, err := url.Parse("http://127.0.0.1:1/files/ips.net")
+	require.NoError(t, err)
+
+	c := mUrl.New()
+	c.HTTPClient.RetryMax = 0
+
+	_, err = c.FetchPrefixes([]mUrl.Request{{URL: u}})
+	require.ErrorContains(t, err, "no responses")
+	require.ErrorContains(t, err, "failed to get http://127.0.0.1:1/files/ips.net")
+	require.ErrorContains(t, err, "connection refused")
+
+	_, err = c.FetchPrefixesAsText([]mUrl.Request{{URL: u}})
+	require.ErrorContains(t, err, "connection refused")
+}
+
+func TestFetchPrefixesReportsStatus(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://www.example.com").
+		Get("/files/blocked.net").
+		Reply(http.StatusForbidden)
+
+	u, err := url.Parse("https://www.example.com/files/blocked.net")
+	require.NoError(t, err)
+
+	c := mUrl.New()
+	gock.InterceptClient(c.HTTPClient.HTTPClient)
+
+	_, err = c.FetchPrefixes([]mUrl.Request{{URL: u}})
+	require.ErrorContains(t, err, "failed to get https://www.example.com/files/blocked.net: status 403")
+}
+
+// TestFetchPrefixesKeepsPartialResults checks that one failed URL does not
+// discard the prefixes fetched from the others.
+func TestFetchPrefixesKeepsPartialResults(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://www.example.com").
+		Get("/files/ips.net").
+		Reply(http.StatusOK).
+		File("testdata/ip-file-1.txt")
+	gock.New("https://www.example.com").
+		Get("/files/blocked.net").
+		Reply(http.StatusForbidden)
+
+	good, err := url.Parse("https://www.example.com/files/ips.net")
+	require.NoError(t, err)
+	bad, err := url.Parse("https://www.example.com/files/blocked.net")
+	require.NoError(t, err)
+
+	c := mUrl.New()
+	gock.InterceptClient(c.HTTPClient.HTTPClient)
+
+	prefixes, err := c.FetchPrefixes([]mUrl.Request{{URL: good}, {URL: bad}})
+	require.NoError(t, err)
+	require.Len(t, prefixes, 4)
+}
