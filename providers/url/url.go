@@ -78,52 +78,9 @@ type HTTPFile struct {
 	Debug  bool
 }
 
+// FetchPrefixesAsText is FetchPrefixes with the prefixes rendered as strings.
 func (c *Client) FetchPrefixesAsText(requests []Request) ([]string, error) {
-	if c.Debug {
-		logrus.SetLevel(logrus.DebugLevel)
-	}
-
-	results := make([]URLResponse, len(requests))
-
-	var mu sync.Mutex
-	var fetchErrors []error
-
-	var g errgroup.Group
-
-	for i, req := range requests {
-		g.Go(func() error {
-			response, err := c.get(req.URL, req.Header)
-			if err != nil {
-				mu.Lock()
-				fetchErrors = append(fetchErrors, err)
-				mu.Unlock()
-
-				logrus.Debugf("%s | %s", pflog.GetFunctionName(), err.Error())
-
-				return nil //nolint:nilerr
-			}
-
-			results[i] = response
-
-			return nil
-		})
-	}
-
-	_ = g.Wait()
-
-	// Filter out zero-value responses (failed fetches)
-	var responses []URLResponse
-	for _, r := range results {
-		if r.Data != nil {
-			responses = append(responses, r)
-		}
-	}
-
-	if len(responses) == 0 && len(fetchErrors) > 0 {
-		return nil, noResponsesError(fetchErrors)
-	}
-
-	pum, err := GetPrefixURLMapFromURLResponses(&responses)
+	pum, err := c.FetchPrefixes(requests)
 	if err != nil {
 		return nil, err
 	}
