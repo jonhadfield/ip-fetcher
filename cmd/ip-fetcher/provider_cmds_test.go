@@ -30,6 +30,14 @@ func TestProviderCmds(t *testing.T) {
 		{"feodo", "IP_FETCHER_MOCK_FEODO", "feodo.txt", "feodo-prefixes.txt", "185.117.90.6"},
 		{"okta", "IP_FETCHER_MOCK_OKTA", "okta.json", "okta-prefixes.txt", "35.247.69.17"},
 		{"m365", "IP_FETCHER_MOCK_M365", "m365.json", "m365-prefixes.txt", "13.107.6.152"},
+		{"amazonbot", "IP_FETCHER_MOCK_AMAZONBOT", "amazonbot.json", "amazonbot-prefixes.txt", "3.81.245.78"},
+		{"ccbot", "IP_FETCHER_MOCK_CCBOT", "ccbot.json", "ccbot-prefixes.txt", "3.41.188.32"},
+		{"cachefly", "IP_FETCHER_MOCK_CACHEFLY", "cachefly.txt", "cachefly-prefixes.txt", "205.234.175.0"},
+		{"salesforce", "IP_FETCHER_MOCK_SALESFORCE", "salesforce.json", "salesforce-prefixes.txt", "145.224.193.0"},
+		{"huawei", "IP_FETCHER_MOCK_HUAWEI", "huawei.json", "huawei-prefixes.txt", "192.0.2.0"},
+		{"mullvad", "IP_FETCHER_MOCK_MULLVAD", "mullvad.json", "mullvad-prefixes.txt", "103.124.165.2"},
+		{"gitlab", "IP_FETCHER_MOCK_GITLAB", "gitlab.txt", "gitlab-prefixes.txt", "34.74.90.64"},
+		{"intercom", "IP_FETCHER_MOCK_INTERCOM", "intercom.json", "intercom-prefixes.txt", "34.197.76.213"},
 	}
 
 	for _, tc := range cases {

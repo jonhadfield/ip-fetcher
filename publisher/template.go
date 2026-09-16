@@ -7,14 +7,17 @@ import (
 	"time"
 
 	"github.com/jonhadfield/ip-fetcher/providers/m247"
+	"github.com/jonhadfield/ip-fetcher/providers/mullvad"
 	"github.com/jonhadfield/ip-fetcher/providers/scaleway"
 	"github.com/jonhadfield/ip-fetcher/providers/vultr"
 
 	"github.com/jonhadfield/ip-fetcher/providers/akamai"
 	"github.com/jonhadfield/ip-fetcher/providers/alibaba"
+	"github.com/jonhadfield/ip-fetcher/providers/amazonbot"
 	"github.com/jonhadfield/ip-fetcher/providers/okta"
 	"github.com/jonhadfield/ip-fetcher/providers/openai"
 	"github.com/jonhadfield/ip-fetcher/providers/ovh"
+	"github.com/jonhadfield/ip-fetcher/providers/salesforce"
 
 	"github.com/jonhadfield/ip-fetcher/providers/greensnow"
 	"github.com/jonhadfield/ip-fetcher/providers/hetzner"
@@ -37,6 +40,8 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/betterstack"
 	"github.com/jonhadfield/ip-fetcher/providers/blocklistde"
 	"github.com/jonhadfield/ip-fetcher/providers/bunny"
+	"github.com/jonhadfield/ip-fetcher/providers/cachefly"
+	"github.com/jonhadfield/ip-fetcher/providers/ccbot"
 	"github.com/jonhadfield/ip-fetcher/providers/cdn77"
 	"github.com/jonhadfield/ip-fetcher/providers/checkly"
 	"github.com/jonhadfield/ip-fetcher/providers/cinsscore"
@@ -54,13 +59,16 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/gcore"
 	"github.com/jonhadfield/ip-fetcher/providers/gcp"
 	"github.com/jonhadfield/ip-fetcher/providers/github"
+	"github.com/jonhadfield/ip-fetcher/providers/gitlab"
 	"github.com/jonhadfield/ip-fetcher/providers/google"
 	"github.com/jonhadfield/ip-fetcher/providers/googlebot"
 	"github.com/jonhadfield/ip-fetcher/providers/googlesc"
 	"github.com/jonhadfield/ip-fetcher/providers/googleutf"
 	"github.com/jonhadfield/ip-fetcher/providers/grafana"
+	"github.com/jonhadfield/ip-fetcher/providers/huawei"
 	"github.com/jonhadfield/ip-fetcher/providers/icloudpr"
 	"github.com/jonhadfield/ip-fetcher/providers/imperva"
+	"github.com/jonhadfield/ip-fetcher/providers/intercom"
 	"github.com/jonhadfield/ip-fetcher/providers/leaseweb"
 	"github.com/jonhadfield/ip-fetcher/providers/linode"
 	"github.com/jonhadfield/ip-fetcher/providers/m365"
@@ -96,6 +104,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchAhrefs, syncAhrefsData, ahrefs.ShortName, ahrefsFile, ahrefs.FullName, ahrefs.HostType, ahrefs.SourceURL},
 	{fetchAkamai, syncAkamaiData, akamai.ShortName, akamaiFile, akamai.FullName, akamai.HostType, akamai.SourceURL},
 	{fetchAlibaba, syncAlibabaData, alibaba.ShortName, alibabaFile, alibaba.FullName, alibaba.HostType, alibaba.SourceURL},
+	{fetchAmazonbot, syncAmazonbotData, amazonbot.ShortName, amazonbotFile, amazonbot.FullName, amazonbot.HostType, amazonbot.SourceURL},
 	{fetchAnthropic, syncAnthropicData, anthropic.ShortName, anthropicFile, anthropic.FullName, anthropic.HostType, anthropic.SourceURL},
 	{fetchApplebot, syncApplebotData, applebot.ShortName, applebotFile, applebot.FullName, applebot.HostType, applebot.SourceURL},
 	{fetchAtlassian, syncAtlassianData, atlassian.ShortName, atlassianFile, atlassian.FullName, atlassian.HostType, atlassian.SourceURL},
@@ -104,6 +113,8 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchBlocklistde, syncBlocklistdeData, blocklistde.ShortName, blocklistdeFile, blocklistde.FullName, blocklistde.HostType, blocklistde.SourceURL},
 	{fetchBetterstack, syncBetterstackData, betterstack.ShortName, betterstackFile, betterstack.FullName, betterstack.HostType, betterstack.SourceURL},
 	{fetchBunny, syncBunnyData, bunny.ShortName, bunnyFile, bunny.FullName, bunny.HostType, bunny.SourceURL},
+	{fetchCacheFly, syncCacheFlyData, cachefly.ShortName, cacheflyFile, cachefly.FullName, cachefly.HostType, cachefly.SourceURL},
+	{fetchCCBot, syncCCBotData, ccbot.ShortName, ccbotFile, ccbot.FullName, ccbot.HostType, ccbot.SourceURL},
 	{fetchCDN77, syncCDN77Data, cdn77.ShortName, cdn77File, cdn77.FullName, cdn77.HostType, cdn77.SourceURL},
 	{fetchCinsscore, syncCinsscoreData, cinsscore.ShortName, cinsscoreFile, cinsscore.FullName, cinsscore.HostType, cinsscore.SourceURL},
 	{fetchCheckly, syncChecklyData, checkly.ShortName, checklyFile, checkly.FullName, checkly.HostType, checkly.SourceURL},
@@ -121,6 +132,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchGCP, syncGCPData, gcp.ShortName, gcpFile, gcp.FullName, gcp.HostType, gcp.SourceURL},
 	{fetchGcore, syncGcoreData, gcore.ShortName, gcoreFile, gcore.FullName, gcore.HostType, gcore.SourceURL},
 	{fetchGitHub, syncGitHubData, github.ShortName, githubFile, github.FullName, github.HostType, github.SourceURL},
+	{fetchGitLab, syncGitLabData, gitlab.ShortName, gitlabFile, gitlab.FullName, gitlab.HostType, gitlab.SourceURL},
 	{fetchGoogle, syncGoogleData, google.ShortName, googleFile, google.FullName, google.HostType, google.SourceURL},
 	{fetchGooglebot, syncGooglebotData, googlebot.ShortName, googlebotFile, googlebot.FullName, googlebot.HostType, googlebot.SourceURL},
 	{fetchGoogleSC, syncGoogleSCData, googlesc.ShortName, googlescFile, googlesc.FullName, googlesc.HostType, googlesc.SourceURL},
@@ -128,13 +140,16 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchGrafana, syncGrafanaData, grafana.ShortName, grafanaFile, grafana.FullName, grafana.HostType, grafana.SourceURL},
 	{fetchGreensnow, syncGreensnowData, greensnow.ShortName, greensnowFile, greensnow.FullName, greensnow.HostType, greensnow.SourceURL},
 	{fetchHetzner, syncHetznerData, hetzner.ShortName, hetznerFile, hetzner.FullName, hetzner.HostType, hetzner.SourceURL},
+	{fetchHuawei, syncHuaweiData, huawei.ShortName, huaweiFile, huawei.FullName, huawei.HostType, huawei.SourceURL},
 	{fetchIBMCloud, syncIBMCloudData, ibmcloud.ShortName, ibmcloudFile, ibmcloud.FullName, ibmcloud.HostType, ibmcloud.SourceURL},
 	{fetchICloudPR, syncICloudPRData, icloudpr.ShortName, icloudprFile, icloudpr.FullName, icloudpr.HostType, icloudpr.SourceURL},
 	{fetchImperva, syncImpervaData, imperva.ShortName, impervaFile, imperva.FullName, imperva.HostType, imperva.SourceURL},
+	{fetchIntercom, syncIntercomData, intercom.ShortName, intercomFile, intercom.FullName, intercom.HostType, intercom.SourceURL},
 	{fetchLeaseweb, syncLeasewebData, leaseweb.ShortName, leasewebFile, leaseweb.FullName, leaseweb.HostType, leaseweb.SourceURL},
 	{fetchLinode, syncLinodeData, linode.ShortName, linodeFile, linode.FullName, linode.HostType, linode.SourceURL},
 	{fetchM247, syncM247Data, m247.ShortName, m247File, m247.FullName, m247.HostType, m247.SourceURL},
 	{fetchM365, syncM365Data, m365.ShortName, m365File, m365.FullName, m365.HostType, m365.SourceURL},
+	{fetchMullvad, syncMullvadData, mullvad.ShortName, mullvadFile, mullvad.FullName, mullvad.HostType, mullvad.SourceURL},
 	{fetchNewrelic, syncNewrelicData, newrelic.ShortName, newrelicFile, newrelic.FullName, newrelic.HostType, newrelic.SourceURL},
 	{fetchOCI, syncOCIData, oci.ShortName, ociFile, oci.FullName, oci.HostType, oci.SourceURL},
 	{fetchOkta, syncOktaData, okta.ShortName, oktaFile, okta.FullName, okta.HostType, okta.SourceURL},
@@ -143,6 +158,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchPingdom, syncPingdomData, pingdom.ShortName, pingdomFile, pingdom.FullName, pingdom.HostType, pingdom.SourceURL},
 	{fetchPerplexitybot, syncPerplexitybotData, perplexitybot.ShortName, perplexitybotFile, perplexitybot.FullName, perplexitybot.HostType, perplexitybot.SourceURL},
 	{fetchRender, syncRenderData, render.ShortName, renderFile, render.FullName, render.HostType, render.SourceURL},
+	{fetchSalesforce, syncSalesforceData, salesforce.ShortName, salesforceFile, salesforce.FullName, salesforce.HostType, salesforce.SourceURL},
 	{fetchScaleway, syncScalewayData, scaleway.ShortName, scalewayFile, scaleway.FullName, scaleway.HostType, scaleway.SourceURL},
 	{fetchSentry, syncSentryData, sentry.ShortName, sentryFile, sentry.FullName, sentry.HostType, sentry.SourceURL},
 	{fetchSite24x7, syncSite24x7Data, site24x7.ShortName, site24x7File, site24x7.FullName, site24x7.HostType, site24x7.SourceURL},

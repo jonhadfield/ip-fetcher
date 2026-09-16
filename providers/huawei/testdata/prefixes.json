@@ -1,0 +1,17 @@
+{
+  "status": "ok",
+  "status_code": 200,
+  "data": {
+    "prefixes": [
+      {
+        "prefix": "192.0.2.0/24"
+      },
+      {
+        "prefix": "2a01:4f8::/32"
+      }
+    ],
+    "query_starttime": "2026-09-13T00:00:00",
+    "query_endtime": "2026-09-13T08:00:00",
+    "resource": ""
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "ip_ranges": [
+    {
+      "range": "54.217.125.63/32",
+      "region": "EU",
+      "service": "INTERCOM-OUTBOUND"
+    },
+    {
+      "range": "54.246.173.113/32",
+      "region": "EU",
+      "service": "INTERCOM-OUTBOUND"
+    }
+  ]
+}

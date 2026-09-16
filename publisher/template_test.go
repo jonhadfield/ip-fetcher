@@ -57,6 +57,14 @@ func TestGenerateReadMeContentIncludesRegisteredProviders(t *testing.T) {
 		{"feodo", "feodo.txt", "abuse.ch Feodo Tracker"},
 		{"okta", "okta.json", "Okta"},
 		{"m365", "m365.json", "Microsoft 365"},
+		{"amazonbot", "amazonbot.json", "Amazonbot"},
+		{"ccbot", "ccbot.json", "Common Crawl CCBot"},
+		{"cachefly", "cachefly.txt", "CacheFly"},
+		{"salesforce", "salesforce.json", "Salesforce"},
+		{"huawei", "huawei.json", "Huawei Cloud"},
+		{"mullvad", "mullvad.json", "Mullvad"},
+		{"gitlab", "gitlab.txt", "GitLab"},
+		{"intercom", "intercom.json", "Intercom"},
 	}
 
 	for _, tc := range cases {
