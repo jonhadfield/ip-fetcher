@@ -15,7 +15,8 @@ import (
 const openaiFile = "openai.json"
 
 // fetchOpenAI combines the per-bot feeds into the single document the CLI
-// writes, as OpenAI publishes GPTBot, OAI-SearchBot and ChatGPT-User separately.
+// writes, as OpenAI publishes GPTBot, OAI-SearchBot, ChatGPT-User and
+// OAI-AdsBot separately.
 func fetchOpenAI() ([]byte, error) {
 	o := openai.New()
 

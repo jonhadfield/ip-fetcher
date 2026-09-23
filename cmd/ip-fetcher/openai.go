@@ -21,7 +21,7 @@ func openaiCmd() *cli.Command {
 	return &cli.Command{
 		Name:      providerName,
 		HelpName:  "- fetch OpenAI bot prefixes",
-		Usage:     "OpenAI Bots (GPTBot, OAI-SearchBot and ChatGPT-User)",
+		Usage:     "OpenAI Bots (GPTBot, OAI-SearchBot, ChatGPT-User and OAI-AdsBot)",
 		UsageText: "ip-fetcher openai {--stdout | --Path FILE} [--lines]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
@@ -57,6 +57,7 @@ func openaiCmd() *cli.Command {
 					openai.GPTBotDownloadURL:      "../../providers/openai/testdata/gptbot.json",
 					openai.SearchBotDownloadURL:   "../../providers/openai/testdata/searchbot.json",
 					openai.ChatGPTUserDownloadURL: "../../providers/openai/testdata/chatgpt-user.json",
+					openai.AdsBotDownloadURL:      "../../providers/openai/testdata/adsbot.json",
 				} {
 					u, _ := url.Parse(downloadURL)
 					gock.New(downloadURL).

@@ -18,9 +18,11 @@ const (
 	GPTBotDownloadURL        = "https://openai.com/gptbot.json"
 	SearchBotDownloadURL     = "https://openai.com/searchbot.json"
 	ChatGPTUserDownloadURL   = "https://openai.com/chatgpt-user.json"
+	AdsBotDownloadURL        = "https://openai.com/adsbot.json"
 	GPTBotName               = "GPTBot"
 	SearchBotName            = "OAI-SearchBot"
 	ChatGPTUserName          = "ChatGPT-User"
+	AdsBotName               = "OAI-AdsBot"
 	downloadedFileTimeFormat = "2006-01-02T15:04:05.999999"
 )
 
@@ -29,6 +31,7 @@ func New() OpenAI {
 		GPTBotURL:      GPTBotDownloadURL,
 		SearchBotURL:   SearchBotDownloadURL,
 		ChatGPTUserURL: ChatGPTUserDownloadURL,
+		AdsBotURL:      AdsBotDownloadURL,
 		Client:         web.NewHTTPClientWithLogger(),
 		Timeout:        web.DefaultRequestTimeout,
 	}
@@ -39,6 +42,7 @@ type OpenAI struct {
 	GPTBotURL      string
 	SearchBotURL   string
 	ChatGPTUserURL string
+	AdsBotURL      string
 	Timeout        time.Duration
 }
 
@@ -72,6 +76,14 @@ func (o *OpenAI) FetchChatGPTUserData() ([]byte, http.Header, int, error) {
 	return o.fetchList(o.ChatGPTUserURL)
 }
 
+func (o *OpenAI) FetchAdsBotData() ([]byte, http.Header, int, error) {
+	if o.AdsBotURL == "" {
+		o.AdsBotURL = AdsBotDownloadURL
+	}
+
+	return o.fetchList(o.AdsBotURL)
+}
+
 func (o *OpenAI) fetchList(downloadURL string) ([]byte, http.Header, int, error) {
 	return web.Request(
 		o.Client,
@@ -93,6 +105,7 @@ func (o *OpenAI) Fetch() (Doc, error) {
 		{o.FetchGPTBotData, &doc.GPTBot},
 		{o.FetchSearchBotData, &doc.SearchBot},
 		{o.FetchChatGPTUserData, &doc.ChatGPTUser},
+		{o.FetchAdsBotData, &doc.AdsBot},
 	}
 
 	for _, l := range lists {
@@ -210,4 +223,5 @@ type Doc struct {
 	GPTBot      List `json:"gptbot" yaml:"gptbot"`
 	SearchBot   List `json:"searchbot" yaml:"searchbot"`
 	ChatGPTUser List `json:"chatgptUser" yaml:"chatgptUser"`
+	AdsBot      List `json:"adsbot" yaml:"adsbot"`
 }

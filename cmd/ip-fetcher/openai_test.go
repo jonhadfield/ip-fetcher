@@ -64,4 +64,5 @@ func TestOpenAICmdStdOut(t *testing.T) {
 	require.Contains(t, out, "104.210.140.128/28")
 	require.Contains(t, out, "13.65.138.112/28")
 	require.Contains(t, out, "2a01:111:f403:c111::/64")
+	require.Contains(t, out, "130.131.229.128/25")
 }

@@ -104,6 +104,9 @@ func TestSyncProviderDataWritesProviderFile(t *testing.T) {
 		{"mullvad", syncMullvadData, mullvadFile},
 		{"gitlab", syncGitLabData, gitlabFile},
 		{"intercom", syncIntercomData, intercomFile},
+		{"quiccloud", syncQuicCloudData, quiccloudFile},
+		{"telegram", syncTelegramData, telegramFile},
+		{"circleci", syncCircleCIData, circleciFile},
 	}
 
 	for _, tc := range cases {

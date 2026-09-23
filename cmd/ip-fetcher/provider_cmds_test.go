@@ -38,6 +38,9 @@ func TestProviderCmds(t *testing.T) {
 		{"mullvad", "IP_FETCHER_MOCK_MULLVAD", "mullvad.json", "mullvad-prefixes.txt", "103.124.165.2"},
 		{"gitlab", "IP_FETCHER_MOCK_GITLAB", "gitlab.txt", "gitlab-prefixes.txt", "34.74.90.64"},
 		{"intercom", "IP_FETCHER_MOCK_INTERCOM", "intercom.json", "intercom-prefixes.txt", "34.197.76.213"},
+		{"quiccloud", "IP_FETCHER_MOCK_QUICCLOUD", "quiccloud.txt", "quiccloud-prefixes.txt", "102.221.36.98"},
+		{"telegram", "IP_FETCHER_MOCK_TELEGRAM", "telegram.txt", "telegram-prefixes.txt", "91.108.56.0"},
+		{"circleci", "IP_FETCHER_MOCK_CIRCLECI", "circleci.json", "circleci-prefixes.txt", "100.27.248.128"},
 	}
 
 	for _, tc := range cases {

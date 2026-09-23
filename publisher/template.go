@@ -45,6 +45,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/cdn77"
 	"github.com/jonhadfield/ip-fetcher/providers/checkly"
 	"github.com/jonhadfield/ip-fetcher/providers/cinsscore"
+	"github.com/jonhadfield/ip-fetcher/providers/circleci"
 	"github.com/jonhadfield/ip-fetcher/providers/cloudflare"
 	"github.com/jonhadfield/ip-fetcher/providers/contabo"
 	"github.com/jonhadfield/ip-fetcher/providers/cymru"
@@ -76,12 +77,14 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/oci"
 	"github.com/jonhadfield/ip-fetcher/providers/perplexitybot"
 	"github.com/jonhadfield/ip-fetcher/providers/pingdom"
+	"github.com/jonhadfield/ip-fetcher/providers/quiccloud"
 	"github.com/jonhadfield/ip-fetcher/providers/render"
 	"github.com/jonhadfield/ip-fetcher/providers/sentry"
 	"github.com/jonhadfield/ip-fetcher/providers/site24x7"
 	"github.com/jonhadfield/ip-fetcher/providers/spamhaus"
 	"github.com/jonhadfield/ip-fetcher/providers/statuscake"
 	"github.com/jonhadfield/ip-fetcher/providers/stripe"
+	"github.com/jonhadfield/ip-fetcher/providers/telegram"
 	"github.com/jonhadfield/ip-fetcher/providers/updown"
 	"github.com/jonhadfield/ip-fetcher/providers/uptimerobot"
 	"github.com/jonhadfield/ip-fetcher/providers/uptrends"
@@ -117,6 +120,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchCCBot, syncCCBotData, ccbot.ShortName, ccbotFile, ccbot.FullName, ccbot.HostType, ccbot.SourceURL},
 	{fetchCDN77, syncCDN77Data, cdn77.ShortName, cdn77File, cdn77.FullName, cdn77.HostType, cdn77.SourceURL},
 	{fetchCinsscore, syncCinsscoreData, cinsscore.ShortName, cinsscoreFile, cinsscore.FullName, cinsscore.HostType, cinsscore.SourceURL},
+	{fetchCircleCI, syncCircleCIData, circleci.ShortName, circleciFile, circleci.FullName, circleci.HostType, circleci.SourceURL},
 	{fetchCheckly, syncChecklyData, checkly.ShortName, checklyFile, checkly.FullName, checkly.HostType, checkly.SourceURL},
 	{fetchCloudflare, syncCloudflareData, cloudflare.ShortName, cloudflareFile, cloudflare.FullName, cloudflare.HostType, cloudflare.SourceURL},
 	{fetchContabo, syncContaboData, contabo.ShortName, contaboFile, contabo.FullName, contabo.HostType, contabo.SourceURL},
@@ -157,6 +161,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchOVH, syncOVHData, ovh.ShortName, ovhFile, ovh.FullName, ovh.HostType, ovh.SourceURL},
 	{fetchPingdom, syncPingdomData, pingdom.ShortName, pingdomFile, pingdom.FullName, pingdom.HostType, pingdom.SourceURL},
 	{fetchPerplexitybot, syncPerplexitybotData, perplexitybot.ShortName, perplexitybotFile, perplexitybot.FullName, perplexitybot.HostType, perplexitybot.SourceURL},
+	{fetchQuicCloud, syncQuicCloudData, quiccloud.ShortName, quiccloudFile, quiccloud.FullName, quiccloud.HostType, quiccloud.SourceURL},
 	{fetchRender, syncRenderData, render.ShortName, renderFile, render.FullName, render.HostType, render.SourceURL},
 	{fetchSalesforce, syncSalesforceData, salesforce.ShortName, salesforceFile, salesforce.FullName, salesforce.HostType, salesforce.SourceURL},
 	{fetchScaleway, syncScalewayData, scaleway.ShortName, scalewayFile, scaleway.FullName, scaleway.HostType, scaleway.SourceURL},
@@ -166,6 +171,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchStatuscake, syncStatuscakeData, statuscake.ShortName, statuscakeFile, statuscake.FullName, statuscake.HostType, statuscake.SourceURL},
 	{fetchStripe, syncStripeData, stripe.ShortName, stripeFile, stripe.FullName, stripe.HostType, stripe.SourceURL},
 	{fetchTenable, syncTenableData, tenable.ShortName, tenableFile, tenable.FullName, tenable.HostType, tenable.SourceURL},
+	{fetchTelegram, syncTelegramData, telegram.ShortName, telegramFile, telegram.FullName, telegram.HostType, telegram.SourceURL},
 	{fetchTencent, syncTencentData, tencent.ShortName, tencentFile, tencent.FullName, tencent.HostType, tencent.SourceURL},
 	{fetchTor, syncTorData, tor.ShortName, torFile, tor.FullName, tor.HostType, tor.SourceURL},
 	{fetchUpdown, syncUpdownData, updown.ShortName, updownFile, updown.FullName, updown.HostType, updown.SourceURL},

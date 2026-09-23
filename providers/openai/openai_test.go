@@ -31,6 +31,7 @@ func TestFetch(t *testing.T) {
 	mockList(t, openai.GPTBotDownloadURL, "testdata/gptbot.json")
 	mockList(t, openai.SearchBotDownloadURL, "testdata/searchbot.json")
 	mockList(t, openai.ChatGPTUserDownloadURL, "testdata/chatgpt-user.json")
+	mockList(t, openai.AdsBotDownloadURL, "testdata/adsbot.json")
 
 	ac := openai.New()
 	gock.InterceptClient(ac.Client.HTTPClient)
@@ -51,6 +52,10 @@ func TestFetch(t *testing.T) {
 	require.NotEmpty(t, doc.ChatGPTUser.IPv4Prefixes)
 	require.Contains(t, doc.ChatGPTUser.IPv4Prefixes, openai.IPv4Entry{netip.MustParsePrefix("13.65.138.112/28")})
 	require.Empty(t, doc.ChatGPTUser.IPv6Prefixes)
+
+	require.NotEmpty(t, doc.AdsBot.IPv4Prefixes)
+	require.Contains(t, doc.AdsBot.IPv4Prefixes, openai.IPv4Entry{netip.MustParsePrefix("130.131.229.128/25")})
+	require.Empty(t, doc.AdsBot.IPv6Prefixes)
 }
 
 func TestProcessDataInvalidJSON(t *testing.T) {

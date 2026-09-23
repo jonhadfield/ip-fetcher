@@ -65,6 +65,9 @@ func TestGenerateReadMeContentIncludesRegisteredProviders(t *testing.T) {
 		{"mullvad", "mullvad.json", "Mullvad"},
 		{"gitlab", "gitlab.txt", "GitLab"},
 		{"intercom", "intercom.json", "Intercom"},
+		{"quiccloud", "quiccloud.txt", "QUIC.cloud"},
+		{"telegram", "telegram.txt", "Telegram"},
+		{"circleci", "circleci.json", "CircleCI"},
 	}
 
 	for _, tc := range cases {
