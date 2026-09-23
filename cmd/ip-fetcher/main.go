@@ -41,7 +41,13 @@ func GetApp() *cli.App {
 		},
 	}
 	app.Usage = "Download and display ips for various cloud providers and services"
-	app.Commands = []*cli.Command{
+	app.Commands = providerCommands()
+
+	return app
+}
+
+func providerCommands() []*cli.Command {
+	return []*cli.Command{
 		abuseipdbCmd(),
 		ahrefsCmd(),
 		akamaiCmd(),
@@ -54,6 +60,7 @@ func GetApp() *cli.App {
 		azureCmd(),
 		bingbotCmd(),
 		betterstackCmd(),
+		binarydefenseCmd(),
 		blocklistdeCmd(),
 		bunnyCmd(),
 		cacheflyCmd(),
@@ -91,6 +98,7 @@ func GetApp() *cli.App {
 		ibmcloudCmd(),
 		impervaCmd(),
 		intercomCmd(),
+		ipsumCmd(),
 		leasewebCmd(),
 		linodeCmd(),
 		m247Cmd(),
@@ -116,6 +124,7 @@ func GetApp() *cli.App {
 		tenableCmd(),
 		telegramCmd(),
 		tencentCmd(),
+		threatfoxCmd(),
 		torCmd(),
 		updownCmd(),
 		uptimerobotCmd(),
@@ -125,6 +134,4 @@ func GetApp() *cli.App {
 		vultrCmd(),
 		zscalerCmd(),
 	}
-
-	return app
 }

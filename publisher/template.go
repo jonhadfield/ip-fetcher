@@ -24,6 +24,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/ibmcloud"
 	"github.com/jonhadfield/ip-fetcher/providers/tenable"
 	"github.com/jonhadfield/ip-fetcher/providers/tencent"
+	"github.com/jonhadfield/ip-fetcher/providers/threatfox"
 	"github.com/jonhadfield/ip-fetcher/providers/tor"
 	"github.com/jonhadfield/ip-fetcher/providers/zoom"
 	"github.com/jonhadfield/ip-fetcher/providers/zscaler"
@@ -38,6 +39,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/aws"
 	"github.com/jonhadfield/ip-fetcher/providers/azure"
 	"github.com/jonhadfield/ip-fetcher/providers/betterstack"
+	"github.com/jonhadfield/ip-fetcher/providers/binarydefense"
 	"github.com/jonhadfield/ip-fetcher/providers/blocklistde"
 	"github.com/jonhadfield/ip-fetcher/providers/bunny"
 	"github.com/jonhadfield/ip-fetcher/providers/cachefly"
@@ -70,6 +72,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/icloudpr"
 	"github.com/jonhadfield/ip-fetcher/providers/imperva"
 	"github.com/jonhadfield/ip-fetcher/providers/intercom"
+	"github.com/jonhadfield/ip-fetcher/providers/ipsum"
 	"github.com/jonhadfield/ip-fetcher/providers/leaseweb"
 	"github.com/jonhadfield/ip-fetcher/providers/linode"
 	"github.com/jonhadfield/ip-fetcher/providers/m365"
@@ -115,6 +118,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchAzure, syncAzureData, azure.ShortName, azureFile, azure.FullName, azure.HostType, azure.InitialURL},
 	{fetchBlocklistde, syncBlocklistdeData, blocklistde.ShortName, blocklistdeFile, blocklistde.FullName, blocklistde.HostType, blocklistde.SourceURL},
 	{fetchBetterstack, syncBetterstackData, betterstack.ShortName, betterstackFile, betterstack.FullName, betterstack.HostType, betterstack.SourceURL},
+	{fetchBinaryDefense, syncBinaryDefenseData, binarydefense.ShortName, binarydefenseFile, binarydefense.FullName, binarydefense.HostType, binarydefense.SourceURL},
 	{fetchBunny, syncBunnyData, bunny.ShortName, bunnyFile, bunny.FullName, bunny.HostType, bunny.SourceURL},
 	{fetchCacheFly, syncCacheFlyData, cachefly.ShortName, cacheflyFile, cachefly.FullName, cachefly.HostType, cachefly.SourceURL},
 	{fetchCCBot, syncCCBotData, ccbot.ShortName, ccbotFile, ccbot.FullName, ccbot.HostType, ccbot.SourceURL},
@@ -149,6 +153,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchICloudPR, syncICloudPRData, icloudpr.ShortName, icloudprFile, icloudpr.FullName, icloudpr.HostType, icloudpr.SourceURL},
 	{fetchImperva, syncImpervaData, imperva.ShortName, impervaFile, imperva.FullName, imperva.HostType, imperva.SourceURL},
 	{fetchIntercom, syncIntercomData, intercom.ShortName, intercomFile, intercom.FullName, intercom.HostType, intercom.SourceURL},
+	{fetchIPsum, syncIPsumData, ipsum.ShortName, ipsumFile, ipsum.FullName, ipsum.HostType, ipsum.SourceURL},
 	{fetchLeaseweb, syncLeasewebData, leaseweb.ShortName, leasewebFile, leaseweb.FullName, leaseweb.HostType, leaseweb.SourceURL},
 	{fetchLinode, syncLinodeData, linode.ShortName, linodeFile, linode.FullName, linode.HostType, linode.SourceURL},
 	{fetchM247, syncM247Data, m247.ShortName, m247File, m247.FullName, m247.HostType, m247.SourceURL},
@@ -173,6 +178,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchTenable, syncTenableData, tenable.ShortName, tenableFile, tenable.FullName, tenable.HostType, tenable.SourceURL},
 	{fetchTelegram, syncTelegramData, telegram.ShortName, telegramFile, telegram.FullName, telegram.HostType, telegram.SourceURL},
 	{fetchTencent, syncTencentData, tencent.ShortName, tencentFile, tencent.FullName, tencent.HostType, tencent.SourceURL},
+	{fetchThreatFox, syncThreatFoxData, threatfox.ShortName, threatfoxFile, threatfox.FullName, threatfox.HostType, threatfox.SourceURL},
 	{fetchTor, syncTorData, tor.ShortName, torFile, tor.FullName, tor.HostType, tor.SourceURL},
 	{fetchUpdown, syncUpdownData, updown.ShortName, updownFile, updown.FullName, updown.HostType, updown.SourceURL},
 	{fetchUptimerobot, syncUptimerobotData, uptimerobot.ShortName, uptimerobotFile, uptimerobot.FullName, uptimerobot.HostType, uptimerobot.SourceURL},

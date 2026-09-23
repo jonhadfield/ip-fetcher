@@ -1,0 +1,35 @@
+{
+  "1929601": [
+    {
+      "ioc_value": "155.103.69.239:4550",
+      "ioc_type": "ip:port",
+      "threat_type": "botnet_cc",
+      "fk_malware": "win.remcos",
+      "malware_printable": "Remcos",
+      "confidence_level": 100,
+      "first_seen_utc": "2026-09-23 10:53:01"
+    }
+  ],
+  "1929595": [
+    {
+      "ioc_value": "8.137.111.232:4321",
+      "ioc_type": "ip:port",
+      "threat_type": "botnet_cc",
+      "fk_malware": "win.adaptix_c2",
+      "malware_printable": "AdaptixC2",
+      "confidence_level": 75,
+      "first_seen_utc": "2026-09-23 09:46:57"
+    }
+  ],
+  "1929554": [
+    {
+      "ioc_value": "[2001:db8::1]:443",
+      "ioc_type": "ip:port",
+      "threat_type": "botnet_cc",
+      "fk_malware": "elf.jackskid",
+      "malware_printable": "Jackskid",
+      "confidence_level": 100,
+      "first_seen_utc": "2026-09-23 09:05:11"
+    }
+  ]
+}

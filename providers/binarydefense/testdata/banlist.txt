@@ -1,0 +1,8 @@
+#
+# Binary Defense Systems Artillery Threat Intelligence Feed and Banlist Feed
+# https://www.binarydefense.com
+#
+1.20.168.127
+1.24.16.45
+8.8.8.8
+203.0.113.10

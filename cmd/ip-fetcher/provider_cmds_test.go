@@ -41,6 +41,9 @@ func TestProviderCmds(t *testing.T) {
 		{"quiccloud", "IP_FETCHER_MOCK_QUICCLOUD", "quiccloud.txt", "quiccloud-prefixes.txt", "102.221.36.98"},
 		{"telegram", "IP_FETCHER_MOCK_TELEGRAM", "telegram.txt", "telegram-prefixes.txt", "91.108.56.0"},
 		{"circleci", "IP_FETCHER_MOCK_CIRCLECI", "circleci.json", "circleci-prefixes.txt", "100.27.248.128"},
+		{"threatfox", "IP_FETCHER_MOCK_THREATFOX", "threatfox.json", "threatfox-prefixes.txt", "155.103.69.239"},
+		{"binarydefense", "IP_FETCHER_MOCK_BINARYDEFENSE", "binarydefense.txt", "binarydefense-prefixes.txt", "1.20.168.127"},
+		{"ipsum", "IP_FETCHER_MOCK_IPSUM", "ipsum.txt", "ipsum-prefixes.txt", "94.154.43.254"},
 	}
 
 	for _, tc := range cases {
