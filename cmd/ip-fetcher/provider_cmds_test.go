@@ -44,6 +44,12 @@ func TestProviderCmds(t *testing.T) {
 		{"threatfox", "IP_FETCHER_MOCK_THREATFOX", "threatfox.json", "threatfox-prefixes.txt", "155.103.69.239"},
 		{"binarydefense", "IP_FETCHER_MOCK_BINARYDEFENSE", "binarydefense.txt", "binarydefense-prefixes.txt", "1.20.168.127"},
 		{"ipsum", "IP_FETCHER_MOCK_IPSUM", "ipsum.txt", "ipsum-prefixes.txt", "94.154.43.254"},
+		{"airvpn", "IP_FETCHER_MOCK_AIRVPN", "airvpn.json", "airvpn-prefixes.txt", "185.156.175.170"},
+		{"ivpn", "IP_FETCHER_MOCK_IVPN", "ivpn.json", "ivpn-prefixes.txt", "149.22.83.100"},
+		{"surfshark", "IP_FETCHER_MOCK_SURFSHARK", "surfshark.json", "surfshark-prefixes.txt", "172.216.15.93"},
+		{"x4bnet", "IP_FETCHER_MOCK_X4BNET", "x4bnet.json", "x4bnet-prefixes.txt", "2.26.157.0"},
+		{"stopforumspam", "IP_FETCHER_MOCK_STOPFORUMSPAM", "stopforumspam.txt", "stopforumspam-prefixes.txt", "103.81.182.0"},
+		{"asndrop", "IP_FETCHER_MOCK_ASNDROP", "asndrop.json", "asndrop-asns.txt", "245"},
 	}
 
 	for _, tc := range cases {

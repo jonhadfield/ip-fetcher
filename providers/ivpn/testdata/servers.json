@@ -1,0 +1,31 @@
+{
+  "wireguard": [
+    {
+      "gateway": "ar.wg.ivpn.net",
+      "hosts": [
+        {
+          "hostname": "ar1.wg.ivpn.net",
+          "host": "149.22.83.100",
+          "v2ray": "149.22.83.102",
+          "local_ip": "172.16.0.1/12",
+          "ipv6": {
+            "local_ip": "fd00:4956:504e:ffff::/96"
+          }
+        }
+      ]
+    }
+  ],
+  "openvpn": [
+    {
+      "gateway": "ar.gw.ivpn.net",
+      "hosts": [
+        {
+          "hostname": "ar1.gw.ivpn.net",
+          "host": "149.22.83.97",
+          "v2ray": "149.22.83.102"
+        }
+      ]
+    }
+  ],
+  "config": {}
+}

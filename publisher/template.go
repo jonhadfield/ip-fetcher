@@ -10,6 +10,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/mullvad"
 	"github.com/jonhadfield/ip-fetcher/providers/scaleway"
 	"github.com/jonhadfield/ip-fetcher/providers/vultr"
+	"github.com/jonhadfield/ip-fetcher/providers/x4bnet"
 
 	"github.com/jonhadfield/ip-fetcher/providers/akamai"
 	"github.com/jonhadfield/ip-fetcher/providers/alibaba"
@@ -33,8 +34,10 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/jonhadfield/ip-fetcher/providers/ahrefs"
+	"github.com/jonhadfield/ip-fetcher/providers/airvpn"
 	"github.com/jonhadfield/ip-fetcher/providers/anthropic"
 	"github.com/jonhadfield/ip-fetcher/providers/applebot"
+	"github.com/jonhadfield/ip-fetcher/providers/asndrop"
 	"github.com/jonhadfield/ip-fetcher/providers/atlassian"
 	"github.com/jonhadfield/ip-fetcher/providers/aws"
 	"github.com/jonhadfield/ip-fetcher/providers/azure"
@@ -73,6 +76,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/imperva"
 	"github.com/jonhadfield/ip-fetcher/providers/intercom"
 	"github.com/jonhadfield/ip-fetcher/providers/ipsum"
+	"github.com/jonhadfield/ip-fetcher/providers/ivpn"
 	"github.com/jonhadfield/ip-fetcher/providers/leaseweb"
 	"github.com/jonhadfield/ip-fetcher/providers/linode"
 	"github.com/jonhadfield/ip-fetcher/providers/m365"
@@ -86,7 +90,9 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/site24x7"
 	"github.com/jonhadfield/ip-fetcher/providers/spamhaus"
 	"github.com/jonhadfield/ip-fetcher/providers/statuscake"
+	"github.com/jonhadfield/ip-fetcher/providers/stopforumspam"
 	"github.com/jonhadfield/ip-fetcher/providers/stripe"
+	"github.com/jonhadfield/ip-fetcher/providers/surfshark"
 	"github.com/jonhadfield/ip-fetcher/providers/telegram"
 	"github.com/jonhadfield/ip-fetcher/providers/updown"
 	"github.com/jonhadfield/ip-fetcher/providers/uptimerobot"
@@ -108,11 +114,13 @@ type Provider struct {
 
 var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchAhrefs, syncAhrefsData, ahrefs.ShortName, ahrefsFile, ahrefs.FullName, ahrefs.HostType, ahrefs.SourceURL},
+	{fetchAirVPN, syncAirVPNData, airvpn.ShortName, airvpnFile, airvpn.FullName, airvpn.HostType, airvpn.SourceURL},
 	{fetchAkamai, syncAkamaiData, akamai.ShortName, akamaiFile, akamai.FullName, akamai.HostType, akamai.SourceURL},
 	{fetchAlibaba, syncAlibabaData, alibaba.ShortName, alibabaFile, alibaba.FullName, alibaba.HostType, alibaba.SourceURL},
 	{fetchAmazonbot, syncAmazonbotData, amazonbot.ShortName, amazonbotFile, amazonbot.FullName, amazonbot.HostType, amazonbot.SourceURL},
 	{fetchAnthropic, syncAnthropicData, anthropic.ShortName, anthropicFile, anthropic.FullName, anthropic.HostType, anthropic.SourceURL},
 	{fetchApplebot, syncApplebotData, applebot.ShortName, applebotFile, applebot.FullName, applebot.HostType, applebot.SourceURL},
+	{fetchASNDrop, syncASNDropData, asndrop.ShortName, asndropFile, asndrop.FullName, asndrop.HostType, asndrop.SourceURL},
 	{fetchAtlassian, syncAtlassianData, atlassian.ShortName, atlassianFile, atlassian.FullName, atlassian.HostType, atlassian.SourceURL},
 	{fetchAWS, syncAWSData, aws.ShortName, awsFile, aws.FullName, aws.HostType, aws.SourceURL},
 	{fetchAzure, syncAzureData, azure.ShortName, azureFile, azure.FullName, azure.HostType, azure.InitialURL},
@@ -154,6 +162,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchImperva, syncImpervaData, imperva.ShortName, impervaFile, imperva.FullName, imperva.HostType, imperva.SourceURL},
 	{fetchIntercom, syncIntercomData, intercom.ShortName, intercomFile, intercom.FullName, intercom.HostType, intercom.SourceURL},
 	{fetchIPsum, syncIPsumData, ipsum.ShortName, ipsumFile, ipsum.FullName, ipsum.HostType, ipsum.SourceURL},
+	{fetchIVPN, syncIVPNData, ivpn.ShortName, ivpnFile, ivpn.FullName, ivpn.HostType, ivpn.SourceURL},
 	{fetchLeaseweb, syncLeasewebData, leaseweb.ShortName, leasewebFile, leaseweb.FullName, leaseweb.HostType, leaseweb.SourceURL},
 	{fetchLinode, syncLinodeData, linode.ShortName, linodeFile, linode.FullName, linode.HostType, linode.SourceURL},
 	{fetchM247, syncM247Data, m247.ShortName, m247File, m247.FullName, m247.HostType, m247.SourceURL},
@@ -174,7 +183,9 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchSite24x7, syncSite24x7Data, site24x7.ShortName, site24x7File, site24x7.FullName, site24x7.HostType, site24x7.SourceURL},
 	{fetchSpamhaus, syncSpamhausData, spamhaus.ShortName, spamhausFile, spamhaus.FullName, spamhaus.HostType, spamhaus.SourceURL},
 	{fetchStatuscake, syncStatuscakeData, statuscake.ShortName, statuscakeFile, statuscake.FullName, statuscake.HostType, statuscake.SourceURL},
+	{fetchStopForumSpam, syncStopForumSpamData, stopforumspam.ShortName, stopforumspamFile, stopforumspam.FullName, stopforumspam.HostType, stopforumspam.SourceURL},
 	{fetchStripe, syncStripeData, stripe.ShortName, stripeFile, stripe.FullName, stripe.HostType, stripe.SourceURL},
+	{fetchSurfshark, syncSurfsharkData, surfshark.ShortName, surfsharkFile, surfshark.FullName, surfshark.HostType, surfshark.SourceURL},
 	{fetchTenable, syncTenableData, tenable.ShortName, tenableFile, tenable.FullName, tenable.HostType, tenable.SourceURL},
 	{fetchTelegram, syncTelegramData, telegram.ShortName, telegramFile, telegram.FullName, telegram.HostType, telegram.SourceURL},
 	{fetchTencent, syncTencentData, tencent.ShortName, tencentFile, tencent.FullName, tencent.HostType, tencent.SourceURL},
@@ -184,6 +195,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchUptimerobot, syncUptimerobotData, uptimerobot.ShortName, uptimerobotFile, uptimerobot.FullName, uptimerobot.HostType, uptimerobot.SourceURL},
 	{fetchUptrends, syncUptrendsData, uptrends.ShortName, uptrendsFile, uptrends.FullName, uptrends.HostType, uptrends.SourceURL},
 	{fetchVultr, syncVultrData, vultr.ShortName, vultrFile, vultr.FullName, vultr.HostType, vultr.SourceURL},
+	{fetchX4BNet, syncX4BNetData, x4bnet.ShortName, x4bnetFile, x4bnet.FullName, x4bnet.HostType, x4bnet.SourceURL},
 	{fetchZoom, syncZoomData, zoom.ShortName, zoomFile, zoom.FullName, zoom.HostType, zoom.SourceURL},
 	{fetchZscaler, syncZscalerData, zscaler.ShortName, zscalerFile, zscaler.FullName, zscaler.HostType, zscaler.SourceURL},
 }

@@ -110,6 +110,12 @@ func TestSyncProviderDataWritesProviderFile(t *testing.T) {
 		{"threatfox", syncThreatFoxData, threatfoxFile},
 		{"binarydefense", syncBinaryDefenseData, binarydefenseFile},
 		{"ipsum", syncIPsumData, ipsumFile},
+		{"airvpn", syncAirVPNData, airvpnFile},
+		{"asndrop", syncASNDropData, asndropFile},
+		{"ivpn", syncIVPNData, ivpnFile},
+		{"stopforumspam", syncStopForumSpamData, stopforumspamFile},
+		{"surfshark", syncSurfsharkData, surfsharkFile},
+		{"x4bnet", syncX4BNetData, x4bnetFile},
 	}
 
 	for _, tc := range cases {

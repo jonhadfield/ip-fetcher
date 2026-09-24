@@ -1,0 +1,20 @@
+{
+  "clusters": [
+    {
+      "connection_name": "al-tia.prod.surfshark.com",
+      "ipv4": [
+        "172.216.15.93"
+      ],
+      "ipv6": []
+    },
+    {
+      "connection_name": "uk-lon.prod.surfshark.com",
+      "ipv4": [
+        "138.199.29.230"
+      ],
+      "ipv6": [
+        "2a01:db8::1"
+      ]
+    }
+  ]
+}
