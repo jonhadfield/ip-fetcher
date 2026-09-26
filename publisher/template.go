@@ -21,6 +21,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/salesforce"
 
 	"github.com/jonhadfield/ip-fetcher/providers/greensnow"
+	"github.com/jonhadfield/ip-fetcher/providers/hetrixtools"
 	"github.com/jonhadfield/ip-fetcher/providers/hetzner"
 	"github.com/jonhadfield/ip-fetcher/providers/ibmcloud"
 	"github.com/jonhadfield/ip-fetcher/providers/tenable"
@@ -81,9 +82,11 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/linode"
 	"github.com/jonhadfield/ip-fetcher/providers/m365"
 	"github.com/jonhadfield/ip-fetcher/providers/newrelic"
+	"github.com/jonhadfield/ip-fetcher/providers/nodeping"
 	"github.com/jonhadfield/ip-fetcher/providers/oci"
 	"github.com/jonhadfield/ip-fetcher/providers/perplexitybot"
 	"github.com/jonhadfield/ip-fetcher/providers/pingdom"
+	"github.com/jonhadfield/ip-fetcher/providers/qualys"
 	"github.com/jonhadfield/ip-fetcher/providers/quiccloud"
 	"github.com/jonhadfield/ip-fetcher/providers/render"
 	"github.com/jonhadfield/ip-fetcher/providers/sentry"
@@ -156,6 +159,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchGrafana, syncGrafanaData, grafana.ShortName, grafanaFile, grafana.FullName, grafana.HostType, grafana.SourceURL},
 	{fetchGreensnow, syncGreensnowData, greensnow.ShortName, greensnowFile, greensnow.FullName, greensnow.HostType, greensnow.SourceURL},
 	{fetchHetzner, syncHetznerData, hetzner.ShortName, hetznerFile, hetzner.FullName, hetzner.HostType, hetzner.SourceURL},
+	{fetchHetrixTools, syncHetrixToolsData, hetrixtools.ShortName, hetrixtoolsFile, hetrixtools.FullName, hetrixtools.HostType, hetrixtools.SourceURL},
 	{fetchHuawei, syncHuaweiData, huawei.ShortName, huaweiFile, huawei.FullName, huawei.HostType, huawei.SourceURL},
 	{fetchIBMCloud, syncIBMCloudData, ibmcloud.ShortName, ibmcloudFile, ibmcloud.FullName, ibmcloud.HostType, ibmcloud.SourceURL},
 	{fetchICloudPR, syncICloudPRData, icloudpr.ShortName, icloudprFile, icloudpr.FullName, icloudpr.HostType, icloudpr.SourceURL},
@@ -169,12 +173,14 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchM365, syncM365Data, m365.ShortName, m365File, m365.FullName, m365.HostType, m365.SourceURL},
 	{fetchMullvad, syncMullvadData, mullvad.ShortName, mullvadFile, mullvad.FullName, mullvad.HostType, mullvad.SourceURL},
 	{fetchNewrelic, syncNewrelicData, newrelic.ShortName, newrelicFile, newrelic.FullName, newrelic.HostType, newrelic.SourceURL},
+	{fetchNodePing, syncNodePingData, nodeping.ShortName, nodepingFile, nodeping.FullName, nodeping.HostType, nodeping.SourceURL},
 	{fetchOCI, syncOCIData, oci.ShortName, ociFile, oci.FullName, oci.HostType, oci.SourceURL},
 	{fetchOkta, syncOktaData, okta.ShortName, oktaFile, okta.FullName, okta.HostType, okta.SourceURL},
 	{fetchOpenAI, syncOpenAIData, openai.ShortName, openaiFile, openai.FullName, openai.HostType, openai.SourceURL},
 	{fetchOVH, syncOVHData, ovh.ShortName, ovhFile, ovh.FullName, ovh.HostType, ovh.SourceURL},
 	{fetchPingdom, syncPingdomData, pingdom.ShortName, pingdomFile, pingdom.FullName, pingdom.HostType, pingdom.SourceURL},
 	{fetchPerplexitybot, syncPerplexitybotData, perplexitybot.ShortName, perplexitybotFile, perplexitybot.FullName, perplexitybot.HostType, perplexitybot.SourceURL},
+	{fetchQualys, syncQualysData, qualys.ShortName, qualysFile, qualys.FullName, qualys.HostType, qualys.SourceURL},
 	{fetchQuicCloud, syncQuicCloudData, quiccloud.ShortName, quiccloudFile, quiccloud.FullName, quiccloud.HostType, quiccloud.SourceURL},
 	{fetchRender, syncRenderData, render.ShortName, renderFile, render.FullName, render.HostType, render.SourceURL},
 	{fetchSalesforce, syncSalesforceData, salesforce.ShortName, salesforceFile, salesforce.FullName, salesforce.HostType, salesforce.SourceURL},

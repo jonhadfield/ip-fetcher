@@ -1,0 +1,20 @@
+{
+  "status": "ok",
+  "status_code": 200,
+  "data": {
+    "prefixes": [
+      {
+        "prefix": "64.39.96.0/24"
+      },
+      {
+        "prefix": "69.67.181.0/24"
+      },
+      {
+        "prefix": "2602:fdaa:c1::/48"
+      }
+    ],
+    "query_starttime": "2026-09-26T00:00:00",
+    "query_endtime": "2026-09-26T08:00:00",
+    "resource": "AS27385"
+  }
+}

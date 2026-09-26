@@ -1,0 +1,4 @@
+pinghostca.nodeping.com 2607:3f00:11:21::10
+pinghostca.nodeping.com 104.247.192.170
+pinghostaz.nodeping.com 2604:86c0:a001:e::2
+pinghostaz.nodeping.com 38.114.123.177
