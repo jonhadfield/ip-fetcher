@@ -47,6 +47,10 @@ func GetApp() *cli.App {
 }
 
 func providerCommands() []*cli.Command {
+	return append(providerCommandsEarly(), providerCommandsLate()...)
+}
+
+func providerCommandsEarly() []*cli.Command {
 	return []*cli.Command{
 		abuseipdbCmd(),
 		ahrefsCmd(),
@@ -97,6 +101,11 @@ func providerCommands() []*cli.Command {
 		hetznerCmd(),
 		hetrixtoolsCmd(),
 		huaweiCmd(),
+	}
+}
+
+func providerCommandsLate() []*cli.Command {
+	return []*cli.Command{
 		iCloudPRCmd(),
 		ibmcloudCmd(),
 		impervaCmd(),
