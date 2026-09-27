@@ -13,6 +13,9 @@ ip-fetcher is a go library and cli used to retrieve public ip prefixes from clou
 platforms, CDNs, crawler bots, monitoring services and threat intelligence feeds.
 Please raise an issue if you have any issues or suggestions for new providers.
 
+To look up which of these sources an address belongs to, and to enrich it with
+threat ratings, see [ipscout](https://github.com/jonhadfield/ipscout).
+
 ![ip-fetcher retrieving prefixes for Cloudflare, Anthropic's crawlers, Googlebot and AWS](docs/screenshot.png)
 
 ## supported providers
