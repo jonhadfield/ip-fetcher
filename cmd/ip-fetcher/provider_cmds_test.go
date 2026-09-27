@@ -53,6 +53,11 @@ func TestProviderCmds(t *testing.T) {
 		{"x4bnet", "IP_FETCHER_MOCK_X4BNET", "x4bnet.json", "x4bnet-prefixes.txt", "2.26.157.0"},
 		{"stopforumspam", "IP_FETCHER_MOCK_STOPFORUMSPAM", "stopforumspam.txt", "stopforumspam-prefixes.txt", "103.81.182.0"},
 		{"asndrop", "IP_FETCHER_MOCK_ASNDROP", "asndrop.json", "asndrop-asns.txt", "245"},
+		{"ohdear", "IP_FETCHER_MOCK_OHDEAR", "ohdear.txt", "ohdear-prefixes.txt", "45.32.146.84"},
+		{"rapid7", "IP_FETCHER_MOCK_RAPID7", "rapid7.txt", "rapid7-prefixes.txt", "34.192.183.106"},
+		{"intruder", "IP_FETCHER_MOCK_INTRUDER", "intruder.txt", "intruder-prefixes.txt", "64.52.19.0"},
+		{"xpanse", "IP_FETCHER_MOCK_XPANSE", "xpanse.txt", "xpanse-prefixes.txt", "35.203.210.0"},
+		{"invicti", "IP_FETCHER_MOCK_INVICTI", "invicti.txt", "invicti-prefixes.txt", "3.228.162.54"},
 	}
 
 	for _, tc := range cases {

@@ -24,10 +24,15 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/hetrixtools"
 	"github.com/jonhadfield/ip-fetcher/providers/hetzner"
 	"github.com/jonhadfield/ip-fetcher/providers/ibmcloud"
+	"github.com/jonhadfield/ip-fetcher/providers/intruder"
+	"github.com/jonhadfield/ip-fetcher/providers/invicti"
+	"github.com/jonhadfield/ip-fetcher/providers/ohdear"
+	"github.com/jonhadfield/ip-fetcher/providers/rapid7"
 	"github.com/jonhadfield/ip-fetcher/providers/tenable"
 	"github.com/jonhadfield/ip-fetcher/providers/tencent"
 	"github.com/jonhadfield/ip-fetcher/providers/threatfox"
 	"github.com/jonhadfield/ip-fetcher/providers/tor"
+	"github.com/jonhadfield/ip-fetcher/providers/xpanse"
 	"github.com/jonhadfield/ip-fetcher/providers/zoom"
 	"github.com/jonhadfield/ip-fetcher/providers/zscaler"
 
@@ -165,6 +170,8 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchICloudPR, syncICloudPRData, icloudpr.ShortName, icloudprFile, icloudpr.FullName, icloudpr.HostType, icloudpr.SourceURL},
 	{fetchImperva, syncImpervaData, imperva.ShortName, impervaFile, imperva.FullName, imperva.HostType, imperva.SourceURL},
 	{fetchIntercom, syncIntercomData, intercom.ShortName, intercomFile, intercom.FullName, intercom.HostType, intercom.SourceURL},
+	{fetchIntruder, syncIntruderData, intruder.ShortName, intruderFile, intruder.FullName, intruder.HostType, intruder.SourceURL},
+	{fetchInvicti, syncInvictiData, invicti.ShortName, invictiFile, invicti.FullName, invicti.HostType, invicti.SourceURL},
 	{fetchIPsum, syncIPsumData, ipsum.ShortName, ipsumFile, ipsum.FullName, ipsum.HostType, ipsum.SourceURL},
 	{fetchIVPN, syncIVPNData, ivpn.ShortName, ivpnFile, ivpn.FullName, ivpn.HostType, ivpn.SourceURL},
 	{fetchLeaseweb, syncLeasewebData, leaseweb.ShortName, leasewebFile, leaseweb.FullName, leaseweb.HostType, leaseweb.SourceURL},
@@ -175,6 +182,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchNewrelic, syncNewrelicData, newrelic.ShortName, newrelicFile, newrelic.FullName, newrelic.HostType, newrelic.SourceURL},
 	{fetchNodePing, syncNodePingData, nodeping.ShortName, nodepingFile, nodeping.FullName, nodeping.HostType, nodeping.SourceURL},
 	{fetchOCI, syncOCIData, oci.ShortName, ociFile, oci.FullName, oci.HostType, oci.SourceURL},
+	{fetchOhDear, syncOhDearData, ohdear.ShortName, ohdearFile, ohdear.FullName, ohdear.HostType, ohdear.SourceURL},
 	{fetchOkta, syncOktaData, okta.ShortName, oktaFile, okta.FullName, okta.HostType, okta.SourceURL},
 	{fetchOpenAI, syncOpenAIData, openai.ShortName, openaiFile, openai.FullName, openai.HostType, openai.SourceURL},
 	{fetchOVH, syncOVHData, ovh.ShortName, ovhFile, ovh.FullName, ovh.HostType, ovh.SourceURL},
@@ -182,6 +190,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchPerplexitybot, syncPerplexitybotData, perplexitybot.ShortName, perplexitybotFile, perplexitybot.FullName, perplexitybot.HostType, perplexitybot.SourceURL},
 	{fetchQualys, syncQualysData, qualys.ShortName, qualysFile, qualys.FullName, qualys.HostType, qualys.SourceURL},
 	{fetchQuicCloud, syncQuicCloudData, quiccloud.ShortName, quiccloudFile, quiccloud.FullName, quiccloud.HostType, quiccloud.SourceURL},
+	{fetchRapid7, syncRapid7Data, rapid7.ShortName, rapid7File, rapid7.FullName, rapid7.HostType, rapid7.SourceURL},
 	{fetchRender, syncRenderData, render.ShortName, renderFile, render.FullName, render.HostType, render.SourceURL},
 	{fetchSalesforce, syncSalesforceData, salesforce.ShortName, salesforceFile, salesforce.FullName, salesforce.HostType, salesforce.SourceURL},
 	{fetchScaleway, syncScalewayData, scaleway.ShortName, scalewayFile, scaleway.FullName, scaleway.HostType, scaleway.SourceURL},
@@ -202,6 +211,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchUptrends, syncUptrendsData, uptrends.ShortName, uptrendsFile, uptrends.FullName, uptrends.HostType, uptrends.SourceURL},
 	{fetchVultr, syncVultrData, vultr.ShortName, vultrFile, vultr.FullName, vultr.HostType, vultr.SourceURL},
 	{fetchX4BNet, syncX4BNetData, x4bnet.ShortName, x4bnetFile, x4bnet.FullName, x4bnet.HostType, x4bnet.SourceURL},
+	{fetchXpanse, syncXpanseData, xpanse.ShortName, xpanseFile, xpanse.FullName, xpanse.HostType, xpanse.SourceURL},
 	{fetchZoom, syncZoomData, zoom.ShortName, zoomFile, zoom.FullName, zoom.HostType, zoom.SourceURL},
 	{fetchZscaler, syncZscalerData, zscaler.ShortName, zscalerFile, zscaler.FullName, zscaler.HostType, zscaler.SourceURL},
 }

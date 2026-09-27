@@ -119,6 +119,11 @@ func TestSyncProviderDataWritesProviderFile(t *testing.T) {
 		{"stopforumspam", syncStopForumSpamData, stopforumspamFile},
 		{"surfshark", syncSurfsharkData, surfsharkFile},
 		{"x4bnet", syncX4BNetData, x4bnetFile},
+		{"ohdear", syncOhDearData, ohdearFile},
+		{"rapid7", syncRapid7Data, rapid7File},
+		{"intruder", syncIntruderData, intruderFile},
+		{"xpanse", syncXpanseData, xpanseFile},
+		{"invicti", syncInvictiData, invictiFile},
 	}
 
 	for _, tc := range cases {
