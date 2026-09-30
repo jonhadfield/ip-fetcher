@@ -16,7 +16,13 @@ import (
 )
 
 const (
-	DigitaloceanDownloadURL = "https://www.digitalocean.com/geo/google.csv"
+	ShortName   = "digitalocean"
+	FullName    = "DigitalOcean"
+	HostType    = "hosting"
+	SourceURL   = "https://www.digitalocean.com/"
+	DownloadURL = "https://www.digitalocean.com/geo/google.csv"
+	// DigitaloceanDownloadURL is retained for callers that still use the old name.
+	DigitaloceanDownloadURL = DownloadURL
 	errFailedToDownload     = "failed to download digital ocean prefixes document "
 )
 
@@ -28,7 +34,7 @@ type DigitalOcean struct {
 
 func New() DigitalOcean {
 	return DigitalOcean{
-		DownloadURL: DigitaloceanDownloadURL,
+		DownloadURL: DownloadURL,
 		Client:      web.NewHTTPClientWithLogger(),
 		Timeout:     web.DefaultRequestTimeout,
 	}
@@ -37,7 +43,7 @@ func New() DigitalOcean {
 func (a *DigitalOcean) FetchData() ([]byte, http.Header, int, error) {
 	// get download url if not specified
 	if a.DownloadURL == "" {
-		a.DownloadURL = DigitaloceanDownloadURL
+		a.DownloadURL = DownloadURL
 	}
 
 	data, headers, status, err := web.Request(

@@ -110,8 +110,6 @@ func (p *Publisher) Run() error {
 	_ = g.Wait()
 
 	// Phase 2: Sync sequentially (git operations are not concurrency-safe)
-	var included []string
-
 	for i, provider := range providers {
 		if results[i].err != nil {
 			slog.Info("failed to fetch", "provider", provider.ShortName, "error", results[i].err)
@@ -128,8 +126,6 @@ func (p *Publisher) Run() error {
 			continue
 		}
 
-		included = append(included, provider.ShortName)
-
 		if commit.IsZero() {
 			slog.Info("provider", provider.ShortName, "in sync")
 
@@ -141,6 +137,17 @@ func (p *Publisher) Run() error {
 		_, err = repo.CommitObject(commit)
 		if err != nil {
 			return err
+		}
+	}
+
+	// README lists every provider file present in the worktree, not only those
+	// fetched this run. A transient upstream failure must not drop a row for a
+	// file that is still published.
+	var included []string
+
+	for _, provider := range providers {
+		if _, statErr := fs.Stat(provider.File); statErr == nil {
+			included = append(included, provider.ShortName)
 		}
 	}
 

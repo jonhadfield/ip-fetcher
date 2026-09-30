@@ -1,19 +1,40 @@
 package bingbot
 
 import (
-	"encoding/json"
 	"net/http"
-	"net/netip"
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
+	"github.com/jonhadfield/ip-fetcher/internal/botprefix"
 	"github.com/jonhadfield/ip-fetcher/internal/web"
 )
 
 const (
-	DownloadURL              = "https://www.bing.com/toolbox/bingbot.json"
-	downloadedFileTimeFormat = "2006-01-02T15:04:05.999999"
+	ShortName   = "bingbot"
+	FullName    = "Bingbot"
+	HostType    = "crawlers"
+	SourceURL   = "https://www.bing.com/webmasters/help/how-to-verify-bingbot-3905dc26"
+	DownloadURL = "https://www.bing.com/toolbox/bingbot.json"
 )
+
+// The document format is shared with the other crawler providers, so the
+// parsing lives in internal/botprefix. These are aliases, not new types, so
+// this package's API is unchanged.
+
+type (
+	Doc          = botprefix.Doc
+	RawDoc       = botprefix.RawDoc
+	IPv4Entry    = botprefix.IPv4Entry
+	IPv6Entry    = botprefix.IPv6Entry
+	RawIPv4Entry = botprefix.RawIPv4Entry
+	RawIPv6Entry = botprefix.RawIPv6Entry
+)
+
+type Bingbot struct {
+	Client      *retryablehttp.Client
+	DownloadURL string
+	Timeout     time.Duration
+}
 
 func New() Bingbot {
 	return Bingbot{
@@ -23,21 +44,11 @@ func New() Bingbot {
 	}
 }
 
-type Bingbot struct {
-	Client      *retryablehttp.Client
-	DownloadURL string
-	Timeout     time.Duration
-}
-
-type RawDoc struct {
-	CreationTime string            `json:"creationTime"`
-	Entries      []json.RawMessage `json:"prefixes"`
-}
-
 func (bb *Bingbot) FetchData() ([]byte, http.Header, int, error) {
 	if bb.DownloadURL == "" {
 		bb.DownloadURL = DownloadURL
 	}
+
 	return web.Request(bb.Client, bb.DownloadURL, http.MethodGet, nil, nil, bb.Timeout)
 }
 
@@ -50,82 +61,8 @@ func (bb *Bingbot) Fetch() (Doc, error) {
 	return ProcessData(data)
 }
 
+// ProcessData parses the feed. Bing always publishes creationTime, so its
+// absence is an error.
 func ProcessData(data []byte) (Doc, error) {
-	var rawDoc RawDoc
-	if err := json.Unmarshal(data, &rawDoc); err != nil {
-		return Doc{}, err
-	}
-
-	doc := Doc{}
-	var err error
-	doc.IPv4Prefixes, doc.IPv6Prefixes, err = castEntries(rawDoc.Entries)
-	if err != nil {
-		return Doc{}, err
-	}
-
-	ct, err := time.Parse(downloadedFileTimeFormat, rawDoc.CreationTime)
-	if err != nil {
-		return Doc{}, err
-	}
-
-	doc.CreationTime = ct
-
-	return doc, nil
-}
-
-func castEntries(prefixes []json.RawMessage) ([]IPv4Entry, []IPv6Entry, error) {
-	var (
-		ipv4 []IPv4Entry
-		ipv6 []IPv6Entry
-	)
-	for _, pr := range prefixes {
-		var ipv4entry RawIPv4Entry
-		var ipv6entry RawIPv6Entry
-
-		if err := json.Unmarshal(pr, &ipv4entry); err == nil {
-			if ipv4Prefix, parseError := netip.ParsePrefix(ipv4entry.IPv4Prefix); parseError == nil {
-				ipv4 = append(ipv4, IPv4Entry{IPv4Prefix: ipv4Prefix})
-				continue
-			}
-		}
-
-		if err := json.Unmarshal(pr, &ipv6entry); err == nil {
-			ipv6Prefix, parseError := netip.ParsePrefix(ipv6entry.IPv6Prefix)
-			if parseError != nil {
-				return ipv4, ipv6, parseError
-			}
-
-			ipv6 = append(ipv6, IPv6Entry{IPv6Prefix: ipv6Prefix})
-
-			continue
-		}
-
-		if err := json.Unmarshal(pr, &ipv6entry); err != nil {
-			return ipv4, ipv6, err
-		}
-	}
-
-	return ipv4, ipv6, nil
-}
-
-type RawIPv4Entry struct {
-	IPv4Prefix string `json:"ipv4Prefix"`
-}
-
-type RawIPv6Entry struct {
-	IPv6Prefix string `json:"ipv6Prefix"`
-}
-
-type IPv4Entry struct {
-	IPv4Prefix netip.Prefix `json:"ipv4Prefix"`
-}
-
-type IPv6Entry struct {
-	IPv6Prefix netip.Prefix `json:"ipv6Prefix"`
-}
-
-type Doc struct {
-	CreationTime time.Time
-	IPv4Prefixes []IPv4Entry
-	IPv6Prefixes []IPv6Entry
+	return botprefix.Parse(data, botprefix.Options{RequireCreationTime: true})
 }

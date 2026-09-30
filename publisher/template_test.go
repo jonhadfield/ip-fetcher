@@ -85,6 +85,8 @@ func TestGenerateReadMeContentIncludesRegisteredProviders(t *testing.T) {
 		{"intruder", "intruder.txt", "Intruder"},
 		{"xpanse", "xpanse.txt", "Cortex Xpanse"},
 		{"invicti", "invicti.txt", "Invicti"},
+		{"bingbot", "bingbot.json", "Bingbot"},
+		{"digitalocean", "digitalocean.csv", "DigitalOcean"},
 	}
 
 	for _, tc := range cases {

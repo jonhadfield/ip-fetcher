@@ -49,6 +49,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/azure"
 	"github.com/jonhadfield/ip-fetcher/providers/betterstack"
 	"github.com/jonhadfield/ip-fetcher/providers/binarydefense"
+	"github.com/jonhadfield/ip-fetcher/providers/bingbot"
 	"github.com/jonhadfield/ip-fetcher/providers/blocklistde"
 	"github.com/jonhadfield/ip-fetcher/providers/bunny"
 	"github.com/jonhadfield/ip-fetcher/providers/cachefly"
@@ -62,6 +63,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/cymru"
 	"github.com/jonhadfield/ip-fetcher/providers/datadog"
 	"github.com/jonhadfield/ip-fetcher/providers/detectify"
+	"github.com/jonhadfield/ip-fetcher/providers/digitalocean"
 	"github.com/jonhadfield/ip-fetcher/providers/dshield"
 	"github.com/jonhadfield/ip-fetcher/providers/duckduckbot"
 	"github.com/jonhadfield/ip-fetcher/providers/emergingthreats"
@@ -135,6 +137,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchBlocklistde, syncBlocklistdeData, blocklistde.ShortName, blocklistdeFile, blocklistde.FullName, blocklistde.HostType, blocklistde.SourceURL},
 	{fetchBetterstack, syncBetterstackData, betterstack.ShortName, betterstackFile, betterstack.FullName, betterstack.HostType, betterstack.SourceURL},
 	{fetchBinaryDefense, syncBinaryDefenseData, binarydefense.ShortName, binarydefenseFile, binarydefense.FullName, binarydefense.HostType, binarydefense.SourceURL},
+	{fetchBingbot, syncBingbotData, bingbot.ShortName, bingbotFile, bingbot.FullName, bingbot.HostType, bingbot.SourceURL},
 	{fetchBunny, syncBunnyData, bunny.ShortName, bunnyFile, bunny.FullName, bunny.HostType, bunny.SourceURL},
 	{fetchCacheFly, syncCacheFlyData, cachefly.ShortName, cacheflyFile, cachefly.FullName, cachefly.HostType, cachefly.SourceURL},
 	{fetchCCBot, syncCCBotData, ccbot.ShortName, ccbotFile, ccbot.FullName, ccbot.HostType, ccbot.SourceURL},
@@ -147,6 +150,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchCymru, syncCymruData, cymru.ShortName, cymruFile, cymru.FullName, cymru.HostType, cymru.SourceURL},
 	{fetchDatadog, syncDatadogData, datadog.ShortName, datadogFile, datadog.FullName, datadog.HostType, datadog.SourceURL},
 	{fetchDetectify, syncDetectifyData, detectify.ShortName, detectifyFile, detectify.FullName, detectify.HostType, detectify.SourceURL},
+	{fetchDigitalOcean, syncDigitalOceanData, digitalocean.ShortName, digitaloceanFile, digitalocean.FullName, digitalocean.HostType, digitalocean.SourceURL},
 	{fetchDshield, syncDshieldData, dshield.ShortName, dshieldFile, dshield.FullName, dshield.HostType, dshield.SourceURL},
 	{fetchDuckduckbot, syncDuckduckbotData, duckduckbot.ShortName, duckduckbotFile, duckduckbot.FullName, duckduckbot.HostType, duckduckbot.SourceURL},
 	{fetchEmergingthreats, syncEmergingthreatsData, emergingthreats.ShortName, emergingthreatsFile, emergingthreats.FullName, emergingthreats.HostType, emergingthreats.SourceURL},
@@ -224,7 +228,7 @@ func GenerateReadMeContent(included []string) (string, error) {
 			if inc == provider.ShortName {
 				fmt.Fprintf(
 					&rows,
-					"| [%s](%s)  | %s |  %s | [source](%s) |  \r\n",
+					"| [%s](%s) | %s | %s | [source](%s) |\n",
 					provider.File,
 					provider.File,
 					provider.FullName,
