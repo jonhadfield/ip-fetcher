@@ -85,6 +85,7 @@ func TestGenerateReadMeContentIncludesRegisteredProviders(t *testing.T) {
 		{"intruder", "intruder.txt", "Intruder"},
 		{"xpanse", "xpanse.txt", "Cortex Xpanse"},
 		{"invicti", "invicti.txt", "Invicti"},
+		{"onetrust", "onetrust.txt", "OneTrust"},
 		{"bingbot", "bingbot.json", "Bingbot"},
 		{"digitalocean", "digitalocean.csv", "DigitalOcean"},
 	}

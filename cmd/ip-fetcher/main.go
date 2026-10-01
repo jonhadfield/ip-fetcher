@@ -124,6 +124,7 @@ func providerCommandsLate() []*cli.Command {
 		nodepingCmd(),
 		ohdearCmd(),
 		oktaCmd(),
+		onetrustCmd(),
 		openaiCmd(),
 		ovhCmd(),
 		perplexitybotCmd(),

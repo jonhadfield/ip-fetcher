@@ -124,6 +124,7 @@ func TestSyncProviderDataWritesProviderFile(t *testing.T) {
 		{"intruder", syncIntruderData, intruderFile},
 		{"xpanse", syncXpanseData, xpanseFile},
 		{"invicti", syncInvictiData, invictiFile},
+		{"onetrust", syncOneTrustData, onetrustFile},
 		{"bingbot", syncBingbotData, bingbotFile},
 		{"digitalocean", syncDigitalOceanData, digitaloceanFile},
 	}

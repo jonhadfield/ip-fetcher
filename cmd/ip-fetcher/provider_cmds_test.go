@@ -58,6 +58,7 @@ func TestProviderCmds(t *testing.T) {
 		{"intruder", "IP_FETCHER_MOCK_INTRUDER", "intruder.txt", "intruder-prefixes.txt", "64.52.19.0"},
 		{"xpanse", "IP_FETCHER_MOCK_XPANSE", "xpanse.txt", "xpanse-prefixes.txt", "35.203.210.0"},
 		{"invicti", "IP_FETCHER_MOCK_INVICTI", "invicti.txt", "invicti-prefixes.txt", "3.228.162.54"},
+		{"onetrust", "IP_FETCHER_MOCK_ONETRUST", "onetrust.txt", "onetrust-prefixes.txt", "20.54.106.120"},
 	}
 
 	for _, tc := range cases {

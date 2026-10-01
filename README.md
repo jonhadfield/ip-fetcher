@@ -20,7 +20,7 @@ threat ratings, see [ipscout](https://github.com/jonhadfield/ipscout).
 
 ## supported providers
 
-98 sources:
+99 sources:
 
 | Category | Providers |
 | --- | --- |
@@ -28,7 +28,7 @@ threat ratings, see [ipscout](https://github.com/jonhadfield/ipscout).
 | **CDN & edge** | [Akamai](https://www.akamai.com) · [Bunny.net](https://bunny.net/) · [CacheFly](https://www.cachefly.com/) · [CDN77](https://www.cdn77.com/) · [Cloudflare](https://www.cloudflare.com/) · [Fastly](https://www.fastly.com/) · [Gcore CDN](https://gcore.com/) · [Imperva](https://www.imperva.com) · [QUIC.cloud](https://www.quic.cloud/) · [Zscaler](https://www.zscaler.com) |
 | **Crawler bots** | [AhrefsBot](https://api.ahrefs.com/v3/public/crawler-ip-ranges) · [Amazonbot](https://developer.amazon.com/amazonbot) (Amazonbot, Amzn-SearchBot, Amzn-User) · [Anthropic Crawler Bots](https://claude.com/crawling/bots.json) (ClaudeBot, Claude-User, Claude-SearchBot) · [Applebot](https://support.apple.com/en-us/119829) · [Bingbot](https://www.bing.com/webmasters/help/which-crawlers-does-bing-use-8c184ec0) · [Common Crawl CCBot](https://commoncrawl.org/ccbot) · [DuckDuckBot](https://duckduckgo.com/duckduckbot) · [Googlebot](https://developers.google.com/search/docs/crawling-indexing/googlebot) · [Google Special Crawlers](https://developers.google.com/search/docs/crawling-indexing/verifying-googlebot) · [Google User-Triggered Fetchers](https://developers.google.com/search/docs/crawling-indexing/verifying-googlebot) · [OpenAI Bots](https://platform.openai.com/docs/bots) (GPTBot, OAI-SearchBot, ChatGPT-User, OAI-AdsBot)[^stale] · [PerplexityBot](https://www.perplexity.com/perplexitybot.json)[^stale] |
 | **Uptime & monitoring** | [Better Stack](https://betterstack.com/docs/uptime/ip-addresses/) · [Checkly](https://www.checklyhq.com/docs/monitoring/allowlisting/) · [Datadog](https://docs.datadoghq.com/api/latest/ip-ranges/) · [Grafana Synthetic Monitoring](https://grafana.com/docs/grafana-cloud/testing/synthetic-monitoring/create-checks/public-probes/) · [HetrixTools](https://docs.hetrixtools.com/uptime-monitoring-ip-addresses/) · [New Relic Synthetics](https://docs.newrelic.com/docs/synthetics/synthetic-monitoring/administration/synthetic-public-minion-ips/) · [NodePing](https://nodeping.com/FAQ) · [Oh Dear](https://ohdear.app/docs/faq/what-ips-does-oh-dear-monitor-from) · [Pingdom](https://www.pingdom.com/) · [Sentry Uptime](https://docs.sentry.io/security-legal-pii/security/ip-ranges/) · [Site24x7](https://www.site24x7.com/multi-location-web-site-monitoring.html) · [StatusCake](https://www.statuscake.com/) · [updown.io](https://updown.io/api) · [UptimeRobot](https://uptimerobot.com/help/locations/) · [Uptrends](https://www.uptrends.com/support/kb/account/ip-addresses-for-whitelisting) |
-| **Vulnerability scanners** | [Cortex Xpanse](https://cortex-docs.paloaltonetworks.com/cortex-xpanse/reference/scanning-activity) · [Detectify](https://docs.detectify.com/network-setup/scanner-ip-addresses) · [Intruder](https://help.intruder.io/en/articles/1635683-what-ips-do-i-need-to-add-to-my-allowlist) · [Invicti](https://docs.invicti.com/ip/trustlist-us) · [Qualys](https://docs.qualys.com/en/vm/latest/help/external_scanner_ips.htm)[^qualys] · [Rapid7 InsightAppSec](https://docs.rapid7.com/insightappsec/allowlist-cloud-engine-ips/) · [Tenable Cloud Scanners](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/CloudSensors.htm)[^stale] |
+| **Vulnerability scanners** | [Cortex Xpanse](https://cortex-docs.paloaltonetworks.com/cortex-xpanse/reference/scanning-activity) · [Detectify](https://docs.detectify.com/network-setup/scanner-ip-addresses) · [Intruder](https://help.intruder.io/en/articles/1635683-what-ips-do-i-need-to-add-to-my-allowlist) · [Invicti](https://docs.invicti.com/ip/trustlist-us) · [OneTrust](https://my.onetrust.com/s/article/UUID-21f6bff2-1b12-8c67-e8b0-d852e36f37af) · [Qualys](https://docs.qualys.com/en/vm/latest/help/external_scanner_ips.htm)[^qualys] · [Rapid7 InsightAppSec](https://docs.rapid7.com/insightappsec/allowlist-cloud-engine-ips/) · [Tenable Cloud Scanners](https://docs.tenable.com/vulnerability-management/Content/Settings/Sensors/CloudSensors.htm)[^stale] |
 | **Threat intelligence** | [abuse.ch Feodo Tracker](https://feodotracker.abuse.ch/blocklist/) · [abuse.ch ThreatFox](https://threatfox.abuse.ch/) · [AbuseIPDB](https://www.abuseipdb.com/) · [Binary Defense](https://www.binarydefense.com/) · [Blocklist.de](https://www.blocklist.de/en/index.html) · [CINS Army List](https://cinsscore.com/) · [DShield](https://www.dshield.org/) · [Emerging Threats](https://rules.emergingthreats.net/blockrules/) · [GreenSnow](https://greensnow.co/) · [IPsum](https://github.com/stamparm/ipsum) · [Spamhaus DROP](https://www.spamhaus.org/blocklists/do-not-route-or-peer/) · [Spamhaus ASN-DROP](https://www.spamhaus.org/blocklists/do-not-route-or-peer/) · [StopForumSpam](https://www.stopforumspam.com/) · [Team Cymru Bogons](https://www.team-cymru.com/bogon-reference) |
 | **Anonymising networks** | [AirVPN](https://airvpn.org/) · [iCloud Private Relay](https://support.apple.com/en-us/HT212614) · [IVPN](https://www.ivpn.net/) · [Mullvad](https://mullvad.net/en/servers) · [Surfshark](https://surfshark.com/) · [Tor Exit Nodes](https://check.torproject.org/) · [X4BNet VPN](https://github.com/X4BNet/lists_vpn) |
 | **Other services** | [Atlassian](https://ip-ranges.atlassian.com/) · [CircleCI](https://circleci.com/docs/ip-ranges/) · [GitHub](https://www.github.com) · [GitLab](https://docs.gitlab.com/ee/user/gitlab_com/#ip-range) · [Google](https://www.google.com/) · [Intercom](https://developers.intercom.com/docs/build-an-integration/learn-more/ip-allowlisting) · [MaxMind GeoIP](https://www.maxmind.com) · [Microsoft 365](https://learn.microsoft.com/en-us/microsoft-365/enterprise/microsoft-365-ip-web-service) · [Okta](https://help.okta.com/en-us/content/topics/security/ip-address-allow-listing.htm) · [Salesforce](https://ip-ranges.salesforce.com/ip-ranges.json) · [Stripe](https://docs.stripe.com/ips) · [Telegram](https://core.telegram.org/resources/cidr.txt) · [Zoom](https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0060548) |
@@ -57,6 +57,7 @@ value if you want to check it yourself: `Doc.CreationTime`, or
 | **Invicti** | Cloud scanner and related trustlist addresses from Invicti's US and EU docs (DAST / PCI ASV traffic to your targets). |
 | **NodePing** | Probe addresses from NodePing's hostname/IP list (`pinghosts.txt`; also available via DNS on `probes.nodeping.com`). Covers their global check locations. |
 | **Oh Dear** | Uptime monitoring probe addresses from Oh Dear's published `used-ips` list (IPv4 and IPv6). |
+| **OneTrust** | Cookie / web scanner egress prefixes from OneTrust's published `webscanner-ips.txt` list (documented under hosting locations). |
 | **Qualys** | Prefixes announced by Qualys, Inc. (**AS27385**), including the well known `64.39.x` and `69.67.x` blocks. Qualys does not publish one public scanner allowlist — the SOC ranges under Help → About are account-specific — so this feed answers “is this IP in Qualys-owned space?” rather than enumerating every platform SOC scanner. |
 | **Rapid7 InsightAppSec** | Cloud engine IPs by region from Rapid7's InsightAppSec allowlist docs. Required when a WAF would otherwise block DAST scan traffic. |
 
@@ -117,8 +118,14 @@ for a provider's options.
 | `--Path`, `-p` | write the prefixes to this path; if it is an existing directory then a provider specific default filename is used |
 | `--format`, `-f` | output format, on the nine providers that offer it: `json` (default), `yaml`, `lines`, `csv` |
 | `--lines` | newline separated prefixes, where offered |
+| `--aggregate` | with `--lines`, set to `exact` (no holes) or `cover` (may fill holes) to reduce the prefix list |
 
 At least one of `--stdout` and `--Path` must be given.
+
+`--aggregate` only applies to newline separated prefix output (`--lines` or
+`--format lines`). `exact` keeps the same address coverage; `cover` can include
+addresses the provider did not list. Upstream JSON/CSV documents are never
+aggregated, including those published to cloud-ips.
 
 `--format` is offered by nine providers: atlassian, bunny, cdn77, datadog,
 fastly, gcp, geoip, imperva and stripe. `--lines` is offered by every provider
@@ -139,6 +146,9 @@ ip-fetcher cloudflare -4 --Path /tmp
 
 # newline separated prefixes
 ip-fetcher fastly --format lines --stdout
+
+# aggregate hole-free siblings in the lines output
+ip-fetcher aws --lines --aggregate exact --stdout
 
 # read prefixes from one or more arbitrary URLs
 ip-fetcher url --stdout https://example.com/ips.txt

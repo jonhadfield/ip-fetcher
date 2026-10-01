@@ -27,6 +27,7 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/intruder"
 	"github.com/jonhadfield/ip-fetcher/providers/invicti"
 	"github.com/jonhadfield/ip-fetcher/providers/ohdear"
+	"github.com/jonhadfield/ip-fetcher/providers/onetrust"
 	"github.com/jonhadfield/ip-fetcher/providers/rapid7"
 	"github.com/jonhadfield/ip-fetcher/providers/tenable"
 	"github.com/jonhadfield/ip-fetcher/providers/tencent"
@@ -188,6 +189,7 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchOCI, syncOCIData, oci.ShortName, ociFile, oci.FullName, oci.HostType, oci.SourceURL},
 	{fetchOhDear, syncOhDearData, ohdear.ShortName, ohdearFile, ohdear.FullName, ohdear.HostType, ohdear.SourceURL},
 	{fetchOkta, syncOktaData, okta.ShortName, oktaFile, okta.FullName, okta.HostType, okta.SourceURL},
+	{fetchOneTrust, syncOneTrustData, onetrust.ShortName, onetrustFile, onetrust.FullName, onetrust.HostType, onetrust.SourceURL},
 	{fetchOpenAI, syncOpenAIData, openai.ShortName, openaiFile, openai.FullName, openai.HostType, openai.SourceURL},
 	{fetchOVH, syncOVHData, ovh.ShortName, ovhFile, ovh.FullName, ovh.HostType, ovh.SourceURL},
 	{fetchPingdom, syncPingdomData, pingdom.ShortName, pingdomFile, pingdom.FullName, pingdom.HostType, pingdom.SourceURL},
