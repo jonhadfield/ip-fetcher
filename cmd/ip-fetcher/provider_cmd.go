@@ -118,9 +118,9 @@ func providerData(
 	}
 
 	if c.Bool(formatLines) {
-		doc, err := fetchDoc()
-		if err != nil {
-			return nil, err
+		doc, docErr := fetchDoc()
+		if docErr != nil {
+			return nil, docErr
 		}
 
 		return docToLines(doc, mode)

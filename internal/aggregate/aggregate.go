@@ -45,6 +45,8 @@ func Apply(mode Mode, prefixes []netip.Prefix) []netip.Prefix {
 		return ExactMerge(prefixes)
 	case Cover:
 		return CoverMerge(prefixes)
+	case None:
+		return slices.Clone(prefixes)
 	default:
 		return slices.Clone(prefixes)
 	}
@@ -67,7 +69,9 @@ func CoverMerge(prefixes []netip.Prefix) []netip.Prefix {
 	return append(coverFamily(ipv4), coverFamily(ipv6)...)
 }
 
-func splitFamilies(prefixes []netip.Prefix) (ipv4, ipv6 []netip.Prefix) {
+func splitFamilies(prefixes []netip.Prefix) ([]netip.Prefix, []netip.Prefix) {
+	var ipv4, ipv6 []netip.Prefix
+
 	for _, p := range prefixes {
 		if !p.IsValid() {
 			continue
@@ -227,9 +231,18 @@ func rangeSize(r netipx.IPRange) uint64 {
 	return n
 }
 
+const (
+	// maxPrefixHostBits is the largest host-bit count we expand when sizing a
+	// prefix for gap comparisons; larger spans are treated as unbounded.
+	maxPrefixHostBits = 64
+	// minMergePrefixes is how many prefixes are required before a merge pass
+	// can combine siblings.
+	minMergePrefixes = 2
+)
+
 func prefixSize(p netip.Prefix) uint64 {
 	bits := p.Addr().BitLen() - p.Bits()
-	if bits >= 64 {
+	if bits >= maxPrefixHostBits {
 		// Cap so comparisons stay useful for huge IPv6 spans.
 		return ^uint64(0)
 	}
@@ -239,7 +252,7 @@ func prefixSize(p netip.Prefix) uint64 {
 
 func addrAdd(addr netip.Addr, delta int64) (netip.Addr, bool) {
 	a := addr.As16()
-	var carry int64 = delta
+	carry := delta
 	for i := 15; i >= 0 && carry != 0; i-- {
 		v := int64(a[i]) + carry
 		carry = 0
@@ -313,7 +326,7 @@ func prefixContains(outer, inner netip.Prefix) bool {
 }
 
 func mergePass(prefixes []netip.Prefix) ([]netip.Prefix, bool) {
-	if len(prefixes) < 2 {
+	if len(prefixes) < minMergePrefixes {
 		return prefixes, false
 	}
 
