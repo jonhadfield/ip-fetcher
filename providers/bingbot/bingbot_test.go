@@ -29,7 +29,7 @@ func TestFetch(t *testing.T) {
 	doc, err := ac.Fetch()
 	require.NoError(t, err)
 	require.NotEmpty(t, doc.IPv4Prefixes)
-	require.Contains(t, doc.IPv4Prefixes, bingbot.IPv4Entry{netip.MustParsePrefix("40.77.139.0/25")})
-	require.Contains(t, doc.IPv4Prefixes, bingbot.IPv4Entry{netip.MustParsePrefix("20.15.133.160/27")})
-	require.NotContains(t, doc.IPv4Prefixes, bingbot.IPv4Entry{netip.MustParsePrefix("200.20.133.160/27")})
+	require.Contains(t, doc.IPv4Prefixes, bingbot.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("40.77.139.0/25")})
+	require.Contains(t, doc.IPv4Prefixes, bingbot.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("20.15.133.160/27")})
+	require.NotContains(t, doc.IPv4Prefixes, bingbot.IPv4Entry{IPv4Prefix: netip.MustParsePrefix("200.20.133.160/27")})
 }
