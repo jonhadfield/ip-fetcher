@@ -40,6 +40,7 @@ func pingdomCmd() *cli.Command {
 				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
+			aggregateFlag(),
 		},
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
@@ -94,7 +95,7 @@ func pingdomData(c *cli.Context, p *pingdom.Pingdom) ([]byte, error) {
 			return nil, err
 		}
 
-		return docToLines(doc)
+		return docToLinesWithCLI(c, doc)
 	}
 
 	data, _, _, err := p.FetchData()

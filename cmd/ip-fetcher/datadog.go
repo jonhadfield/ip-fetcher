@@ -8,6 +8,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/jonhadfield/ip-fetcher/internal/aggregate"
 	"github.com/jonhadfield/ip-fetcher/providers/datadog"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/h2non/gock.v1"
@@ -50,6 +51,7 @@ func datadogCmd() *cli.Command {
 				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
+			aggregateFlag(),
 		},
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
@@ -79,12 +81,18 @@ func datadogCmd() *cli.Command {
 				format = formatLines
 			}
 
-			return datadogOutput(doc, format, stdout, path)
+			mode, aggErr := aggregateModeOrError(c)
+
+			if aggErr != nil {
+				return aggErr
+			}
+
+			return datadogOutput(doc, format, stdout, path, mode)
 		},
 	}
 }
 
-func datadogOutput(doc datadog.Doc, format string, stdout bool, path string) error {
+func datadogOutput(doc datadog.Doc, format string, stdout bool, path string, mode aggregate.Mode) error {
 	if !slices.Contains(datadogFormats, format) {
 		return fmt.Errorf("invalid format: %s\n       choose from: %s",
 			format, strings.Join(datadogFormats, ", "))
@@ -97,7 +105,7 @@ func datadogOutput(doc datadog.Doc, format string, stdout bool, path string) err
 
 	switch format {
 	case formatLines:
-		data = prefixesToLines(doc.IPv4Prefixes, doc.IPv6Prefixes)
+		data = prefixesToLinesAggregated(doc.IPv4Prefixes, doc.IPv6Prefixes, mode)
 	case formatYAML:
 		if data, err = yaml.Marshal(doc); err != nil {
 			return err

@@ -8,6 +8,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/jonhadfield/ip-fetcher/internal/aggregate"
 	"github.com/jonhadfield/ip-fetcher/providers/stripe"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/h2non/gock.v1"
@@ -50,6 +51,7 @@ func stripeCmd() *cli.Command {
 				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
+			aggregateFlag(),
 		},
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
@@ -87,12 +89,18 @@ func stripeCmd() *cli.Command {
 				format = formatLines
 			}
 
-			return stripeOutput(doc, format, stdout, path)
+			mode, aggErr := aggregateModeOrError(c)
+
+			if aggErr != nil {
+				return aggErr
+			}
+
+			return stripeOutput(doc, format, stdout, path, mode)
 		},
 	}
 }
 
-func stripeOutput(doc stripe.Doc, format string, stdout bool, path string) error {
+func stripeOutput(doc stripe.Doc, format string, stdout bool, path string, mode aggregate.Mode) error {
 	if !slices.Contains(stripeFormats, format) {
 		return fmt.Errorf("invalid format: %s\n       choose from: %s",
 			format, strings.Join(stripeFormats, ", "))
@@ -105,7 +113,7 @@ func stripeOutput(doc stripe.Doc, format string, stdout bool, path string) error
 
 	switch format {
 	case formatLines:
-		data = prefixesToLines(doc.IPv4Prefixes, doc.IPv6Prefixes)
+		data = prefixesToLinesAggregated(doc.IPv4Prefixes, doc.IPv6Prefixes, mode)
 	case formatYAML:
 		if data, err = yaml.Marshal(doc); err != nil {
 			return err

@@ -9,6 +9,10 @@ import (
 )
 
 func resolveOutputTargets(c *cli.Context) (string, bool, error) {
+	if _, err := aggregateModeOrError(c); err != nil {
+		return "", false, err
+	}
+
 	path := strings.TrimSpace(c.String(flagPath))
 	stdout := c.Bool(flagStdout)
 

@@ -40,6 +40,7 @@ func gcoreCmd() *cli.Command {
 				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
+			aggregateFlag(),
 		},
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
@@ -88,7 +89,7 @@ func gcoreData(c *cli.Context, p *gcore.Gcore) ([]byte, error) {
 			return nil, err
 		}
 
-		return docToLines(doc)
+		return docToLinesWithCLI(c, doc)
 	}
 
 	data, _, _, err := p.FetchData()

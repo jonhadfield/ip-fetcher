@@ -40,6 +40,7 @@ func zoomCmd() *cli.Command {
 				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
+			aggregateFlag(),
 		},
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
@@ -88,7 +89,7 @@ func zoomData(c *cli.Context, p *zoom.Zoom) ([]byte, error) {
 			return nil, err
 		}
 
-		return docToLines(doc)
+		return docToLinesWithCLI(c, doc)
 	}
 
 	data, _, _, err := p.FetchData()

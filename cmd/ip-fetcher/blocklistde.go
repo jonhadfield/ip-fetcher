@@ -40,6 +40,7 @@ func blocklistdeCmd() *cli.Command {
 				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
+			aggregateFlag(),
 		},
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
@@ -67,7 +68,7 @@ func blocklistdeCmd() *cli.Command {
 					return err
 				}
 
-				if data, err = docToLines(doc); err != nil {
+				if data, err = docToLinesWithCLI(c, doc); err != nil {
 					return err
 				}
 			} else {

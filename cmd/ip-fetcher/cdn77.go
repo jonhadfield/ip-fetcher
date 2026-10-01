@@ -8,6 +8,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/jonhadfield/ip-fetcher/internal/aggregate"
 	"github.com/jonhadfield/ip-fetcher/providers/cdn77"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/h2non/gock.v1"
@@ -50,6 +51,7 @@ func cdn77Cmd() *cli.Command {
 				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
+			aggregateFlag(),
 		},
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
@@ -80,12 +82,18 @@ func cdn77Cmd() *cli.Command {
 				format = formatLines
 			}
 
-			return cdn77Output(doc, format, stdout, path)
+			mode, aggErr := aggregateModeOrError(c)
+
+			if aggErr != nil {
+				return aggErr
+			}
+
+			return cdn77Output(doc, format, stdout, path, mode)
 		},
 	}
 }
 
-func cdn77Output(doc cdn77.Doc, format string, stdout bool, path string) error {
+func cdn77Output(doc cdn77.Doc, format string, stdout bool, path string, mode aggregate.Mode) error {
 	if !slices.Contains(cdn77Formats, format) {
 		return fmt.Errorf("invalid format: %s\n       choose from: %s",
 			format, strings.Join(cdn77Formats, ", "))
@@ -101,6 +109,9 @@ func cdn77Output(doc cdn77.Doc, format string, stdout bool, path string) error {
 		data = cdn77Csv(doc)
 	case formatLines:
 		data = cdn77Lines(doc)
+		if data, err = aggregateLinesOutput(data, mode); err != nil {
+			return err
+		}
 	case formatYAML:
 		if data, err = yaml.Marshal(doc); err != nil {
 			return err

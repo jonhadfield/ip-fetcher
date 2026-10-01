@@ -40,6 +40,7 @@ func statuscakeCmd() *cli.Command {
 				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
+			aggregateFlag(),
 		},
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
@@ -89,7 +90,7 @@ func statuscakeData(c *cli.Context, p *statuscake.StatusCake) ([]byte, error) {
 			return nil, err
 		}
 
-		return docToLines(doc)
+		return docToLinesWithCLI(c, doc)
 	}
 
 	data, _, _, err := p.FetchData()

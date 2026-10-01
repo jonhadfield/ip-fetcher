@@ -39,6 +39,7 @@ func awsCmd() *cli.Command {
 				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
+			aggregateFlag(),
 		},
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
@@ -56,7 +57,7 @@ func awsCmd() *cli.Command {
 				defer gock.Off()
 			}
 
-			data, fileName, err := awsData(&a, c.Bool(formatLines))
+			data, fileName, err := awsData(c, &a, c.Bool(formatLines))
 			if err != nil {
 				return err
 			}
@@ -91,14 +92,14 @@ func configureAWSMock(a *aws.AWS) (bool, error) {
 	return true, nil
 }
 
-func awsData(a *aws.AWS, asLines bool) ([]byte, string, error) {
+func awsData(c *cli.Context, a *aws.AWS, asLines bool) ([]byte, string, error) {
 	if asLines {
 		doc, _, err := a.Fetch()
 		if err != nil {
 			return nil, "", err
 		}
 
-		data, err := docToLines(doc)
+		data, err := docToLinesWithCLI(c, doc)
 		if err != nil {
 			return nil, "", err
 		}

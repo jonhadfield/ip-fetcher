@@ -44,6 +44,7 @@ func zscalerCmd() *cli.Command {
 				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
+			aggregateFlag(),
 		},
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
@@ -71,7 +72,7 @@ func zscalerCmd() *cli.Command {
 				}
 
 				var lines []byte
-				if lines, err = docToLines(zscalerPrefixes(raw)); err != nil {
+				if lines, err = docToLinesWithCLI(c, zscalerPrefixes(raw)); err != nil {
 					return err
 				}
 

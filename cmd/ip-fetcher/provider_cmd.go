@@ -33,6 +33,7 @@ func providerFlags() []cli.Flag {
 			Name:  formatLines,
 			Usage: usageLinesOutput,
 		},
+		aggregateFlag(),
 	}
 }
 
@@ -69,7 +70,7 @@ func providerCommand(spec providerSpec) *cli.Command {
 		Name:         spec.name,
 		HelpName:     "- fetch " + spec.helpName,
 		Usage:        spec.usage,
-		UsageText:    fmt.Sprintf("ip-fetcher %s {--stdout | --Path FILE} [--lines]", spec.name),
+		UsageText:    fmt.Sprintf("ip-fetcher %s {--stdout | --Path FILE} [--lines] [--aggregate exact|cover]", spec.name),
 		OnUsageError: onUsageError,
 		Flags:        providerFlags(),
 		Action: func(c *cli.Context) error {
@@ -111,13 +112,18 @@ func providerData(
 	fetchData func() ([]byte, http.Header, int, error),
 	fetchDoc func() (any, error),
 ) ([]byte, error) {
+	mode, err := aggregateModeOrError(c)
+	if err != nil {
+		return nil, err
+	}
+
 	if c.Bool(formatLines) {
 		doc, err := fetchDoc()
 		if err != nil {
 			return nil, err
 		}
 
-		return docToLines(doc)
+		return docToLines(doc, mode)
 	}
 
 	data, _, _, err := fetchData()

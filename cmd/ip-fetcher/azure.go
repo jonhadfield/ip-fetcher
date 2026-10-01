@@ -40,6 +40,7 @@ func azureCmd() *cli.Command {
 				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
+			aggregateFlag(),
 		},
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
@@ -73,7 +74,7 @@ func azureCmd() *cli.Command {
 				if doc, _, err = a.Fetch(); err != nil {
 					return err
 				}
-				if data, err = docToLines(doc); err != nil {
+				if data, err = docToLinesWithCLI(c, doc); err != nil {
 					return err
 				}
 			} else {

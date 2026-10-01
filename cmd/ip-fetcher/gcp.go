@@ -9,6 +9,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/jonhadfield/ip-fetcher/internal/aggregate"
 	"github.com/jonhadfield/ip-fetcher/providers/gcp"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/h2non/gock.v1"
@@ -48,6 +49,7 @@ func gcpCmd() *cli.Command {
 				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
+			aggregateFlag(),
 		},
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
@@ -79,12 +81,17 @@ func gcpCmd() *cli.Command {
 				format = formatLines
 			}
 
-			return output(doc, format, stdout, path)
+			mode, aggErr := aggregateModeOrError(c)
+			if aggErr != nil {
+				return aggErr
+			}
+
+			return output(doc, format, stdout, path, mode)
 		},
 	}
 }
 
-func output(doc gcp.Doc, format string, stdout bool, path string) error {
+func output(doc gcp.Doc, format string, stdout bool, path string, mode aggregate.Mode) error {
 	var (
 		data []byte
 		err  error
@@ -95,6 +102,9 @@ func output(doc gcp.Doc, format string, stdout bool, path string) error {
 		data = csv(doc)
 	case formatLines:
 		data = lines(doc)
+		if data, err = aggregateLinesOutput(data, mode); err != nil {
+			return err
+		}
 	case formatYAML:
 		jsonPayload, marshalErr := json.Marshal(doc)
 		if marshalErr != nil {

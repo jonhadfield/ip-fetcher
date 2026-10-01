@@ -41,6 +41,7 @@ func ociCmd() *cli.Command {
 				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
+			aggregateFlag(),
 		},
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
@@ -68,7 +69,7 @@ func ociCmd() *cli.Command {
 					return err
 				}
 
-				if data, err = docToLines(doc); err != nil {
+				if data, err = docToLinesWithCLI(c, doc); err != nil {
 					return err
 				}
 			} else {

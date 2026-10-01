@@ -8,6 +8,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/jonhadfield/ip-fetcher/internal/aggregate"
 	"github.com/jonhadfield/ip-fetcher/providers/imperva"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/h2non/gock.v1"
@@ -50,6 +51,7 @@ func impervaCmd() *cli.Command {
 				Name:  formatLines,
 				Usage: usageLinesOutput,
 			},
+			aggregateFlag(),
 		},
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
@@ -79,12 +81,18 @@ func impervaCmd() *cli.Command {
 				format = formatLines
 			}
 
-			return impervaOutput(doc, format, stdout, path)
+			mode, aggErr := aggregateModeOrError(c)
+
+			if aggErr != nil {
+				return aggErr
+			}
+
+			return impervaOutput(doc, format, stdout, path, mode)
 		},
 	}
 }
 
-func impervaOutput(doc imperva.Doc, format string, stdout bool, path string) error {
+func impervaOutput(doc imperva.Doc, format string, stdout bool, path string, mode aggregate.Mode) error {
 	if !slices.Contains(impervaFormats, format) {
 		return fmt.Errorf("invalid format: %s\n       choose from: %s",
 			format, strings.Join(impervaFormats, ", "))
@@ -97,7 +105,7 @@ func impervaOutput(doc imperva.Doc, format string, stdout bool, path string) err
 
 	switch format {
 	case formatLines:
-		data = prefixesToLines(doc.IPv4Prefixes, doc.IPv6Prefixes)
+		data = prefixesToLinesAggregated(doc.IPv4Prefixes, doc.IPv6Prefixes, mode)
 	case formatYAML:
 		if data, err = yaml.Marshal(doc); err != nil {
 			return err

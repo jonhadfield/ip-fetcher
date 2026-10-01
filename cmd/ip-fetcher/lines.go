@@ -6,6 +6,10 @@ import (
 	"net/netip"
 	"reflect"
 	"strings"
+
+	"github.com/jonhadfield/ip-fetcher/internal/aggregate"
+	"github.com/jonhadfield/ip-fetcher/internal/iplist"
+	"github.com/urfave/cli/v2"
 )
 
 var errNoPrefixes = errors.New("no prefixes found")
@@ -24,20 +28,118 @@ func prefixesToLines(ipv4, ipv6 []netip.Prefix) []byte {
 	return []byte(sl.String())
 }
 
-// docToLines converts any provider document or prefix slice to newline separated IP prefixes.
-func docToLines(doc any) ([]byte, error) {
+// linesWanted reports whether the command is producing newline separated prefixes.
+func linesWanted(c *cli.Context) bool {
+	return c.Bool(formatLines) || c.String(flagFormat) == formatLines
+}
+
+// aggregateModeOrError parses --aggregate and ensures it is only used with lines output.
+func aggregateModeOrError(c *cli.Context) (aggregate.Mode, error) {
+	return aggregateMode(c, linesWanted(c))
+}
+
+// aggregateMode parses --aggregate. When lines is false, a non-None mode is an error.
+func aggregateMode(c *cli.Context, lines bool) (aggregate.Mode, error) {
+	mode, err := aggregate.ParseMode(c.String(flagAggregate))
+	if err != nil {
+		return aggregate.None, err
+	}
+
+	if mode != aggregate.None && !lines {
+		return aggregate.None, errors.New(errAggregateNeedsLines)
+	}
+
+	return mode, nil
+}
+
+// aggregateFlag is the shared --aggregate exact|cover option.
+func aggregateFlag() *cli.StringFlag {
+	return &cli.StringFlag{
+		Name:  flagAggregate,
+		Usage: usageAggregate,
+	}
+}
+
+// docToLinesWithCLI reads --aggregate from the CLI context and renders lines.
+func docToLinesWithCLI(c *cli.Context, doc any) ([]byte, error) {
+	mode, err := aggregateModeOrError(c)
+	if err != nil {
+		return nil, err
+	}
+
+	return docToLines(doc, mode)
+}
+
+// docToLines converts any provider document or prefix slice to newline separated
+// IP prefixes, optionally aggregating them.
+func docToLines(doc any, mode aggregate.Mode) ([]byte, error) {
 	if doc == nil {
 		return nil, errNoPrefixes
 	}
 
-	prefixes := collectPrefixes(doc)
+	raw := collectPrefixes(doc)
+	if len(raw) == 0 {
+		return nil, errNoPrefixes
+	}
+
+	prefixes := make([]netip.Prefix, 0, len(raw))
+	for _, s := range raw {
+		p, ok := iplist.ToPrefix(s)
+		if !ok {
+			continue
+		}
+
+		prefixes = append(prefixes, p)
+	}
+
 	if len(prefixes) == 0 {
 		return nil, errNoPrefixes
 	}
 
-	joined := strings.Join(prefixes, "\n") + "\n"
+	prefixes = aggregate.Apply(mode, prefixes)
 
-	return []byte(joined), nil
+	lines := make([]string, 0, len(prefixes))
+	for _, p := range prefixes {
+		lines = append(lines, p.String())
+	}
+
+	return []byte(strings.Join(lines, "\n") + "\n"), nil
+}
+
+// aggregateLinesOutput re-parses newline separated prefixes and applies mode.
+func aggregateLinesOutput(data []byte, mode aggregate.Mode) ([]byte, error) {
+	if mode == aggregate.None {
+		return data, nil
+	}
+
+	ipv4, ipv6, err := iplist.Parse("aggregate", data)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(ipv4) == 0 && len(ipv6) == 0 {
+		return nil, errNoPrefixes
+	}
+
+	return prefixesToLinesAggregated(ipv4, ipv6, mode), nil
+}
+
+// prefixesToLinesAggregated applies aggregation then renders IPv4 then IPv6.
+func prefixesToLinesAggregated(ipv4, ipv6 []netip.Prefix, mode aggregate.Mode) []byte {
+	merged := aggregate.Apply(mode, append(append([]netip.Prefix{}, ipv4...), ipv6...))
+
+	var out4, out6 []netip.Prefix
+	for _, p := range merged {
+		if p.Addr().Is4() {
+			out4 = append(out4, p)
+
+			continue
+		}
+
+		out6 = append(out6, p)
+	}
+
+	return prefixesToLines(out4, out6)
 }
 
 func collectPrefixes(input any) []string { //nolint:gocognit

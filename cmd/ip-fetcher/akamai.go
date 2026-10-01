@@ -19,7 +19,7 @@ func akamaiCmd() *cli.Command {
 		Name:      providerName,
 		HelpName:  "- fetch Akamai prefixes",
 		Usage:     "Akamai",
-		UsageText: "ip-fetcher akamai {--stdout | --Path FILE}",
+		UsageText: "ip-fetcher akamai {--stdout | --Path FILE} [--aggregate exact|cover]",
 		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
 			_ = cli.ShowSubcommandHelp(cCtx)
 			return err
@@ -33,6 +33,7 @@ func akamaiCmd() *cli.Command {
 				Name:  flagStdout,
 				Usage: usageWriteToStdout, Aliases: []string{"s"},
 			},
+			aggregateFlag(),
 		},
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
@@ -60,7 +61,13 @@ func akamaiCmd() *cli.Command {
 				return err
 			}
 
-			data, err := docToLines(prefixes)
+			// Output is always newline separated prefixes.
+			mode, err := aggregateMode(c, true)
+			if err != nil {
+				return err
+			}
+
+			data, err := docToLines(prefixes, mode)
 			if err != nil {
 				return err
 			}
