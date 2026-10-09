@@ -1,10 +1,6 @@
 package publisher
 
 import (
-	"bytes"
-	"log/slog"
-	"os"
-
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -22,27 +18,5 @@ func fetchGoogle() ([]byte, error) {
 }
 
 func syncGoogleData(data []byte, wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
-	rgb, err := fs.Open(googleFile)
-	if err != nil && !os.IsNotExist(err) {
-		return plumbing.ZeroHash, err
-	}
-
-	if err == nil {
-		upToDate, utdErr := isUpToDate(bytes.NewReader(data), rgb)
-		if utdErr != nil || upToDate {
-			return plumbing.ZeroHash, utdErr
-		}
-
-		slog.Info(googleFile, "up to date", upToDate)
-	}
-
-	if err = createFile(fs, googleFile, data); err != nil {
-		return plumbing.ZeroHash, err
-	}
-
-	if _, err = wt.Add(googleFile); err != nil {
-		return plumbing.ZeroHash, err
-	}
-
-	return createCommit(wt, "update google data")
+	return syncData(googleFile, data, wt, fs)
 }

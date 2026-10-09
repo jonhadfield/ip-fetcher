@@ -25,34 +25,17 @@ var atlassianFormats = []string{formatJSON, formatYAML, formatLines}
 
 func atlassianCmd() *cli.Command {
 	return &cli.Command{
-		Name:      providerNameAtlassian,
-		HelpName:  "- fetch Atlassian prefixes",
-		Usage:     "Atlassian",
-		UsageText: "ip-fetcher atlassian {--stdout | --Path FILE} [--lines]",
-		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
-			_ = cli.ShowSubcommandHelp(cCtx)
-
-			return err
-		},
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  flagPath,
-				Usage: usageWhereToSaveFile, Aliases: []string{"p"},
-			},
-			&cli.BoolFlag{
-				Name:  flagStdout,
-				Usage: usageWriteToStdout, Aliases: []string{"s"},
-			},
+		Name:         providerNameAtlassian,
+		HelpName:     "- fetch Atlassian prefixes",
+		Usage:        "Atlassian",
+		UsageText:    "ip-fetcher atlassian {--stdout | --Path FILE} [--lines]",
+		OnUsageError: onUsageError,
+		Flags: providerFlagsWith(
 			&cli.StringFlag{
 				Name:  flagFormat,
 				Usage: strings.Join(atlassianFormats, ", "), Value: formatJSON, Aliases: []string{"f"},
 			},
-			&cli.BoolFlag{
-				Name:  formatLines,
-				Usage: usageLinesOutput,
-			},
-			aggregateFlag(),
-		},
+		),
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
 			if err != nil {

@@ -15,7 +15,7 @@ import (
 )
 
 func TestFetchData(t *testing.T) {
-	u, err := url.Parse(digitalocean.DigitaloceanDownloadURL)
+	u, err := url.Parse(digitalocean.DownloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 
@@ -43,7 +43,7 @@ func TestFetchData(t *testing.T) {
 }
 
 func TestFetch(t *testing.T) {
-	u, err := url.Parse(digitalocean.DigitaloceanDownloadURL)
+	u, err := url.Parse(digitalocean.DownloadURL)
 	require.NoError(t, err)
 	urlBase := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
 

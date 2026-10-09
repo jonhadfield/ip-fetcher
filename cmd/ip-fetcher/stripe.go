@@ -25,34 +25,17 @@ var stripeFormats = []string{formatJSON, formatYAML, formatLines}
 
 func stripeCmd() *cli.Command {
 	return &cli.Command{
-		Name:      providerNameStripe,
-		HelpName:  "- fetch Stripe prefixes",
-		Usage:     "Stripe",
-		UsageText: "ip-fetcher stripe {--stdout | --Path FILE} [--lines]",
-		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
-			_ = cli.ShowSubcommandHelp(cCtx)
-
-			return err
-		},
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  flagPath,
-				Usage: usageWhereToSaveFile, Aliases: []string{"p"},
-			},
-			&cli.BoolFlag{
-				Name:  flagStdout,
-				Usage: usageWriteToStdout, Aliases: []string{"s"},
-			},
+		Name:         providerNameStripe,
+		HelpName:     "- fetch Stripe prefixes",
+		Usage:        "Stripe",
+		UsageText:    "ip-fetcher stripe {--stdout | --Path FILE} [--lines]",
+		OnUsageError: onUsageError,
+		Flags: providerFlagsWith(
 			&cli.StringFlag{
 				Name:  flagFormat,
 				Usage: strings.Join(stripeFormats, ", "), Value: formatJSON, Aliases: []string{"f"},
 			},
-			&cli.BoolFlag{
-				Name:  formatLines,
-				Usage: usageLinesOutput,
-			},
-			aggregateFlag(),
-		},
+		),
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
 			if err != nil {

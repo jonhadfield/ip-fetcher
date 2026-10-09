@@ -37,6 +37,17 @@ func providerFlags() []cli.Flag {
 	}
 }
 
+// providerFlagsWith inserts extra flags after path/stdout and before --lines.
+func providerFlagsWith(extra ...cli.Flag) []cli.Flag {
+	base := providerFlags()
+	out := make([]cli.Flag, 0, len(base)+len(extra))
+	out = append(out, base[:2]...)
+	out = append(out, extra...)
+	out = append(out, base[2:]...)
+
+	return out
+}
+
 // mockSource serves one of a provider's URLs from a testdata file, so the CLI
 // tests can exercise a command without reaching the network.
 type mockSource struct {

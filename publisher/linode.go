@@ -1,10 +1,7 @@
 package publisher
 
 import (
-	"bytes"
 	"encoding/json"
-	"log/slog"
-	"os"
 
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-git/v5"
@@ -43,27 +40,5 @@ func fetchLinode() ([]byte, error) {
 }
 
 func syncLinodeData(data []byte, wt *git.Worktree, fs billy.Filesystem) (plumbing.Hash, error) {
-	rgb, err := fs.Open(linodeFile)
-	if err != nil && !os.IsNotExist(err) {
-		return plumbing.ZeroHash, err
-	}
-
-	if err == nil {
-		upToDate, utdErr := isUpToDate(bytes.NewReader(data), rgb)
-		if utdErr != nil || upToDate {
-			return plumbing.ZeroHash, utdErr
-		}
-
-		slog.Info(linodeFile, "up to date", upToDate)
-	}
-
-	if err = createFile(fs, linodeFile, data); err != nil {
-		return plumbing.ZeroHash, err
-	}
-
-	if _, err = wt.Add(linodeFile); err != nil {
-		return plumbing.ZeroHash, err
-	}
-
-	return createCommit(wt, "update linode data")
+	return syncData(linodeFile, data, wt, fs)
 }

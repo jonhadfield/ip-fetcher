@@ -19,30 +19,12 @@ func uptimerobotCmd() *cli.Command {
 	)
 
 	return &cli.Command{
-		Name:      providerName,
-		HelpName:  "- fetch UptimeRobot monitoring prefixes",
-		Usage:     "UptimeRobot",
-		UsageText: "ip-fetcher uptimerobot {--stdout | --Path FILE} [--lines]",
-		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
-			_ = cli.ShowSubcommandHelp(cCtx)
-
-			return err
-		},
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  flagPath,
-				Usage: usageWhereToSaveFile, Aliases: []string{"p"},
-			},
-			&cli.BoolFlag{
-				Name:  flagStdout,
-				Usage: usageWriteToStdout, Aliases: []string{"s"},
-			},
-			&cli.BoolFlag{
-				Name:  formatLines,
-				Usage: usageLinesOutput,
-			},
-			aggregateFlag(),
-		},
+		Name:         providerName,
+		HelpName:     "- fetch UptimeRobot monitoring prefixes",
+		Usage:        "UptimeRobot",
+		UsageText:    "ip-fetcher uptimerobot {--stdout | --Path FILE} [--lines]",
+		OnUsageError: onUsageError,
+		Flags:        providerFlags(),
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
 			if err != nil {

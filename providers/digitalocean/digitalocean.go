@@ -16,14 +16,12 @@ import (
 )
 
 const (
-	ShortName   = "digitalocean"
-	FullName    = "DigitalOcean"
-	HostType    = "hosting"
-	SourceURL   = "https://www.digitalocean.com/"
-	DownloadURL = "https://www.digitalocean.com/geo/google.csv"
-	// DigitaloceanDownloadURL is retained for callers that still use the old name.
-	DigitaloceanDownloadURL = DownloadURL
-	errFailedToDownload     = "failed to download digital ocean prefixes document "
+	ShortName           = "digitalocean"
+	FullName            = "DigitalOcean"
+	HostType            = "hosting"
+	SourceURL           = "https://www.digitalocean.com/"
+	DownloadURL         = "https://www.digitalocean.com/geo/google.csv"
+	errFailedToDownload = "failed to download digital ocean prefixes document "
 )
 
 type DigitalOcean struct {

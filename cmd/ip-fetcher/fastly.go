@@ -25,34 +25,17 @@ var fastlyFormats = []string{formatJSON, formatYAML, formatLines, formatCSV}
 
 func fastlyCmd() *cli.Command {
 	return &cli.Command{
-		Name:      providerNameFastly,
-		HelpName:  "- fetch Fastly prefixes",
-		Usage:     "Fastly",
-		UsageText: "ip-fetcher fastly {--stdout | --Path FILE} [--lines]",
-		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
-			_ = cli.ShowSubcommandHelp(cCtx)
-
-			return err
-		},
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  flagPath,
-				Usage: usageWhereToSaveFile, Aliases: []string{"p"},
-			},
-			&cli.BoolFlag{
-				Name:  flagStdout,
-				Usage: usageWriteToStdout, Aliases: []string{"s"},
-			},
+		Name:         providerNameFastly,
+		HelpName:     "- fetch Fastly prefixes",
+		Usage:        "Fastly",
+		UsageText:    "ip-fetcher fastly {--stdout | --Path FILE} [--lines]",
+		OnUsageError: onUsageError,
+		Flags: providerFlagsWith(
 			&cli.StringFlag{
 				Name:  flagFormat,
 				Usage: strings.Join(fastlyFormats, ", "), Value: formatJSON, Aliases: []string{"f"},
 			},
-			&cli.BoolFlag{
-				Name:  formatLines,
-				Usage: usageLinesOutput,
-			},
-			aggregateFlag(),
-		},
+		),
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
 			if err != nil {

@@ -7,15 +7,11 @@ import (
 
 func publishCmd() *cli.Command {
 	return &cli.Command{
-		Name:      "publish",
-		Usage:     "publishes the Data to a remote location",
-		HelpName:  "- fetch and deploy ranges to a git repo",
-		UsageText: "ip-fetcher publish",
-		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
-			_ = cli.ShowSubcommandHelp(cCtx)
-
-			return err
-		},
+		Name:         "publish",
+		Usage:        "publishes the Data to a remote location",
+		HelpName:     "- fetch and deploy ranges to a git repo",
+		UsageText:    "ip-fetcher publish",
+		OnUsageError: onUsageError,
 		Action: func(c *cli.Context) error {
 			publisher.Publish()
 

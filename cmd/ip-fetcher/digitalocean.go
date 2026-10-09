@@ -16,30 +16,12 @@ func digitaloceanCmd() *cli.Command {
 	)
 
 	return &cli.Command{
-		Name:      "digitalocean",
-		HelpName:  "- fetch DigitalOcean prefixes",
-		Usage:     "DigitalOcean",
-		UsageText: "ip-fetcher digitalocean {--stdout | --Path FILE} [--lines]",
-		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
-			_ = cli.ShowSubcommandHelp(cCtx)
-
-			return err
-		},
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  flagPath,
-				Usage: usageWhereToSaveFile, Aliases: []string{"p"}, TakesFile: true,
-			},
-			&cli.BoolFlag{
-				Name:  flagStdout,
-				Usage: usageWriteToStdout, Aliases: []string{"s"},
-			},
-			&cli.BoolFlag{
-				Name:  formatLines,
-				Usage: usageLinesOutput,
-			},
-			aggregateFlag(),
-		},
+		Name:         "digitalocean",
+		HelpName:     "- fetch DigitalOcean prefixes",
+		Usage:        "DigitalOcean",
+		UsageText:    "ip-fetcher digitalocean {--stdout | --Path FILE} [--lines]",
+		OnUsageError: onUsageError,
+		Flags:        providerFlags(),
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
 			if err != nil {
@@ -50,7 +32,7 @@ func digitaloceanCmd() *cli.Command {
 
 			if isEnvEnabled("IP_FETCHER_MOCK_DIGITALOCEAN") {
 				defer gock.Off()
-				urlBase := digitalocean.DigitaloceanDownloadURL
+				urlBase := digitalocean.DownloadURL
 				u, _ := url.Parse(urlBase)
 				gock.New(urlBase).
 					Get(u.Path).

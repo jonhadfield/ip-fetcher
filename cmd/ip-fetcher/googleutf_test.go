@@ -83,7 +83,7 @@ func TestGoogleutfCmdSavetoPath(t *testing.T) {
 	// with directory only
 	os.Args = []string{"ip-fetcher", "googleutf", "--Path", tDir}
 	require.NoError(t, app.Run(os.Args))
-	require.FileExists(t, filepath.Join(tDir, "user-triggered-fetchers.json"))
+	require.FileExists(t, filepath.Join(tDir, "googleutf.json"))
 }
 
 func TestGoogleutfCmdStdOut(t *testing.T) {
@@ -145,5 +145,5 @@ func TestGoogleutfCmdStdOutAndFile(t *testing.T) {
 	out := <-outC
 	require.Contains(t, out, "35.187.132.96/27")
 	require.Contains(t, out, "2404:f340:4010:4000::/64")
-	require.FileExists(t, filepath.Join(tDir, "user-triggered-fetchers.json"))
+	require.FileExists(t, filepath.Join(tDir, "googleutf.json"))
 }

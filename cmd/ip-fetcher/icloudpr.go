@@ -21,30 +21,12 @@ func iCloudPRCmd() *cli.Command {
 	)
 
 	return &cli.Command{
-		Name:      SICloudPR,
-		HelpName:  "- fetch iCloud Private Relay prefixes",
-		Usage:     "iCloud Private Relay prefixes",
-		UsageText: "ip-fetcher icloudpr {--stdout | --Path FILE}",
-		OnUsageError: func(cCtx *cli.Context, err error, isSubcommand bool) error {
-			_ = cli.ShowSubcommandHelp(cCtx)
-
-			return err
-		},
-		Flags: []cli.Flag{
-			&cli.StringFlag{
-				Name:  flagPath,
-				Usage: usageWhereToSaveFile, Aliases: []string{"p"},
-			},
-			&cli.BoolFlag{
-				Name:  flagStdout,
-				Usage: usageWriteToStdout, Aliases: []string{"s"},
-			},
-			&cli.BoolFlag{
-				Name:  formatLines,
-				Usage: usageLinesOutput,
-			},
-			aggregateFlag(),
-		},
+		Name:         SICloudPR,
+		HelpName:     "- fetch iCloud Private Relay prefixes",
+		Usage:        "iCloud Private Relay prefixes",
+		UsageText:    "ip-fetcher icloudpr {--stdout | --Path FILE}",
+		OnUsageError: onUsageError,
+		Flags:        providerFlags(),
 		Action: func(c *cli.Context) error {
 			path, stdout, err := resolveOutputTargets(c)
 			if err != nil {
