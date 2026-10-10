@@ -36,15 +36,15 @@ threat ratings, see [ipscout](https://github.com/jonhadfield/ipscout).
 Plus a **Custom URL** source, for any list not covered above.
 
 [^stale]: These feeds are still served and still parse, but their publishers
-have not regenerated them recently. As of 2026-09-23 the `creationTime` in the
-OpenAI OAI-SearchBot document was 2026-01-02 (GPTBot, ChatGPT-User and
-OAI-AdsBot are newer) and PerplexityBot's was 2025-02-07, and as of 2026-09-02
-Tenable's `createDate` was 2026-03-31 — a much shorter gap than the crawler
-feeds, and a scanner list changes less often, but still worth a look before
-relying on it. The prefixes may no longer reflect the addresses those services
-use, so treat them with caution when allowlisting. Each provider carries the
-value if you want to check it yourself: `Doc.CreationTime`, or
-`Doc.CreateDate` for Tenable.
+have not regenerated them recently. As of 2026-10-10 the `creationTime` in the
+OpenAI OAI-SearchBot document was still 2026-01-02 (ChatGPT-User was
+2026-10-07, GPTBot 2026-09-22, OAI-AdsBot 2026-05-12) and PerplexityBot's was
+still 2025-02-07, and Tenable's `createDate` was still 2026-03-31 — a much
+shorter gap than the crawler feeds, and a scanner list changes less often, but
+still worth a look before relying on it. The prefixes may no longer reflect
+the addresses those services use, so treat them with caution when
+allowlisting. Each provider carries the value if you want to check it
+yourself: `Doc.CreationTime`, or `Doc.CreateDate` for Tenable.
 
 
 ### provider notes

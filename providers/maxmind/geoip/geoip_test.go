@@ -34,19 +34,31 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-// TODO: test for DB type other than all caps
 func TestConstructDownloadURL(t *testing.T) {
 	licenseKey := "license-key"
 	editionID := "GeoLite2"
-	dbType := "ASN"
 	csvDBFormat := "cSv"
 	mmdbDBFormat := "mmdB"
-	require.Equal(t, "https://download.maxmind.com/app/geoip_download?"+
-		"edition_id=GeoLite2-ASN-CSV&license_key=license-key&suffix=zip",
-		geoip.ConstructDownloadURL(licenseKey, editionID, dbType, csvDBFormat))
-	require.Equal(t, "https://download.maxmind.com/app/geoip_download?"+
-		"edition_id=GeoLite2-ASN&license_key=license-key&suffix=tar.gz",
-		geoip.ConstructDownloadURL(licenseKey, editionID, dbType, mmdbDBFormat))
+
+	tests := []struct {
+		name   string
+		dbType string
+	}{
+		{name: "all caps", dbType: "ASN"},
+		{name: "lower case", dbType: "asn"},
+		{name: "mixed case", dbType: "AsN"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, "https://download.maxmind.com/app/geoip_download?"+
+				"edition_id=GeoLite2-ASN-CSV&license_key=license-key&suffix=zip",
+				geoip.ConstructDownloadURL(licenseKey, editionID, tt.dbType, csvDBFormat))
+			require.Equal(t, "https://download.maxmind.com/app/geoip_download?"+
+				"edition_id=GeoLite2-ASN&license_key=license-key&suffix=tar.gz",
+				geoip.ConstructDownloadURL(licenseKey, editionID, tt.dbType, mmdbDBFormat))
+		})
+	}
 }
 
 func TestGetVersionFromZipFileName(t *testing.T) {
