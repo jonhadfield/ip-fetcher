@@ -8,7 +8,7 @@ require (
 	github.com/Danny-Dasilva/CycleTLS/cycletls v1.0.30
 	github.com/agiledragon/gomonkey/v2 v2.14.3
 	github.com/go-git/go-billy/v5 v5.9.2
-	github.com/go-git/go-git/v5 v5.19.2
+	github.com/go-git/go-git/v5 v5.19.3
 	github.com/hashicorp/go-retryablehttp v0.7.8
 	github.com/jszwec/csvutil v1.10.0
 	github.com/sirupsen/logrus v1.10.2
@@ -44,9 +44,8 @@ require (
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v1.4.0 // indirect
 	github.com/klauspost/compress v1.18.3 // indirect
-	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/onsi/ginkgo/v2 v2.28.1 // indirect
-	github.com/pjbgf/sha1cd v0.6.0 // indirect
+	github.com/pjbgf/sha1cd v0.7.0 // indirect
 	github.com/quic-go/qpack v0.6.0 // indirect
 	github.com/quic-go/quic-go v0.59.1 // indirect
 	github.com/refraction-networking/uquic v0.0.6 // indirect
