@@ -10,7 +10,7 @@ require (
 	github.com/go-git/go-billy/v5 v5.9.2
 	github.com/go-git/go-git/v5 v5.19.2
 	github.com/hashicorp/go-retryablehttp v0.7.8
-	github.com/jszwec/csvutil v1.10.0
+	github.com/jszwec/csvutil v1.10.1
 	github.com/sirupsen/logrus v1.10.2
 	github.com/stretchr/testify v1.12.1
 	github.com/urfave/cli/v2 v2.27.7
