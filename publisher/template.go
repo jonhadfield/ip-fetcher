@@ -78,7 +78,9 @@ import (
 	"github.com/jonhadfield/ip-fetcher/providers/google"
 	"github.com/jonhadfield/ip-fetcher/providers/googlebot"
 	"github.com/jonhadfield/ip-fetcher/providers/googlesc"
+	"github.com/jonhadfield/ip-fetcher/providers/googleuta"
 	"github.com/jonhadfield/ip-fetcher/providers/googleutf"
+	"github.com/jonhadfield/ip-fetcher/providers/googleutfg"
 	"github.com/jonhadfield/ip-fetcher/providers/grafana"
 	"github.com/jonhadfield/ip-fetcher/providers/huawei"
 	"github.com/jonhadfield/ip-fetcher/providers/icloudpr"
@@ -165,7 +167,9 @@ var providers = []Provider{ //nolint:nolintlint,gochecknoglobals
 	{fetchGoogle, syncGoogleData, google.ShortName, googleFile, google.FullName, google.HostType, google.SourceURL},
 	{fetchGooglebot, syncGooglebotData, googlebot.ShortName, googlebotFile, googlebot.FullName, googlebot.HostType, googlebot.SourceURL},
 	{fetchGoogleSC, syncGoogleSCData, googlesc.ShortName, googlescFile, googlesc.FullName, googlesc.HostType, googlesc.SourceURL},
+	{fetchGoogleUTA, syncGoogleUTAData, googleuta.ShortName, googleutaFile, googleuta.FullName, googleuta.HostType, googleuta.SourceURL},
 	{fetchGoogleUTF, syncGoogleUTFData, googleutf.ShortName, googleutfFile, googleutf.FullName, googleutf.HostType, googleutf.SourceURL},
+	{fetchGoogleUTFG, syncGoogleUTFGData, googleutfg.ShortName, googleutfgFile, googleutfg.FullName, googleutfg.HostType, googleutfg.SourceURL},
 	{fetchGrafana, syncGrafanaData, grafana.ShortName, grafanaFile, grafana.FullName, grafana.HostType, grafana.SourceURL},
 	{fetchGreensnow, syncGreensnowData, greensnow.ShortName, greensnowFile, greensnow.FullName, greensnow.HostType, greensnow.SourceURL},
 	{fetchHetzner, syncHetznerData, hetzner.ShortName, hetznerFile, hetzner.FullName, hetzner.HostType, hetzner.SourceURL},

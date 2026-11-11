@@ -59,6 +59,8 @@ func TestProviderCmds(t *testing.T) {
 		{"xpanse", "IP_FETCHER_MOCK_XPANSE", "xpanse.txt", "xpanse-prefixes.txt", "35.203.210.0"},
 		{"invicti", "IP_FETCHER_MOCK_INVICTI", "invicti.txt", "invicti-prefixes.txt", "3.228.162.54"},
 		{"onetrust", "IP_FETCHER_MOCK_ONETRUST", "onetrust.txt", "onetrust-prefixes.txt", "20.54.106.120"},
+		{"googleuta", "IP_FETCHER_MOCK_GOOGLEUTA", "googleuta.json", "googleuta-prefixes.txt", "136.121.16.0"},
+		{"googleutfg", "IP_FETCHER_MOCK_GOOGLEUTFG", "googleutfg.json", "googleutfg-prefixes.txt", "142.250.32.0"},
 	}
 
 	for _, tc := range cases {

@@ -127,6 +127,8 @@ func TestSyncProviderDataWritesProviderFile(t *testing.T) {
 		{"onetrust", syncOneTrustData, onetrustFile},
 		{"bingbot", syncBingbotData, bingbotFile},
 		{"digitalocean", syncDigitalOceanData, digitaloceanFile},
+		{"googleuta", syncGoogleUTAData, googleutaFile},
+		{"googleutfg", syncGoogleUTFGData, googleutfgFile},
 	}
 
 	for _, tc := range cases {

@@ -59,6 +59,8 @@ func TestGenerateReadMeContentIncludesRegisteredProviders(t *testing.T) {
 		{"m365", "m365.json", "Microsoft 365"},
 		{"amazonbot", "amazonbot.json", "Amazonbot"},
 		{"ccbot", "ccbot.json", "Common Crawl CCBot"},
+		{"googleuta", "googleuta.json", "Google User-Triggered Agents"},
+		{"googleutfg", "googleutfg.json", "Google User-Triggered Fetchers (Google)"},
 		{"cachefly", "cachefly.txt", "CacheFly"},
 		{"salesforce", "salesforce.json", "Salesforce"},
 		{"huawei", "huawei.json", "Huawei Cloud"},
